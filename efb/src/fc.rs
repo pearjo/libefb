@@ -15,6 +15,22 @@
 
 //! Flight Computer.
 
+use std::fmt::{Display, Formatter, Result};
+
+use crate::geometry::Angle;
+
+#[repr(C)]
+pub struct Wind {
+    pub direction: Angle,
+    pub speed: i16,
+}
+
+impl Display for Wind {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "{0}@{1}", self.direction, self.speed)
+    }
+}
+
 /// Converts an angle from degree minutes and seconds to decimal.
 pub fn dms_to_decimal(degree: i32, minutes: i32, seconds: i32) -> f32 {
     degree as f32 + minutes as f32 / 60.0 + seconds as f32 / 3600.0

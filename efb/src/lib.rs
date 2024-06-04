@@ -17,5 +17,6 @@ pub mod airspace;
 pub mod algorithm;
 pub mod fc;
 pub mod fms;
+pub mod fp;
 pub mod geometry;
 pub mod parser;

@@ -15,9 +15,27 @@
 
 use libc::*;
 
-use efb::fc;
+use efb::fc::{Wind};
+use efb::fp::legs::{Leg};
+use efb::geometry::{Angle};
 
 #[no_mangle]
-pub extern "C" fn efb_fc_dms_to_decimal(degree: c_int, minutes: c_int, seconds: c_int) -> c_float {
-    fc::dms_to_decimal(degree, minutes, seconds)
+pub extern "C" fn efb_fp_leg(
+    tc: i16,
+    dist: c_float,
+    wind_direction: i16,
+    wind_speed: i16,
+    var: i16,
+    tas: i16,
+) -> Leg {
+    Leg::new(
+        Angle::from_deg(tc),
+        dist,
+        Wind {
+            direction: Angle::from_deg(wind_direction),
+            speed: wind_speed,
+        },
+        Angle::from_deg(var),
+        tas,
+    )
 }
