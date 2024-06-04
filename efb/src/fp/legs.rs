@@ -28,7 +28,7 @@ pub struct Leg {
     pub th: Angle,
     pub mc: Angle,
     pub mh: Angle,
-    pub time: f32,
+    pub time: u32,
 }
 
 impl Leg {
@@ -48,7 +48,7 @@ impl Leg {
             th,
             mc: tc + var,
             mh: th + var,
-            time: dist / gs as f32,
+            time: (dist as f32 / gs as f32 * 3600.0).round() as u32,
         }
     }
 }
