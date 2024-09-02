@@ -1,2 +1,10 @@
+# Rust
 Cargo.lock
 target
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__
+*.ipynb*
