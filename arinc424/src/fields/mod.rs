@@ -72,6 +72,12 @@ where
 #[derive(Debug)]
 pub struct AlphaNumericField<const I: usize, const N: usize>([u8; N]);
 
+impl<const I: usize, const N: usize> AlphaNumericField<I, N> {
+    pub fn into_inner(self) -> [u8; N] {
+        self.0
+    }
+}
+
 impl<const I: usize, const N: usize> Field for AlphaNumericField<I, N> {}
 
 impl<const I: usize, const N: usize> str::FromStr for AlphaNumericField<I, N> {
