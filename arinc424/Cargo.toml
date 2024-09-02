@@ -14,11 +14,8 @@
 # limitations under the License.
 
 [package]
-name = "efb"
+name = "arinc424"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-keywords = [ "aviation", "EFB"]
-
-[dependencies.arinc424]
-path = "../arinc424"
+keywords = ["ARINC", "ARINC 424"]
