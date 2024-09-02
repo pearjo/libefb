@@ -24,9 +24,9 @@
 use std::str::FromStr;
 
 use super::{Parser, ParserError};
-use crate::airspace::{Airspace, AirspaceClass, Airspaces};
 use crate::fc::dms_to_decimal;
 use crate::geometry::{Coordinate, VerticalDistance};
+use crate::nd::{Airspace, AirspaceClass, NavigationData};
 
 /// An element representing an airspace.
 struct OpenAirElement {

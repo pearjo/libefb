@@ -13,11 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod airspace;
-pub mod algorithm;
-pub mod fc;
-pub mod fms;
-pub mod fp;
-pub mod geometry;
-pub mod nd;
-pub mod parser;
+mod airac_cycle;
+mod airspace;
+mod mag_var;
+mod waypoint;
+
+pub use airac_cycle::AiracCycle;
+pub use airspace::{Airspace, AirspaceClass, Airspaces};
+pub use mag_var::MagneticVariation;
+pub use waypoint::{Region, Waypoint, WaypointUsage, Waypoints};
+
+#[derive(Default)]
+pub struct NavigationData {
+    pub airspaces: Airspaces,
+    pub waypoints: Waypoints,
+}

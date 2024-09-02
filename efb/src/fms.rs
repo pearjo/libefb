@@ -15,6 +15,7 @@
 
 use crate::airspace::{Airspace, Airspaces};
 use crate::geometry::{point_in_polygon, Coordinate};
+use crate::nd::{Airspace, Airspaces, Waypoint, Waypoints, NavigationData};
 
 pub struct FMS {
     airspaces: Airspaces,
@@ -32,9 +33,9 @@ impl FMS {
 
 #[cfg(test)]
 mod tests {
-    use crate::airspace::*;
     use crate::coord;
     use crate::geometry::VerticalDistance;
+    use crate::nd::*;
     use crate::polygon;
 
     use super::*;

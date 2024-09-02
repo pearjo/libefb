@@ -13,11 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod airspace;
-pub mod algorithm;
-pub mod fc;
-pub mod fms;
-pub mod fp;
-pub mod geometry;
-pub mod nd;
-pub mod parser;
+#[repr(C)]
+#[derive(Debug, PartialEq)]
+pub struct AiracCycle {
+    pub year: u8,
+    pub month: u8,
+}

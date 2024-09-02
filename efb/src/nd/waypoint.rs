@@ -1,0 +1,71 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 Joe Pearson
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+use super::*;
+use crate::geometry::Coordinate;
+
+pub type Waypoints = Vec<Waypoint>;
+
+#[repr(C)]
+#[derive(Debug, PartialEq)]
+pub enum WaypointUsage {
+    VFROnly,
+    Unknown,
+}
+
+/// The region where the waypoint is located. This can be either a terminal area
+/// or enroute if the holding fix is an enroute waypoint or enroute Navaid.
+#[repr(C)]
+#[derive(Debug, PartialEq)]
+pub enum Region {
+    /// An enroute fix or Navaid.
+    Enroute,
+    /// The terminal area to which the fix belongs with the airport ident as
+    /// value.
+    TerminalArea([u8; 4]),
+}
+
+#[repr(C)]
+#[derive(Debug, PartialEq)]
+pub struct Waypoint {
+    pub fix_ident: String,
+    pub desc: String,
+    pub usage: WaypointUsage,
+    pub coordinate: Coordinate,
+    pub mag_var: MagneticVariation,
+    pub region: Region,
+    pub cycle: AiracCycle,
+}
+
+impl Waypoint {
+    /// Returns the identifier used in routes. This is the [fix_ident] with a
+    /// region prefix in case the waypoint is within a terminal area. In that
+    /// case, the last two character of the airport ident are prefixed. For
+    /// example, a waypoint with ident `W1` at the Hamburg terminal area `EDDH`
+    /// would be `DHW1`.
+    pub fn route_ident(&self) -> String {
+        let region_prefix: String = match self.region {
+            Region::Enroute => String::default(),
+            Region::TerminalArea(airport_ident) => {
+                match String::from_utf8(vec![airport_ident[2], airport_ident[3]]) {
+                    Ok(airport_prefix) => airport_prefix,
+                    _ => String::default(),
+                }
+            }
+        };
+
+        region_prefix + &self.fix_ident
+    }
+}
