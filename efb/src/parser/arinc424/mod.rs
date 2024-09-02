@@ -26,8 +26,9 @@ impl Parser for Arinc424Parser {
         let airspaces = Airspaces::new();
         let mut waypoints = Waypoints::new();
 
+        // TODO add some nice error handling
         s.lines().for_each(|line| match &line[4..6] {
-            "PC" => {
+            "EA" | "PC" => {
                 if let Ok(waypoint_record) = arinc424::Waypoint::from_str(line) {
                     waypoints.push(waypoint_record.into());
                 }
