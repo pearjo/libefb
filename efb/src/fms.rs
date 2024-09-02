@@ -15,16 +15,17 @@
 
 use crate::airspace::{Airspace, Airspaces};
 use crate::geometry::{point_in_polygon, Coordinate};
-use crate::nd::{Airspace, Airspaces, Waypoint, Waypoints, NavigationData};
+use crate::nd::{Airspace, Waypoint, NavigationData};
 
 pub struct FMS {
-    airspaces: Airspaces,
+    pub navigation_data: NavigationData,
 }
 
 impl FMS {
     /// Returns all [Airspace] at the `point`.
     pub fn at(&self, point: &Coordinate) -> Vec<&Airspace> {
-        self.airspaces
+        self.navigation_data
+            .airspaces
             .iter()
             .filter(|airspace| point_in_polygon(point, &airspace.polygon))
             .collect()
@@ -46,22 +47,25 @@ mod tests {
         let outside = coord!(53.04892, 8.90907);
 
         let fms = FMS {
-            airspaces: vec![Airspace {
-                name: String::from("TMA BREMEN A"),
-                class: AirspaceClass::D,
-                ceiling: VerticalDistance::Fl(65),
-                floor: VerticalDistance::Msl(1500),
-                polygon: polygon![
-                    (53.10111, 8.974999),
-                    (53.102776, 9.079166),
-                    (52.97028, 9.084444),
-                    (52.96889, 8.982222),
-                    (53.10111, 8.974999)
-                ],
-            }],
+            navigation_data: NavigationData {
+                airspaces: vec![Airspace {
+                    name: String::from("TMA BREMEN A"),
+                    class: AirspaceClass::D,
+                    ceiling: VerticalDistance::Fl(65),
+                    floor: VerticalDistance::Msl(1500),
+                    polygon: polygon![
+                        (53.10111, 8.974999),
+                        (53.102776, 9.079166),
+                        (52.97028, 9.084444),
+                        (52.96889, 8.982222),
+                        (53.10111, 8.974999)
+                    ],
+                }],
+                waypoints: Waypoints::new(),
+            },
         };
 
-        assert_eq!(fms.at(&inside), vec![&fms.airspaces[0]]);
+        assert_eq!(fms.at(&inside), vec![&fms.navigation_data.airspaces[0]]);
         assert!(fms.at(&outside).is_empty());
     }
 }

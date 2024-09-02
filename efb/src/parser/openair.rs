@@ -218,19 +218,19 @@ impl OpenAirParser {
 }
 
 impl Parser for OpenAirParser {
-    fn parse(s: &str) -> Result<Airspaces, ParserError> {
+    fn parse(s: &str) -> Result<NavigationData, ParserError> {
+        let mut nd = NavigationData::default();
         let mut element = OpenAirElement::new();
-        let mut airspaces: Airspaces = Airspaces::new();
 
         s.lines().for_each(|command| {
             if let Some(airspace) = Self::parse_command(command, &mut element) {
-                airspaces.push(airspace);
+                nd.airspaces.push(airspace);
             }
         });
 
-        airspaces.push((&mut element).into());
+        nd.airspaces.push((&mut element).into());
 
-        Ok(airspaces)
+        Ok(nd)
     }
 }
 
@@ -243,7 +243,7 @@ mod tests {
 
     #[test]
     fn parses_command() {
-        let airspaces = OpenAirParser::parse(
+        let nd = OpenAirParser::parse(
             r#"AC D
 AN TMA BREMEN A
 AH FL 65
@@ -270,7 +270,7 @@ DP 53:06:04 N 8:58:30 E
             ],
         };
 
-        assert_eq!(airspaces, Ok(vec!(tma_bremen_a)));
+        assert_eq!(nd.unwrap().airspaces, vec!(tma_bremen_a));
     }
 
     #[test]
