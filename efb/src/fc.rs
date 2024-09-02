@@ -32,6 +32,6 @@ impl Display for Wind {
 }
 
 /// Converts an angle from degree minutes and seconds to decimal.
-pub fn dms_to_decimal(degree: i32, minutes: i32, seconds: i32) -> f32 {
+pub fn dms_to_decimal(degree: u8, minutes: u8, seconds: u8) -> f32 {
     degree as f32 + minutes as f32 / 60.0 + seconds as f32 / 3600.0
 }

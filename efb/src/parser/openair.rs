@@ -24,7 +24,7 @@
 use std::str::FromStr;
 
 use super::{Parser, ParserError};
-use crate::fc::dms_to_decimal;
+use crate::fc;
 use crate::geometry::{Coordinate, VerticalDistance};
 use crate::nd::{Airspace, AirspaceClass, NavigationData};
 
@@ -111,30 +111,30 @@ impl FromStr for Coordinate {
         let mut iter = s.split(&[' ', ':'][..]);
 
         // parse latitude
-        let d = iter.next().and_then(|s| s.parse::<i32>().ok());
-        let m = iter.next().and_then(|s| s.parse::<i32>().ok());
-        let s = iter.next().and_then(|s| s.parse::<i32>().ok());
+        let d = iter.next().and_then(|s| s.parse::<u8>().ok());
+        let m = iter.next().and_then(|s| s.parse::<u8>().ok());
+        let s = iter.next().and_then(|s| s.parse::<u8>().ok());
         let ns = iter.next();
 
         let latitude = match (d, m, s, ns) {
             (Some(d), Some(m), Some(s), Some(ns)) => match ns {
-                "N" => Some(dms_to_decimal(d, m, s)),
-                "S" => Some(-1.0 * dms_to_decimal(d, m, s)),
+                "N" => Some(fc::dms_to_decimal(d, m, s)),
+                "S" => Some(-1.0 * fc::dms_to_decimal(d, m, s)),
                 _ => None,
             },
             _ => None,
         };
 
         // parse longitude
-        let d = iter.next().and_then(|s| s.parse::<i32>().ok());
-        let m = iter.next().and_then(|s| s.parse::<i32>().ok());
-        let s = iter.next().and_then(|s| s.parse::<i32>().ok());
+        let d = iter.next().and_then(|s| s.parse::<u8>().ok());
+        let m = iter.next().and_then(|s| s.parse::<u8>().ok());
+        let s = iter.next().and_then(|s| s.parse::<u8>().ok());
         let ew = iter.next();
 
         let longitude = match (d, m, s, ew) {
             (Some(d), Some(m), Some(s), Some(ew)) => match ew {
-                "E" => Some(dms_to_decimal(d, m, s)),
-                "W" => Some(-1.0 * dms_to_decimal(d, m, s)),
+                "E" => Some(fc::dms_to_decimal(d, m, s)),
+                "W" => Some(-1.0 * fc::dms_to_decimal(d, m, s)),
                 _ => None,
             },
             _ => None,
@@ -238,7 +238,7 @@ impl Parser for OpenAirParser {
 mod tests {
     use super::*;
 
-    use crate::fc::dms_to_decimal;
+    use crate::fc;
     use crate::polygon;
 
     #[test]
@@ -262,11 +262,11 @@ DP 53:06:04 N 8:58:30 E
             ceiling: VerticalDistance::Fl(65),
             floor: VerticalDistance::Msl(1500),
             polygon: polygon![
-                (dms_to_decimal(53, 6, 4), dms_to_decimal(8, 58, 30)),
-                (dms_to_decimal(53, 6, 10), dms_to_decimal(9, 4, 45)),
-                (dms_to_decimal(52, 58, 13), dms_to_decimal(9, 5, 4)),
-                (dms_to_decimal(52, 58, 8), dms_to_decimal(8, 58, 56)),
-                (dms_to_decimal(53, 6, 4), dms_to_decimal(8, 58, 30))
+                (fc::dms_to_decimal(53, 6, 4), fc::dms_to_decimal(8, 58, 30)),
+                (fc::dms_to_decimal(53, 6, 10), fc::dms_to_decimal(9, 4, 45)),
+                (fc::dms_to_decimal(52, 58, 13), fc::dms_to_decimal(9, 5, 4)),
+                (fc::dms_to_decimal(52, 58, 8), fc::dms_to_decimal(8, 58, 56)),
+                (fc::dms_to_decimal(53, 6, 4), fc::dms_to_decimal(8, 58, 30))
             ],
         };
 
@@ -279,8 +279,8 @@ DP 53:06:04 N 8:58:30 E
         assert_eq!(
             north_west,
             Ok(Coordinate {
-                latitude: dms_to_decimal(37, 53, 0),
-                longitude: -dms_to_decimal(116, 55, 30),
+                latitude: fc::dms_to_decimal(37, 53, 0),
+                longitude: -fc::dms_to_decimal(116, 55, 30),
             })
         );
 
@@ -288,8 +288,8 @@ DP 53:06:04 N 8:58:30 E
         assert_eq!(
             south_east,
             Ok(Coordinate {
-                latitude: -dms_to_decimal(50, 34, 0),
-                longitude: dms_to_decimal(16, 55, 30),
+                latitude: -fc::dms_to_decimal(50, 34, 0),
+                longitude: fc::dms_to_decimal(16, 55, 30),
             })
         );
 
