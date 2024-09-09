@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::geometry::{point_in_polygon, Coordinate};
+use crate::geom::{point_in_polygon, Coordinate};
 
 mod airac_cycle;
 mod airspace;
@@ -63,7 +63,7 @@ impl NavigationData {
 #[cfg(test)]
 mod tests {
     use crate::coord;
-    use crate::geometry::VerticalDistance;
+    use crate::geom::VerticalDistance;
     use crate::polygon;
 
     use super::*;

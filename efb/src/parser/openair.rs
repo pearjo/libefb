@@ -25,7 +25,7 @@ use std::str::FromStr;
 
 use super::{Parser, ParserError};
 use crate::fc;
-use crate::geometry::{Coordinate, VerticalDistance};
+use crate::geom::{Coordinate, VerticalDistance};
 use crate::nd::{Airspace, AirspaceClass, NavigationData};
 
 /// An element representing an airspace.

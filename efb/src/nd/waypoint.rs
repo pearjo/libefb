@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use super::*;
-use crate::geometry::Coordinate;
+use crate::geom::Coordinate;
 
 pub type Waypoints = Vec<Waypoint>;
 

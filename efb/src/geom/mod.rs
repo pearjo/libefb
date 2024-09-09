@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod airspace;
-pub mod algorithm;
-pub mod fc;
-pub mod fms;
-pub mod fp;
-pub mod geom;
-pub mod nd;
-pub mod parser;
+//! Geometry.
+mod angle;
+mod coordinate;
+mod units;
+
+pub use angle::*;
+pub use coordinate::*;
+pub use units::*;

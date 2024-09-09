@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::geometry::{Coordinate, Line, Polygon};
+use crate::geom::{Coordinate, Line, Polygon};
 
 /// Returns `0` if the point is outside the polygon.
 /// [ref]: https://web.archive.org/web/20130126163405/http://geomalgorithms.com/a03-_inclusion.html

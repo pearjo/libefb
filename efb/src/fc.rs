@@ -17,7 +17,7 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-use crate::geometry::Angle;
+use crate::geom::Angle;
 
 #[repr(C)]
 pub struct Wind {

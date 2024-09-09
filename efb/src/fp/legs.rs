@@ -1,5 +1,5 @@
 use crate::fc::Wind;
-use crate::geometry::Angle;
+use crate::geom::Angle;
 
 fn ground_speed(tc: &Angle, tas: i16, wind: &Wind, wca: &Angle) -> i16 {
     (tas.pow(2) as f32 + wind.speed.pow(2) as f32

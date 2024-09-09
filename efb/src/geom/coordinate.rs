@@ -14,47 +14,9 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
-use std::ops::Add;
 
+use super::Angle;
 use crate::algorithm;
-
-/// An angle as value between 0° and 360°.
-#[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct Angle {
-    pub deg: i16,
-    pub rad: f32,
-}
-
-impl Angle {
-    pub fn from_deg(deg: i16) -> Self {
-        Self {
-            deg: deg,
-            rad: (deg as f32).to_radians(),
-        }
-    }
-
-    pub fn from_rad(rad: f32) -> Self {
-        Self {
-            deg: rad.to_degrees().round() as i16,
-            rad: rad,
-        }
-    }
-}
-
-impl Add for Angle {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Self::from_deg((self.deg + other.deg) % 360)
-    }
-}
-
-impl Display for Angle {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{0:03}", self.deg)
-    }
-}
 
 /// Coordinate value.
 #[repr(C)]
@@ -65,6 +27,53 @@ pub struct Coordinate {
 
     /// Longitude in the range from -90° south to 90° north.
     pub longitude: f32,
+}
+
+impl Coordinate {
+    /// Returns the bearing between this point and the `other`.
+    pub fn bearing(&self, other: &Coordinate) -> Angle {
+        // TODO fix result
+        // double dlon = qDegreesToRadians(other.d->lng - d->lng);
+        // double lat1Rad = qDegreesToRadians(d->lat);
+        // double lat2Rad = qDegreesToRadians(other.d->lat);
+        // double y = sin(dlon) * cos(lat2Rad);
+        // double x = cos(lat1Rad) * sin(lat2Rad) - sin(lat1Rad) * cos(lat2Rad) * cos(dlon);
+        // double azimuth = qRadiansToDegrees(atan2(y, x)) + 360.0;
+        // double whole;
+        // double fraction = modf(azimuth, &whole);
+        // return qreal((int(whole + 360) % 360) + fraction);
+
+        let lat_a = self.latitude;
+        let lat_b = other.latitude;
+        let delta_long = self.longitude - other.longitude;
+
+        let x = lat_b.cos() + delta_long.sin();
+        let y = lat_a.cos() * lat_b.sin() - lat_a.sin() * lat_b.cos() * delta_long.cos();
+
+        Angle::from_rad(x.atan2(y))
+    }
+
+    /// Returns the distance from this point to the `other`.
+    pub fn dist(&self, other: &Coordinate) -> f32 {
+        // Haversine
+
+        let delta_lat = other.latitude - self.latitude;
+        let delta_long = other.longitude - self.longitude;
+
+        // double dlat = qDegreesToRadians(other.d->lat - d->lat);
+        // double dlon = qDegreesToRadians(other.d->lng - d->lng);
+        // double haversine_dlat = sin(dlat / 2.0);
+        // haversine_dlat *= haversine_dlat;
+        // double haversine_dlon = sin(dlon / 2.0);
+        // haversine_dlon *= haversine_dlon;
+        // double y = haversine_dlat
+        //     + cos(qDegreesToRadians(d->lat))
+        //     * cos(qDegreesToRadians(other.d->lat))
+        //     * haversine_dlon;
+        // double x = 2 * asin(sqrt(y));
+        // return qreal(x * qgeocoordinate_EARTH_MEAN_RADIUS * 1000);
+        0.0
+    }
 }
 
 #[macro_export]
@@ -91,7 +100,7 @@ pub type Polygon = Vec<Coordinate>;
 ///
 /// ```
 /// use efb::polygon;
-/// use efb::geometry::Coordinate;
+/// use efb::geom::Coordinate;
 ///
 /// let p = polygon![(0.0, 0.0), (10.0, 10.0)];
 /// assert_eq!(p[0], Coordinate { latitude: 0.0, longitude: 0.0 });
@@ -118,49 +127,6 @@ macro_rules! polygon {
 /// Returns `true` if the `point` is inside the `polygon`.
 pub fn point_in_polygon(point: &Coordinate, polygon: &Polygon) -> bool {
     algorithm::winding_number(point, polygon) != 0
-}
-
-/// A vertical distance value.
-#[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum VerticalDistance {
-    /// Absolute distance above ground level in feet.
-    Agl(u16),
-
-    /// Altitude in feet with reference to a local air pressure.
-    Altitude(u16),
-
-    /// Flight level in hundreds of feet as altitude at standard air pressure.
-    Fl(u16),
-
-    /// Ground level.
-    Gnd,
-
-    /// Distance above mean sea level at standard air pressure.
-    Msl(u16),
-
-    /// An unlimited vertical distance.
-    Unlimited,
-}
-
-// TODO: Do we need the default?
-impl Default for VerticalDistance {
-    fn default() -> Self {
-        Self::Gnd
-    }
-}
-
-impl Display for VerticalDistance {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self {
-            VerticalDistance::Gnd => write!(f, "GND"),
-            VerticalDistance::Fl(value) => write!(f, "FL{value}"),
-            VerticalDistance::Agl(value) => write!(f, "{value} AGL"),
-            VerticalDistance::Msl(value) => write!(f, "{value} MSL"),
-            VerticalDistance::Altitude(value) => write!(f, "{value} ALT"),
-            VerticalDistance::Unlimited => write!(f, "unlimited"),
-        }
-    }
 }
 
 #[cfg(test)]

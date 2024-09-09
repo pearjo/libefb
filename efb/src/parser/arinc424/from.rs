@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use crate::fc;
-use crate::geometry::Coordinate;
+use crate::geom::Coordinate;
 use crate::nd::*;
 
 use arinc424;
