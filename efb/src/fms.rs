@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! Flight Management System.
+
 use crate::nd::*;
 use crate::parser::{Arinc424Parser, OpenAirParser, Parser};
 

@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! Navigation Data.
+
 use crate::geom::{point_in_polygon, Coordinate};
 
 mod airac_cycle;

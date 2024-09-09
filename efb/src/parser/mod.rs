@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! Parser.
+
 use crate::nd::NavigationData;
 use std::fs;
 use std::io::ErrorKind;

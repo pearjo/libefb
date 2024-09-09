@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! Algorithms.
+
 use crate::geom::{Coordinate, Line, Polygon};
 
 /// Returns `0` if the point is outside the polygon.
