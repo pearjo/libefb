@@ -15,11 +15,11 @@
 
 //! Algorithms.
 
-use crate::geom::{Coordinate, Line, Polygon};
+use crate::geom::{Coordinate, Line};
 
 /// Returns `0` if the point is outside the polygon.
 /// [ref]: https://web.archive.org/web/20130126163405/http://geomalgorithms.com/a03-_inclusion.html
-pub fn winding_number(p: &Coordinate, v: &Polygon) -> i32 {
+pub fn winding_number(p: &Coordinate, v: &Vec<Coordinate>) -> i32 {
     let mut wn = 0;
 
     for i in 0..(v.len() - 1) {

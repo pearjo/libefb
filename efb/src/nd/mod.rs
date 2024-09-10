@@ -15,7 +15,7 @@
 
 //! Navigation Data.
 
-use crate::geom::{point_in_polygon, Coordinate};
+use crate::geom::Coordinate;
 
 mod airac_cycle;
 mod airspace;
@@ -50,7 +50,7 @@ impl NavigationData {
     pub fn at(&self, point: &Coordinate) -> Vec<&Airspace> {
         self.airspaces
             .iter()
-            .filter(|airspace| point_in_polygon(point, &airspace.polygon))
+            .filter(|airspace| airspace.polygon.contains(point))
             .collect()
     }
 
@@ -64,9 +64,7 @@ impl NavigationData {
 
 #[cfg(test)]
 mod tests {
-    use crate::coord;
-    use crate::geom::VerticalDistance;
-    use crate::polygon;
+    use crate::geom::{Polygon, VerticalDistance};
 
     use super::*;
 

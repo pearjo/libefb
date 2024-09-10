@@ -25,7 +25,7 @@ use std::str::FromStr;
 
 use super::{Parser, ParserError};
 use crate::fc;
-use crate::geom::{Coordinate, VerticalDistance};
+use crate::geom::{Coordinate, Polygon, VerticalDistance};
 use crate::nd::{Airspace, AirspaceClass, NavigationData};
 
 /// An element representing an airspace.
@@ -43,7 +43,7 @@ struct OpenAirElement {
     al: Option<VerticalDistance>,
 
     /// Polygon point.
-    dp: Vec<Coordinate>,
+    dp: Polygon,
 }
 
 // TODO: Change to FromStr!
@@ -73,18 +73,19 @@ impl OpenAirElement {
             an: None,
             ah: None,
             al: None,
-            dp: Vec::new(),
+            dp: Polygon::new(),
         }
     }
 }
 
 impl From<&mut OpenAirElement> for Airspace {
     fn from(element: &mut OpenAirElement) -> Self {
-        let mut polygon = element.dp.clone();
-        match polygon.first() {
+        let mut coords = element.dp.clone().into_inner();
+
+        match coords.first() {
             Some(first) => {
-                if first != polygon.last().unwrap() {
-                    polygon.push(first.clone());
+                if first != coords.last().unwrap() {
+                    coords.push(first.clone());
                 }
             }
             None => (),
@@ -95,7 +96,7 @@ impl From<&mut OpenAirElement> for Airspace {
             class: element.ac.take().unwrap_or_default().into(),
             ceiling: element.ah.unwrap_or_default(),
             floor: element.al.unwrap_or_default(),
-            polygon: polygon,
+            polygon: Polygon::from(coords),
         }
     }
 }
@@ -237,9 +238,7 @@ impl Parser for OpenAirParser {
 #[cfg(test)]
 mod tests {
     use super::*;
-
     use crate::fc;
-    use crate::polygon;
 
     #[test]
     fn parses_command() {

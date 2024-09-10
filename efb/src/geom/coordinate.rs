@@ -16,7 +16,6 @@
 use std::fmt::{Display, Formatter, Result};
 
 use super::Angle;
-use crate::algorithm;
 
 /// Coordinate value.
 #[repr(C)]
@@ -76,16 +75,6 @@ impl Coordinate {
     }
 }
 
-#[macro_export]
-macro_rules! coord {
-    ($latitude:expr, $longitude:expr) => {
-        Coordinate {
-            latitude: $latitude,
-            longitude: $longitude,
-        }
-    };
-}
-
 impl Display for Coordinate {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "({0}, {1})", self.latitude, self.longitude)
@@ -94,68 +83,5 @@ impl Display for Coordinate {
 
 pub type Line = (Coordinate, Coordinate);
 
-pub type Polygon = Vec<Coordinate>;
-
-/// Creates a [`Polygon`] containing the coordinates.
-///
-/// ```
-/// use efb::polygon;
-/// use efb::geom::Coordinate;
-///
-/// let p = polygon![(0.0, 0.0), (10.0, 10.0)];
-/// assert_eq!(p[0], Coordinate { latitude: 0.0, longitude: 0.0 });
-/// assert_eq!(p[1], Coordinate { latitude: 10.0, longitude: 10.0 });
-/// ```
-#[macro_export]
-macro_rules! polygon {
-    ( $( $p:expr ),* ) => {
-        {
-            let mut polygon = Vec::new();
-            $(
-                polygon.push(
-                    Coordinate {
-                        latitude: $p.0,
-                        longitude: $p.1,
-                    }
-                );
-            )*
-            polygon
-        }
-    };
-}
-
-/// Returns `true` if the `point` is inside the `polygon`.
-pub fn point_in_polygon(point: &Coordinate, polygon: &Polygon) -> bool {
-    algorithm::winding_number(point, polygon) != 0
-}
-
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn point_is_in_polygon() {
-        let point = coord!(15.0, 15.0);
-        let polygon = polygon![
-            (10.0, 10.0),
-            (20.0, 10.0),
-            (20.0, 20.0),
-            (10.0, 20.0),
-            (10.0, 10.0)
-        ];
-        assert!(point_in_polygon(&point, &polygon));
-    }
-
-    #[test]
-    fn point_is_not_in_polygon() {
-        let point = coord!(20.0, 0.0);
-        let polygon = polygon![
-            (-10.0, 10.0),
-            (10.0, 10.0),
-            (10.0, -10.0),
-            (-10.0, -10.0),
-            (-10.0, 10.0)
-        ];
-        assert!(!point_in_polygon(&point, &polygon));
-    }
-}
+mod tests {}
