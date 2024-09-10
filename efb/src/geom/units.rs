@@ -69,6 +69,14 @@ pub enum Distance {
 }
 
 impl Distance {
+    /// Consumes the Distance, returning its inner value.
+    pub fn into_inner(self) -> f32 {
+        match self {
+            Self::Meter(v) => v,
+            Self::NauticalMiles(v) => v,
+        }
+    }
+
     /// Converts to meters.
     pub fn to_m(self) -> Self {
         match self {

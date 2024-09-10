@@ -16,6 +16,8 @@
 use std::fmt::{Display, Formatter, Result};
 use std::ops::Add;
 
+use crate::nd::MagneticVariation;
+
 /// An angle as value between 0° and 360°.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -45,6 +47,20 @@ impl Add for Angle {
 
     fn add(self, other: Self) -> Self {
         Self::from_deg((self.deg + other.deg) % 360)
+    }
+}
+
+impl Add<MagneticVariation> for Angle {
+    type Output = Self;
+
+    fn add(self, other: MagneticVariation) -> Self {
+        let other_deg = match other {
+            MagneticVariation::East(v) => v,
+            MagneticVariation::West(v) => 360.0 - v,
+            _ => 0.0,
+        };
+
+        Self::from_deg((self.deg + other_deg.round() as i16) % 360)
     }
 }
 

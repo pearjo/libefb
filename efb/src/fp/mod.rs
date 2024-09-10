@@ -13,11 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum MagneticVariation {
-    East(f32),
-    West(f32),
-    OrientedToTrueNorth,
-    Unknown,
-}
+//! Flight Plan.
+mod legs;
+mod route;
+
+use legs::Leg;
+pub use route::Route;

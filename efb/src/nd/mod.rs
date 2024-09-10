@@ -33,9 +33,15 @@ pub enum Fix<'a> {
 }
 
 impl Fix<'_> {
-    fn coordinate(&self) -> Coordinate {
+    pub fn coordinate(&self) -> Coordinate {
         match self {
             Self::Waypoint(wp) => wp.coordinate,
+        }
+    }
+
+    pub fn var(&self) -> MagneticVariation {
+        match self {
+            Self::Waypoint(wp) => wp.mag_var,
         }
     }
 }
