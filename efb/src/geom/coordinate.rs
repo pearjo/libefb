@@ -15,7 +15,11 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-use super::Angle;
+use super::{Angle, Distance};
+
+mod constants {
+    pub const EARTH_MEAN_RADIUS: f32 = 6371.0072;
+}
 
 /// Coordinate value.
 #[repr(C)]
@@ -53,25 +57,19 @@ impl Coordinate {
     }
 
     /// Returns the distance from this point to the `other`.
-    pub fn dist(&self, other: &Coordinate) -> f32 {
-        // Haversine
-
-        let delta_lat = other.latitude - self.latitude;
-        let delta_long = other.longitude - self.longitude;
-
-        // double dlat = qDegreesToRadians(other.d->lat - d->lat);
-        // double dlon = qDegreesToRadians(other.d->lng - d->lng);
-        // double haversine_dlat = sin(dlat / 2.0);
-        // haversine_dlat *= haversine_dlat;
-        // double haversine_dlon = sin(dlon / 2.0);
-        // haversine_dlon *= haversine_dlon;
-        // double y = haversine_dlat
-        //     + cos(qDegreesToRadians(d->lat))
-        //     * cos(qDegreesToRadians(other.d->lat))
-        //     * haversine_dlon;
-        // double x = 2 * asin(sqrt(y));
-        // return qreal(x * qgeocoordinate_EARTH_MEAN_RADIUS * 1000);
-        0.0
+    ///
+    /// The distance is calculated according to Haversine.
+    pub fn dist(&self, other: &Coordinate) -> Distance {
+        let delta_lat = (other.latitude - self.latitude).to_radians();
+        let delta_long = (other.longitude - self.longitude).to_radians();
+        let haversine_delta_lat = (delta_lat / 2.0).sin().powi(2);
+        let haversine_delta_long = (delta_long / 2.0).sin().powi(2);
+        let y = haversine_delta_lat
+            + self.latitude.to_radians().cos() // TODO do we need to first convert to radians?
+            * other.latitude.to_radians().cos()
+            * haversine_delta_long;
+        let x = 2.0 * y.sqrt().asin();
+        Distance::Meter(x * constants::EARTH_MEAN_RADIUS * 1000.0)
     }
 }
 
@@ -84,4 +82,15 @@ impl Display for Coordinate {
 pub type Line = (Coordinate, Coordinate);
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+
+    #[test]
+    fn dist() {
+        // The distance along the equator between 1° in longitude is per
+        // definition 60 NM.
+        let a = coord!(0.0, 0.0);
+        let b = coord!(0.0, 1.0);
+        assert_eq!(a.dist(&b).to_nm(), Distance::NauticalMiles(60.0));
+    }
+}
