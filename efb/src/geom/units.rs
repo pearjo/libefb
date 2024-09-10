@@ -15,6 +15,10 @@
 
 use std::fmt::{Display, Formatter, Result};
 
+mod constants {
+    pub const NAUTICAL_MILE_IN_METER: f32 = 1852.0;
+}
+
 /// A vertical distance value.
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -55,5 +59,49 @@ impl Display for VerticalDistance {
             VerticalDistance::Altitude(value) => write!(f, "{value} ALT"),
             VerticalDistance::Unlimited => write!(f, "unlimited"),
         }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Distance {
+    Meter(f32),
+    NauticalMiles(f32),
+}
+
+impl Distance {
+    /// Converts to meters.
+    pub fn to_m(self) -> Self {
+        match self {
+            Self::Meter(_) => self,
+            Self::NauticalMiles(nm) => Self::Meter(nm * constants::NAUTICAL_MILE_IN_METER),
+        }
+    }
+
+    /// Converts to nautical miles.
+    pub fn to_nm(self) -> Self {
+        match self {
+            Self::Meter(m) => Self::NauticalMiles(m / constants::NAUTICAL_MILE_IN_METER),
+            Self::NauticalMiles(_) => self,
+        }
+    }
+}
+
+impl Display for Distance {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        match self {
+            Distance::Meter(value) => write!(f, "{value} m"),
+            Distance::NauticalMiles(value) => write!(f, "{value} NM"),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn distance() {
+        let nm = Distance::NauticalMiles(1.0);
+        assert_eq!(nm.to_m(), Distance::Meter(1852.0));
     }
 }
