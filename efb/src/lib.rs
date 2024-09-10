@@ -13,6 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! # The Electronic Flight Bag (EFB) Library
+//!
+//! The EFB Library is the foundation for flight planning applications,
+//! providing functionality to plan a flight and get navigational aids
+//! in-flight.
+
 #[macro_use]
 mod macros;
 
