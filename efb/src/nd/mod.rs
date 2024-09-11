@@ -16,15 +16,14 @@
 //! Navigation Data.
 
 use crate::geom::Coordinate;
+use crate::MagneticVariation;
 
 mod airac_cycle;
 mod airspace;
-mod mag_var;
 mod waypoint;
 
 pub use airac_cycle::AiracCycle;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
-pub use mag_var::MagneticVariation;
 pub use waypoint::{Region, Waypoint, WaypointUsage, Waypoints};
 
 #[repr(C)]
@@ -70,7 +69,8 @@ impl NavigationData {
 
 #[cfg(test)]
 mod tests {
-    use crate::geom::{Polygon, VerticalDistance};
+    use crate::geom::Polygon;
+    use crate::VerticalDistance;
 
     use super::*;
 

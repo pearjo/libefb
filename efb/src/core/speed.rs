@@ -13,9 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Flight Computer.
+#[derive(Copy, Clone)]
+pub enum Speed {
+    Knots(f32),
+    MeterPerSecond(f32),
+}
 
-/// Converts an angle from degree minutes and seconds to decimal.
-pub fn dms_to_decimal(degree: u8, minutes: u8, seconds: u8) -> f32 {
-    degree as f32 + minutes as f32 / 60.0 + seconds as f32 / 3600.0
+impl Speed {
+    pub fn to_kt(self) -> f32 {
+        match self {
+            Self::Knots(v) => v,
+            Self::MeterPerSecond(v) => v * 1.943844,
+        }
+    }
+
+    pub fn to_ms(self) -> f32 {
+        match self {
+            Self::Knots(v) => v * 0.514444,
+            Self::MeterPerSecond(v) => v,
+        }
+    }
 }

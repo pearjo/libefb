@@ -1,6 +1,5 @@
-use crate::fc::Wind;
-use crate::geom::{Angle, Distance};
 use crate::nd::Fix;
+use crate::{Angle, Distance, Speed, Wind};
 
 /// A leg `from` one point `to` another.
 pub struct Leg<'a> {
@@ -9,7 +8,7 @@ pub struct Leg<'a> {
     /// The point to which the leg is going.
     pub to: &'a Fix<'a>,
     /// The desired true airspeed (TAS).
-    pub tas: i16,
+    pub tas: Speed,
     /// The wind to take into account.
     pub wind: Wind,
 }
@@ -42,27 +41,30 @@ impl Leg<'_> {
     }
 
     /// The ground speed in knots.
-    pub fn gs(&self) -> i16 {
-        (self.tas.pow(2) as f32 + self.wind.speed.pow(2) as f32
-            - ((2 * self.tas * self.wind.speed) as f32
-                * (self.bearing().rad - self.wind.direction.rad + self.wca().rad).cos()))
-        .sqrt()
-        .round() as i16
+    pub fn gs(&self) -> Speed {
+        let tas = self.tas.to_kt();
+        let ws = self.wind.speed.to_kt();
+
+        Speed::Knots(
+            (tas.powi(2) + ws.powi(2)
+                - ((2.0 * tas * ws)
+                    * (self.bearing() - self.wind.direction + self.wca())
+                        .rad
+                        .cos()))
+            .sqrt(),
+        )
     }
 
     /// The wind correction angle based on the wind.
     fn wca(&self) -> Angle {
-        Angle::from_rad(
-            (self.wind.speed as f32 / self.tas as f32
-                * Angle::from_deg(self.bearing().deg - 180 + self.wind.direction.deg)
-                    .rad
-                    .sin())
-            .asin(),
-        )
+        let tas = self.tas.to_kt();
+        let ws = self.wind.speed.to_kt();
+
+        Angle::from_rad((ws / tas * (self.bearing() - 180 + self.wind.direction).rad.sin()).asin())
     }
 
     /// The estimated time to fly the leg in seconds.
     pub fn time(&self) -> u32 {
-        (self.dist().to_nm().into_inner() / self.gs() as f32 * 3600.0).round() as u32
+        self.dist() / self.gs()
     }
 }

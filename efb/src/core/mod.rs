@@ -13,9 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Flight Computer.
+mod angle;
+mod dist;
+mod mag_var;
+mod speed;
+mod wind;
 
-/// Converts an angle from degree minutes and seconds to decimal.
-pub fn dms_to_decimal(degree: u8, minutes: u8, seconds: u8) -> f32 {
-    degree as f32 + minutes as f32 / 60.0 + seconds as f32 / 3600.0
-}
+pub use angle::*;
+pub use dist::*;
+pub use mag_var::*;
+pub use speed::*;
+pub use wind::*;

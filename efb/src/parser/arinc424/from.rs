@@ -16,6 +16,7 @@
 use crate::fc;
 use crate::geom::Coordinate;
 use crate::nd::*;
+use crate::MagneticVariation;
 
 use arinc424;
 

@@ -15,7 +15,7 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-use super::{Angle, Distance};
+use crate::{Angle, Distance};
 
 mod constants {
     pub const EARTH_MEAN_RADIUS: f32 = 6371.0072;

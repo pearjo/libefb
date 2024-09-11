@@ -13,9 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Flight Computer.
+use std::fmt::{Display, Formatter, Result};
 
-/// Converts an angle from degree minutes and seconds to decimal.
-pub fn dms_to_decimal(degree: u8, minutes: u8, seconds: u8) -> f32 {
-    degree as f32 + minutes as f32 / 60.0 + seconds as f32 / 3600.0
+use super::{Angle, Speed};
+
+#[repr(C)]
+pub struct Wind {
+    pub direction: Angle,
+    pub speed: Speed,
+}
+
+impl Display for Wind {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "{0}@{1}", self.direction, self.speed.to_kt())
+    }
 }

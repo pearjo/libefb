@@ -13,7 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::Speed;
+
 use std::fmt::{Display, Formatter, Result};
+use std::ops::Div;
 
 mod constants {
     pub const NAUTICAL_MILE_IN_METER: f32 = 1852.0;
@@ -90,6 +93,17 @@ impl Distance {
         match self {
             Self::Meter(m) => Self::NauticalMiles(m / constants::NAUTICAL_MILE_IN_METER),
             Self::NauticalMiles(_) => self,
+        }
+    }
+}
+
+impl Div<Speed> for Distance {
+    type Output = u32;
+
+    fn div(self, rhs: Speed) -> Self::Output {
+        match self {
+            Distance::Meter(v) => (v / rhs.to_ms()).round() as u32,
+            Distance::NauticalMiles(v) => (v / rhs.to_kt()).round() as u32 * 3600,
         }
     }
 }

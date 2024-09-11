@@ -14,9 +14,9 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
-use std::ops::Add;
+use std::ops::{Add, Sub};
 
-use crate::nd::MagneticVariation;
+use super::MagneticVariation;
 
 /// An angle as value between 0° and 360°.
 #[repr(C)]
@@ -47,6 +47,30 @@ impl Add for Angle {
 
     fn add(self, other: Self) -> Self {
         Self::from_deg((self.deg + other.deg) % 360)
+    }
+}
+
+impl Add<i16> for Angle {
+    type Output = Self;
+
+    fn add(self, other: i16) -> Self {
+        Self::from_deg((self.deg + other) % 360)
+    }
+}
+
+impl Sub for Angle {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self::from_deg((self.deg - other.deg) % 360)
+    }
+}
+
+impl Sub<i16> for Angle {
+    type Output = Self;
+
+    fn sub(self, other: i16) -> Self {
+        Self::from_deg((self.deg - other) % 360)
     }
 }
 

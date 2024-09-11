@@ -14,12 +14,8 @@
 // limitations under the License.
 
 //! Geometry.
-mod angle;
 mod coordinate;
 mod polygon;
-mod units;
 
-pub use angle::*;
 pub use coordinate::*;
 pub use polygon::*;
-pub use units::*;

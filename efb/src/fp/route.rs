@@ -1,7 +1,6 @@
 use super::Leg;
-use crate::fc::Wind;
-use crate::geom::Angle;
 use crate::nd::*;
+use crate::{Angle, Speed, Wind};
 
 pub enum RouteError {
     FixNotFound,
@@ -20,10 +19,10 @@ impl<'a> Route<'a> {
                 from: &self.fixes[i],
                 to: &self.fixes[i + 1],
                 // TODO decode TAS and wind from input
-                tas: 107,
+                tas: Speed::Knots(107.0),
                 wind: Wind {
                     direction: Angle::from_deg(0),
-                    speed: 0,
+                    speed: Speed::Knots(0.0),
                 },
             });
         }

@@ -15,7 +15,8 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-use crate::geom::{Polygon, VerticalDistance};
+use crate::geom::Polygon;
+use crate::VerticalDistance;
 
 pub type Airspaces = Vec<Airspace>;
 
