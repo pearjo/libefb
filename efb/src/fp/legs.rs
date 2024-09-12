@@ -40,6 +40,7 @@ impl Leg<'_> {
         self.from.coordinate().dist(&self.to.coordinate())
     }
 
+    // TODO add test to verify calculation
     /// The ground speed in knots.
     pub fn gs(&self) -> Speed {
         let tas = self.tas.to_kt();
@@ -55,6 +56,7 @@ impl Leg<'_> {
         )
     }
 
+    // TODO add test to verify calculation
     /// The wind correction angle based on the wind.
     fn wca(&self) -> Angle {
         let tas = self.tas.to_kt();
@@ -63,6 +65,7 @@ impl Leg<'_> {
         Angle::from_rad((ws / tas * (self.bearing() - 180 + self.wind.direction).rad.sin()).asin())
     }
 
+    // TODO add test to verify calculation
     /// The estimated time to fly the leg in seconds.
     pub fn time(&self) -> u32 {
         self.dist() / self.gs()

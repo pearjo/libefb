@@ -33,6 +33,7 @@ pub struct Coordinate {
 }
 
 impl Coordinate {
+    // TODO check calculation and add test to verify
     /// Returns the bearing between this point and the `other`.
     pub fn bearing(&self, other: &Coordinate) -> Angle {
         // TODO fix result
@@ -56,6 +57,7 @@ impl Coordinate {
         Angle::from_rad(x.atan2(y))
     }
 
+    // TODO fix distance calculation and add some comments regarding Haversine
     /// Returns the distance from this point to the `other`.
     ///
     /// The distance is calculated according to Haversine.

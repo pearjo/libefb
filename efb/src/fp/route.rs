@@ -6,6 +6,17 @@ pub enum RouteError {
     FixNotFound,
 }
 
+// TODO add proper docs on how to enter a route
+/// # Decoding
+///
+/// The route can be decoded from a space separated list of fixes, wind values
+/// and performance instructions. The instructions
+///
+///   `135@09 107KT EDDH DHD HLW EDHL`
+///
+/// would create a route from Hamburg to Luebeck via outbound delta routing and
+/// inbound whisky routing with a desired TAS of 107kt and a wind of 9kt from
+/// south-east.
 pub struct Route<'a> {
     fixes: Vec<Fix<'a>>,
 }
