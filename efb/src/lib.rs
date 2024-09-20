@@ -26,6 +26,7 @@ mod core;
 pub use core::*;
 
 pub mod algorithm;
+pub mod error;
 pub mod fc;
 pub mod fms;
 pub mod fp;

@@ -26,7 +26,9 @@ pub use airac_cycle::AiracCycle;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use waypoint::{Region, Waypoint, WaypointUsage, Waypoints};
 
+/// A fix location with coordinates.
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub enum Fix<'a> {
     Waypoint(&'a Waypoint),
 }

@@ -13,8 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::fmt::{Display, Formatter, Result};
+use std::fmt::{Display, Formatter};
 
+use crate::fc;
 use crate::{Angle, Distance};
 
 mod constants {
@@ -73,10 +74,19 @@ impl Coordinate {
         let x = 2.0 * y.sqrt().asin();
         Distance::Meter(x * constants::EARTH_MEAN_RADIUS * 1000.0)
     }
+
+    pub fn from_dms(latitude: (i8, u8, u8), longitude: (i16, u8, u8)) -> Self {
+        Self {
+            latitude: latitude.0.signum() as f32
+                * fc::dms_to_decimal(latitude.0 as u8, latitude.1, latitude.2),
+            longitude: longitude.0.signum() as f32
+                * fc::dms_to_decimal(longitude.0 as u8, longitude.1, longitude.2),
+        }
+    }
 }
 
 impl Display for Coordinate {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "({0}, {1})", self.latitude, self.longitude)
     }
 }
@@ -94,5 +104,9 @@ mod tests {
         let a = coord!(0.0, 0.0);
         let b = coord!(0.0, 1.0);
         assert_eq!(a.dist(&b).to_nm(), Distance::NauticalMiles(60.0));
+
+        let ham = Coordinate::from_dms((53, 37, 49), (9, 59, 18));
+        let fra = Coordinate::from_dms((50, 0, 47), (8, 31, 37));
+        assert_eq!(ham.dist(&fra).to_nm(), Distance::NauticalMiles(222.4));
     }
 }

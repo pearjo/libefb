@@ -105,7 +105,16 @@ impl From<&mut OpenAirElement> for Airspace {
 #[derive(Debug, PartialEq)]
 pub struct ParseOpenAirCoordinateError;
 
-impl FromStr for Coordinate {
+#[derive(Debug, PartialEq)]
+struct OpenAirCoordinate(Coordinate);
+
+impl OpenAirCoordinate {
+    pub fn into_inner(self) -> Coordinate {
+        self.0
+    }
+}
+
+impl FromStr for OpenAirCoordinate {
     type Err = ParseOpenAirCoordinateError;
 
     // 37:53:00 N 116:55:30 W
@@ -143,10 +152,10 @@ impl FromStr for Coordinate {
         };
 
         match (latitude, longitude) {
-            (Some(latitude), Some(longitude)) => Ok(Coordinate {
+            (Some(latitude), Some(longitude)) => Ok(Self(Coordinate {
                 latitude,
                 longitude,
-            }),
+            })),
             _ => Err(ParseOpenAirCoordinateError),
         }
     }
@@ -208,8 +217,8 @@ impl OpenAirParser {
             Some("AH") => element.ah = record?.parse::<VerticalDistance>().ok(),
             Some("AL") => element.al = record?.parse::<VerticalDistance>().ok(),
             Some("DP") => {
-                if let Ok(coordinate) = record?.parse::<Coordinate>() {
-                    element.dp.push(coordinate);
+                if let Ok(coordinate) = record?.parse::<OpenAirCoordinate>() {
+                    element.dp.push(coordinate.into_inner());
                 }
             }
             _ => {}
@@ -275,25 +284,25 @@ DP 53:06:04 N 8:58:30 E
 
     #[test]
     fn parses_coordinate() {
-        let north_west = "37:53:00 N 116:55:30 W".parse::<Coordinate>();
+        let north_west = "37:53:00 N 116:55:30 W".parse::<OpenAirCoordinate>();
         assert_eq!(
-            north_west,
-            Ok(Coordinate {
+            north_west.unwrap().into_inner(),
+            Coordinate {
                 latitude: fc::dms_to_decimal(37, 53, 0),
                 longitude: -fc::dms_to_decimal(116, 55, 30),
-            })
+            }
         );
 
-        let south_east = "50:34:00 S 16:55:30 E".parse::<Coordinate>();
+        let south_east = "50:34:00 S 16:55:30 E".parse::<OpenAirCoordinate>();
         assert_eq!(
-            south_east,
-            Ok(Coordinate {
+            south_east.unwrap().into_inner(),
+            Coordinate {
                 latitude: -fc::dms_to_decimal(50, 34, 0),
                 longitude: fc::dms_to_decimal(16, 55, 30),
-            })
+            }
         );
 
-        let invalid = "50.1202 X 16.214 Y".parse::<Coordinate>();
+        let invalid = "50.1202 X 16.214 Y".parse::<OpenAirCoordinate>();
         assert_eq!(invalid, Err(ParseOpenAirCoordinateError),);
     }
 

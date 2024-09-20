@@ -18,6 +18,7 @@ use std::fmt::{Display, Formatter, Result};
 use super::{Angle, Speed};
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct Wind {
     pub direction: Angle,
     pub speed: Speed,

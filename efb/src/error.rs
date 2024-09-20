@@ -13,10 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Flight Plan.
-mod decoder;
-mod legs;
-mod route;
-
-pub use legs::Leg;
-pub use route::{Route, RouteError};
+pub enum Error {
+    ExpectedWindOnLeg,
+    ExpectedSpeedOnLeg,
+    UnexpectedString,
+}
