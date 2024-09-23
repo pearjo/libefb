@@ -18,6 +18,7 @@
 use crate::nd::NavigationData;
 use std::fs;
 use std::io::ErrorKind;
+use std::path::Path;
 
 mod arinc424;
 mod openair;
@@ -30,7 +31,7 @@ pub trait Parser {
     fn parse(s: &str) -> Result<NavigationData, ParserError>;
 
     /// Read the file from [`path`] and parses the airspaces from it.
-    fn read(path: &str) -> Result<NavigationData, ParserError> {
+    fn read(path: &Path) -> Result<NavigationData, ParserError> {
         match fs::read_to_string(path) {
             Ok(string) => Self::parse(&string),
             Err(err) => Err(match err.kind() {

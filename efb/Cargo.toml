@@ -20,5 +20,8 @@ edition = "2021"
 license = "Apache-2.0"
 keywords = [ "aviation", "EFB"]
 
-[dependencies.arinc424]
-path = "../arinc424"
+[dependencies]
+arinc424 = { path = "../arinc424" }
+
+[dev-dependencies]
+clap = { version = "4.5.18", features = ["derive"] }

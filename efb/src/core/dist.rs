@@ -111,8 +111,8 @@ impl Div<Speed> for Distance {
 impl Display for Distance {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
-            Distance::Meter(value) => write!(f, "{value} m"),
-            Distance::NauticalMiles(value) => write!(f, "{value} NM"),
+            Distance::Meter(value) => write!(f, "{value:>5.1} m"),
+            Distance::NauticalMiles(value) => write!(f, "{value:>5.1} NM"),
         }
     }
 }

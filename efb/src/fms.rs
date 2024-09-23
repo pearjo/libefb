@@ -15,6 +15,8 @@
 
 //! Flight Management System.
 
+use std::path::Path;
+
 use crate::nd::*;
 use crate::parser::{Arinc424Parser, OpenAirParser, Parser};
 
@@ -27,14 +29,14 @@ pub struct FMS {
 }
 
 impl FMS {
-    pub fn from_arinc424(path: &str) -> Result<Self, FMSError> {
+    pub fn from_arinc424(path: &Path) -> Result<Self, FMSError> {
         match Arinc424Parser::read(path) {
             Ok(navigation_data) => Ok(Self { navigation_data }),
             _ => Err(FMSError),
         }
     }
 
-    pub fn from_openair(path: &str) -> Result<Self, FMSError> {
+    pub fn from_openair(path: &Path) -> Result<Self, FMSError> {
         match OpenAirParser::read(path) {
             Ok(navigation_data) => Ok(Self { navigation_data }),
             _ => Err(FMSError),

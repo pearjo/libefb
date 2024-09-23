@@ -16,32 +16,40 @@
 use std::fmt::{Display, Formatter, Result};
 
 #[derive(Copy, Clone)]
-pub enum Speed {
-    Knots(f32),
-    MeterPerSecond(f32),
+pub struct Duration {
+    pub hours: u8,
+    pub minutes: u8,
+    pub seconds: u8,
 }
 
-impl Speed {
-    pub fn to_kt(self) -> f32 {
-        match self {
-            Self::Knots(v) => v,
-            Self::MeterPerSecond(v) => v * 1.943844,
+impl Duration {
+    pub fn from_seconds(s: u32) -> Self {
+        Self {
+            hours: (s / 3600 % 24) as u8,
+            minutes: (s / 60 % 60) as u8,
+            seconds: (s % 60) as u8,
         }
     }
 
-    pub fn to_ms(self) -> f32 {
-        match self {
-            Self::Knots(v) => v * 0.514444,
-            Self::MeterPerSecond(v) => v,
+    pub fn round(self) -> Self {
+        Self {
+            hours: self.hours,
+            minutes: if self.seconds >= 30 {
+                self.minutes + 1
+            } else {
+                self.minutes
+            },
+            seconds: 0,
         }
     }
 }
 
-impl Display for Speed {
+impl Display for Duration {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self {
-            Self::Knots(value) => write!(f, "{value:.0} kt"),
-            Self::MeterPerSecond(value) => write!(f, "{value:.0} m/s"),
+        if self.seconds > 0 {
+            write!(f, "{:02}:{:02}:{:02}", self.hours, self.minutes, self.seconds)
+        } else {
+            write!(f, "{:02}:{:02}", self.hours, self.minutes)
         }
     }
 }

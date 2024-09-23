@@ -15,12 +15,14 @@
 
 mod angle;
 mod dist;
+mod duration;
 mod mag_var;
 mod speed;
 mod wind;
 
 pub use angle::*;
 pub use dist::*;
+pub use duration::*;
 pub use mag_var::*;
 pub use speed::*;
 pub use wind::*;

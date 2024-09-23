@@ -34,6 +34,12 @@ pub enum Fix<'a> {
 }
 
 impl Fix<'_> {
+    pub fn ident(&self) -> String {
+        match self {
+            Self::Waypoint(wp) => wp.fix_ident.clone(),
+        }
+    }
+
     pub fn coordinate(&self) -> Coordinate {
         match self {
             Self::Waypoint(wp) => wp.coordinate,

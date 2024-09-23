@@ -1,5 +1,5 @@
 use crate::nd::Fix;
-use crate::{Angle, Distance, Speed, Wind};
+use crate::{Angle, Distance, Duration, Speed, Wind};
 
 /// A leg `from` one point `to` another.
 pub struct Leg<'a> {
@@ -67,7 +67,7 @@ impl Leg<'_> {
 
     // TODO add test to verify calculation
     /// The estimated time to fly the leg in seconds.
-    pub fn time(&self) -> u32 {
-        self.dist() / self.gs()
+    pub fn time(&self) -> Duration {
+        Duration::from_seconds(self.dist() / self.gs())
     }
 }
