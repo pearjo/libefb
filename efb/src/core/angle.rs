@@ -106,7 +106,7 @@ impl Add<MagneticVariation> for Angle {
         let other_deg: f32 = match other {
             MagneticVariation::East(v) => -v,
             MagneticVariation::West(v) => v,
-            _ => 0.0,
+            MagneticVariation::OrientedToTrueNorth => 0.0,
         };
 
         (self.rad + other_deg.to_radians()).into()

@@ -14,6 +14,9 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
+use time::OffsetDateTime;
+use wmm::declination;
+use crate::geom::Coordinate;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -21,7 +24,20 @@ pub enum MagneticVariation {
     East(f32),
     West(f32),
     OrientedToTrueNorth,
-    Unknown,
+}
+
+impl From<Coordinate> for MagneticVariation {
+    fn from(value: Coordinate) -> Self {
+        let date = OffsetDateTime::now_utc().date();
+        // TODO this can be improved to not only unwrap
+        let mag_var = declination(date, value.latitude, value.longitude).unwrap();
+
+        if mag_var.is_sign_negative() {
+            Self::West(mag_var.abs())
+        } else {
+            Self::East(mag_var)
+        }
+    }
 }
 
 impl Display for MagneticVariation {
@@ -29,8 +45,7 @@ impl Display for MagneticVariation {
         match self {
             Self::East(value) => write!(f, "{:.1}° E", value),
             Self::West(value) => write!(f, "{:.1}° W", value),
-            Self::OrientedToTrueNorth => write!(f, "oriented to true north"),
-            _ => write!(f, "unknown variation"),
+            Self::OrientedToTrueNorth => write!(f, "T"),
         }
     }
 }

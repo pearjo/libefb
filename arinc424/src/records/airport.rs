@@ -13,7 +13,7 @@ pub struct Airport {
     pub cont_nr: ContNr<21>,
     pub latitude: Latitude<32>,
     pub longitude: Longitude<41>,
-    pub mag_var: MagVar<51>,
+    pub mag_var: MagVar<51, 32, 41>,
     pub mag_true_ind: MagTrueInd<85>,
     pub datum: Datum<86>,
     pub frn: FileRecordNumber,
@@ -72,7 +72,7 @@ mod tests {
                 assert_eq!(wp.longitude.minutes, 59);
                 assert_eq!(wp.longitude.seconds, 17);
                 assert_eq!(wp.longitude.centiseconds, 62);
-                assert_eq!(wp.mag_var, MagVar::East(0, 20));
+                assert_eq!(wp.mag_var, MagVar::East(2, 0));
                 assert_eq!(wp.mag_true_ind, MagTrueInd::Magnetic);
                 assert_eq!(wp.datum, Datum::WGE);
                 assert_eq!(wp.frn, 35651);

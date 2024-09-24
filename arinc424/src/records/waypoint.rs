@@ -29,7 +29,7 @@ pub struct Waypoint {
     pub waypoint_usage: WaypointUsage,
     pub latitude: Latitude<32>,
     pub longitude: Longitude<41>,
-    pub mag_var: MagVar<74>,
+    pub mag_var: MagVar<74, 32, 41>,
     pub datum: Datum<84>,
     pub name_ind: NameInd<95>,
     pub name_desc: NameDesc<98>,
@@ -94,7 +94,7 @@ mod tests {
                 assert_eq!(wp.longitude.minutes, 40);
                 assert_eq!(wp.longitude.seconds, 45);
                 assert_eq!(wp.longitude.centiseconds, 12);
-                assert_eq!(wp.mag_var, MagVar::Unknown);
+                assert_eq!(wp.mag_var, MagVar::WMM(wp.latitude, wp.longitude));
                 assert_eq!(wp.datum, Datum::WGE);
                 assert_eq!(wp.name_ind, NameInd::Unspecified);
                 assert_eq!(wp.name_desc, "WHISKEY1                 ");

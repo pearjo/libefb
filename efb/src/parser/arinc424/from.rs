@@ -51,13 +51,16 @@ impl<const I: usize, const J: usize> From<(arinc424::Latitude<I>, arinc424::Long
     }
 }
 
-impl<const I: usize> From<arinc424::MagVar<I>> for MagneticVariation {
-    fn from(value: arinc424::MagVar<I>) -> Self {
+impl<const I: usize, const J: usize, const K: usize> From<arinc424::MagVar<I, J, K>> for MagneticVariation {
+    fn from(value: arinc424::MagVar<I, J, K>) -> Self {
         match value {
             arinc424::MagVar::East(d, cd) => Self::East(d as f32 + cd as f32 / 100.0),
             arinc424::MagVar::West(d, cd) => Self::West(d as f32 + cd as f32 / 100.0),
             arinc424::MagVar::OrientedToTrueNorth => Self::OrientedToTrueNorth,
-            _ => Self::Unknown,
+            arinc424::MagVar::WMM(lat, long) => {
+                let coord: Coordinate = (lat, long).into();
+                Self::from(coord)
+            },
         }
     }
 }

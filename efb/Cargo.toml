@@ -22,6 +22,8 @@ keywords = [ "aviation", "EFB"]
 
 [dependencies]
 arinc424 = { path = "../arinc424" }
+time = "0.3.36"
+wmm = "0.2.3"
 
 [dev-dependencies]
 clap = { version = "4.5.18", features = ["derive"] }
