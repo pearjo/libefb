@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::fmt::{Display, Formatter, Result};
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum MagneticVariation {
@@ -20,4 +22,15 @@ pub enum MagneticVariation {
     West(f32),
     OrientedToTrueNorth,
     Unknown,
+}
+
+impl Display for MagneticVariation {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        match self {
+            Self::East(value) => write!(f, "{:.1}° E", value),
+            Self::West(value) => write!(f, "{:.1}° W", value),
+            Self::OrientedToTrueNorth => write!(f, "oriented to true north"),
+            _ => write!(f, "unknown variation"),
+        }
+    }
 }
