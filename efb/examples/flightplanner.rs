@@ -34,7 +34,7 @@ fn main() {
         match Route::decode(args.route.as_str(), &fms.navigation_data) {
             Ok(route) => {
                 println!("╭──────┬──────────┬──────┬──────┬───────┬───────╮");
-                println!("│ TC   │  DIST    │ MC   │ MH   │ TIME  │ TO    │");
+                println!("│ TC   │  DIST    │ MC   │ MH   │ ETE   │ TO    │");
                 println!("├──────┼──────────┼──────┼──────┼───────┼───────┤");
 
                 for leg in route.legs() {
@@ -44,7 +44,7 @@ fn main() {
                         leg.dist().to_nm(),
                         leg.mc(),
                         leg.mh(),
-                        leg.time().round(),
+                        leg.ete().round(),
                         leg.to.ident(),
                     );
                 }

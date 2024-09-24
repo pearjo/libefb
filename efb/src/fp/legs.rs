@@ -66,8 +66,8 @@ impl Leg<'_> {
     }
 
     // TODO add test to verify calculation
-    /// The estimated time to fly the leg in seconds.
-    pub fn time(&self) -> Duration {
+    /// The estimated time enroute the leg.
+    pub fn ete(&self) -> Duration {
         Duration::from_seconds(self.dist() / self.gs())
     }
 }
