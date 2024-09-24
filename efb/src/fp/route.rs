@@ -50,7 +50,7 @@ pub enum RouteError {
 /// [`leg`]: crate::fp::legs::Leg
 /// [`fixes`]: crate::nd::Fix
 pub struct Route<'a> {
-    elements: Vec<RouteElement<'a>>,
+    _elements: Vec<RouteElement<'a>>,
     legs: Vec<Leg<'a>>,
 }
 
@@ -74,7 +74,7 @@ impl<'a> Route<'a> {
 
         let legs = Self::legs_from_elements(&elements)?;
 
-        Ok(Self { elements, legs })
+        Ok(Self { _elements: elements, legs })
     }
 
     pub fn legs(&self) -> &Vec<Leg<'a>> {

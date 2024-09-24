@@ -17,7 +17,7 @@
 use std::str::FromStr;
 
 use crate::error::Error;
-use crate::{Angle, Speed, Wind};
+use crate::{Speed, Wind};
 
 impl FromStr for Wind {
     type Err = Error;
