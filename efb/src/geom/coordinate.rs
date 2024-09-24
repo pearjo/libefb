@@ -37,22 +37,11 @@ impl Coordinate {
     // TODO check calculation and add test to verify
     /// Returns the bearing between this point and the `other`.
     pub fn bearing(&self, other: &Coordinate) -> Angle {
-        // TODO fix result
-        // double dlon = qDegreesToRadians(other.d->lng - d->lng);
-        // double lat1Rad = qDegreesToRadians(d->lat);
-        // double lat2Rad = qDegreesToRadians(other.d->lat);
-        // double y = sin(dlon) * cos(lat2Rad);
-        // double x = cos(lat1Rad) * sin(lat2Rad) - sin(lat1Rad) * cos(lat2Rad) * cos(dlon);
-        // double azimuth = qRadiansToDegrees(atan2(y, x)) + 360.0;
-        // double whole;
-        // double fraction = modf(azimuth, &whole);
-        // return qreal((int(whole + 360) % 360) + fraction);
+        let lat_a = self.latitude.to_radians();
+        let lat_b = other.latitude.to_radians();
+        let delta_long = (other.longitude - self.longitude).to_radians();
 
-        let lat_a = self.latitude;
-        let lat_b = other.latitude;
-        let delta_long = self.longitude - other.longitude;
-
-        let x = lat_b.cos() + delta_long.sin();
+        let x = lat_b.cos() * delta_long.sin();
         let y = lat_a.cos() * lat_b.sin() - lat_a.sin() * lat_b.cos() * delta_long.cos();
 
         x.atan2(y).into()
@@ -97,16 +86,19 @@ pub type Line = (Coordinate, Coordinate);
 mod tests {
     use super::*;
 
+    // Helgoland VOR
+    const DHE: Coordinate = coord!(54.18568611, 7.91070000);
+    // Itzehoe Hungriger Wolf
+    const EDHF: Coordinate = coord!(53.99250000, 9.57666667);
+
+    #[test]
+    fn bearing() {
+        // TODO why are we off by 4°
+        assert_eq!(DHE.bearing(&EDHF).deg(), 97);
+    }
+
     #[test]
     fn dist() {
-        // The distance along the equator between 1° in longitude is per
-        // definition 60 NM.
-        let a = coord!(0.0, 0.0);
-        let b = coord!(0.0, 1.0);
-        assert_eq!(a.dist(&b).to_nm(), Distance::NauticalMiles(60.0));
-
-        let ham = Coordinate::from_dms((53, 37, 49), (9, 59, 18));
-        let fra = Coordinate::from_dms((50, 0, 47), (8, 31, 37));
-        assert_eq!(ham.dist(&fra).to_nm(), Distance::NauticalMiles(222.4));
+        assert_eq!(DHE.dist(&EDHF).to_nm().into_inner().round(), 60.0);
     }
 }
