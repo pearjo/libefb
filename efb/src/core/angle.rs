@@ -18,27 +18,50 @@ use std::ops::{Add, Sub};
 
 use super::MagneticVariation;
 
+mod constants {
+    pub const PI2: f32 = std::f32::consts::PI * 2.0;
+}
+
 /// An angle as value between 0° and 360°.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Angle {
-    pub deg: i16,
-    pub rad: f32,
+    rad: f32,
+}
+
+impl From<i16> for Angle {
+    fn from(value: i16) -> Self {
+        Self {
+            rad: {
+                if value.is_negative() {
+                    ((360 + (value % 360)) as f32).to_radians()
+                } else {
+                    ((value % 360) as f32).to_radians()
+                }
+            }
+        }
+    }
+}
+
+impl From<f32> for Angle {
+    fn from(value: f32) -> Self {
+        Self {
+            rad: if value.is_sign_negative() {
+                constants::PI2 + (value % (constants::PI2))
+            } else {
+                value % constants::PI2
+            }
+        }
+    }
 }
 
 impl Angle {
-    pub fn from_deg(deg: i16) -> Self {
-        Self {
-            deg: deg,
-            rad: (deg as f32).to_radians(),
-        }
+    pub fn deg(&self) -> u16 {
+        self.rad.to_degrees().round() as u16
     }
 
-    pub fn from_rad(rad: f32) -> Self {
-        Self {
-            deg: rad.to_degrees().round() as i16,
-            rad: rad,
-        }
+    pub fn rad(&self) -> f32 {
+        self.rad
     }
 }
 
@@ -46,7 +69,7 @@ impl Add for Angle {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self::from_deg((self.deg + other.deg) % 360)
+        (self.rad + other.rad).into()
     }
 }
 
@@ -54,7 +77,7 @@ impl Add<i16> for Angle {
     type Output = Self;
 
     fn add(self, other: i16) -> Self {
-        Self::from_deg((self.deg + other) % 360)
+        (self.deg() as i16 + other).into()
     }
 }
 
@@ -62,7 +85,9 @@ impl Sub for Angle {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self::from_deg((self.deg - other.deg) % 360)
+        Self {
+            rad: self.rad - other.rad,
+        }
     }
 }
 
@@ -70,7 +95,7 @@ impl Sub<i16> for Angle {
     type Output = Self;
 
     fn sub(self, other: i16) -> Self {
-        Self::from_deg((self.deg - other) % 360)
+        (self.deg() as i16 - other).into()
     }
 }
 
@@ -78,18 +103,51 @@ impl Add<MagneticVariation> for Angle {
     type Output = Self;
 
     fn add(self, other: MagneticVariation) -> Self {
-        let other_deg = match other {
-            MagneticVariation::East(v) => v,
-            MagneticVariation::West(v) => 360.0 - v,
+        let other_deg: f32 = match other {
+            MagneticVariation::East(v) => -v,
+            MagneticVariation::West(v) => v,
             _ => 0.0,
         };
 
-        Self::from_deg((self.deg + other_deg.round() as i16) % 360)
+        (self.rad + other_deg.to_radians()).into()
     }
 }
 
 impl Display for Angle {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{0:03}°", self.deg)
+        write!(f, "{0:03}°", self.deg())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from() {
+        let north: Angle = 0.into();
+        assert_eq!(north, 360.into());
+
+        let west: Angle = (-90).into();
+        assert_eq!(west, 270.into());
+
+        let north: Angle = 0.0.into();
+        assert_eq!(north, 360.into());
+
+        let south: Angle = std::f32::consts::PI.into();
+        assert_eq!(south, 180.into());
+    }
+
+    #[test]
+    fn add_sub() {
+        let north: Angle = 0.into();
+        let east: Angle = 90.into();
+        let south: Angle = 180.into();
+        let west: Angle = 270.into();
+
+        assert_eq!(east - 90, north);
+        assert_eq!(south - 90, east);
+        assert_eq!(north - 90, west);
+        assert_eq!(west + 180, east);
     }
 }

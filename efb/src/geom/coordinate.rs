@@ -55,7 +55,7 @@ impl Coordinate {
         let x = lat_b.cos() + delta_long.sin();
         let y = lat_a.cos() * lat_b.sin() - lat_a.sin() * lat_b.cos() * delta_long.cos();
 
-        Angle::from_rad(x.atan2(y))
+        x.atan2(y).into()
     }
 
     // TODO fix distance calculation and add some comments regarding Haversine

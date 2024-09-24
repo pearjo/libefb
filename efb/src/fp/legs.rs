@@ -50,7 +50,7 @@ impl Leg<'_> {
             (tas.powi(2) + ws.powi(2)
                 - ((2.0 * tas * ws)
                     * (self.bearing() - self.wind.direction + self.wca())
-                        .rad
+                        .rad()
                         .cos()))
             .sqrt(),
         )
@@ -62,7 +62,7 @@ impl Leg<'_> {
         let tas = self.tas.to_kt();
         let ws = self.wind.speed.to_kt();
 
-        Angle::from_rad((ws / tas * (self.bearing() - 180 + self.wind.direction).rad.sin()).asin())
+        (ws / tas * (self.bearing() - 180 + self.wind.direction).rad().sin()).asin().into()
     }
 
     // TODO add test to verify calculation

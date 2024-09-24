@@ -24,12 +24,12 @@ impl FromStr for Wind {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() == 6 && &s[3..4] == "@" {
-            let direction = s[0..3].parse::<u16>();
+            let direction = s[0..3].parse::<i16>();
             let speed = s[4..6].parse::<f32>();
 
             match (direction, speed) {
                 (Ok(direction), Ok(speed)) => Ok(Wind {
-                    direction: Angle::from_deg(direction as i16),
+                    direction: direction.into(),
                     speed: Speed::Knots(speed),
                 }),
                 _ => Err(Error::UnexpectedString),
