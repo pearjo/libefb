@@ -33,9 +33,9 @@ fn main() {
     if let Ok(fms) = FMS::from_arinc424(&args.path) {
         match Route::decode(args.route.as_str(), &fms.navigation_data) {
             Ok(route) => {
-                println!("╭─────┬──────────┬─────┬─────┬───────┬───────╮");
-                println!("│ TC  │  DIST    │ MC  │ MH  │ TIME  │ TO    │");
-                println!("├─────┼──────────┼─────┼─────┼───────┼───────┤");
+                println!("╭──────┬──────────┬──────┬──────┬───────┬───────╮");
+                println!("│ TC   │  DIST    │ MC   │ MH   │ TIME  │ TO    │");
+                println!("├──────┼──────────┼──────┼──────┼───────┼───────┤");
 
                 for leg in route.legs() {
                     println!(
@@ -49,7 +49,7 @@ fn main() {
                     );
                 }
 
-                println!("╰─────┴──────────┴─────┴─────┴───────┴───────╯");
+                println!("╰──────┴──────────┴──────┴──────┴───────┴───────╯");
             }
             Err(e) => eprintln!("Error: {e:?}"),
         }

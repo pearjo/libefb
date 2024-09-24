@@ -90,6 +90,6 @@ impl Add<MagneticVariation> for Angle {
 
 impl Display for Angle {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{0:03}", self.deg)
+        write!(f, "{0:03}°", self.deg)
     }
 }
