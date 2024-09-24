@@ -19,10 +19,12 @@ use crate::geom::Coordinate;
 use crate::MagneticVariation;
 
 mod airac_cycle;
+mod airport;
 mod airspace;
 mod waypoint;
 
 pub use airac_cycle::AiracCycle;
+pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use waypoint::{Region, Waypoint, WaypointUsage, Waypoints};
 
@@ -30,24 +32,28 @@ pub use waypoint::{Region, Waypoint, WaypointUsage, Waypoints};
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub enum Fix<'a> {
+    Airport(&'a Airport),
     Waypoint(&'a Waypoint),
 }
 
 impl Fix<'_> {
     pub fn ident(&self) -> String {
         match self {
+            Self::Airport(aprt) => aprt.icao_ident.clone(),
             Self::Waypoint(wp) => wp.fix_ident.clone(),
         }
     }
 
     pub fn coordinate(&self) -> Coordinate {
         match self {
+            Self::Airport(aprt) => aprt.coordinate,
             Self::Waypoint(wp) => wp.coordinate,
         }
     }
 
     pub fn var(&self) -> MagneticVariation {
         match self {
+            Self::Airport(aprt) => aprt.mag_var,
             Self::Waypoint(wp) => wp.mag_var,
         }
     }
@@ -55,6 +61,7 @@ impl Fix<'_> {
 
 #[derive(Default)]
 pub struct NavigationData {
+    pub airports: Vec<Airport>,
     pub airspaces: Airspaces,
     pub waypoints: Waypoints,
 }
@@ -72,6 +79,12 @@ impl NavigationData {
             .iter()
             .find(|&wp| wp.route_ident() == ident)
             .map(|wp| Fix::Waypoint(wp))
+            .or(
+                self.airports
+                    .iter()
+                    .find(|&aprt| aprt.route_ident() == ident)
+                    .map(|aprt| Fix::Airport(aprt))
+            )
     }
 }
 
@@ -101,6 +114,7 @@ mod tests {
                     (53.10111, 8.974999)
                 ],
             }],
+            airports: Vec::new(),
             waypoints: Waypoints::new(),
         };
 

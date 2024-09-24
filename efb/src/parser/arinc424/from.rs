@@ -72,6 +72,19 @@ impl<const I: usize> From<arinc424::RegnCode<I>> for Region {
     }
 }
 
+impl From<arinc424::Airport> for Airport {
+    fn from(aprt: arinc424::Airport) -> Airport {
+        Airport {
+            icao_ident: aprt.arpt_ident.to_string(),
+            iata_designator: aprt.iata.to_string(),
+            name: String::from(""),
+            coordinate: (aprt.latitude, aprt.longitude).into(),
+            mag_var: aprt.mag_var.into(),
+            cycle: aprt.cycle.into(),
+        }
+    }
+}
+
 impl From<arinc424::Waypoint> for Waypoint {
     fn from(wp: arinc424::Waypoint) -> Waypoint {
         Waypoint {

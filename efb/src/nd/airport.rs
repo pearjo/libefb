@@ -13,8 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod airport;
-mod waypoint;
+use super::*;
+use crate::geom::Coordinate;
 
-pub use airport::Airport;
-pub use waypoint::Waypoint;
+#[repr(C)]
+#[derive(Debug, PartialEq)]
+pub struct Airport {
+    pub icao_ident: String,
+    pub iata_designator: String,
+    pub name: String,
+    pub coordinate: Coordinate,
+    pub mag_var: MagneticVariation,
+    pub cycle: AiracCycle,
+}
+
+impl Airport {
+    pub fn route_ident(&self) -> String {
+        self.icao_ident.clone()
+    }
+}
