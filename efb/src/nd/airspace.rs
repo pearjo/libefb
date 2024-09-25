@@ -22,8 +22,8 @@ pub type Airspaces = Vec<Airspace>;
 
 /// Airspace.
 ///
-/// The airspace is classified by the [`class`] and enclosed by the [`polygon`].
-/// It ranges from the [`floor`] to [`ceiling`] in vertical direction.
+/// The airspace is classified by the `class` and enclosed by the `polygon`.
+/// It ranges from the `floor` to `ceiling` in vertical direction.
 #[repr(C)]
 #[derive(Debug, PartialEq)]
 pub struct Airspace {

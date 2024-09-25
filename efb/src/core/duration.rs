@@ -15,7 +15,8 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Copy, Clone)]
+/// A duration measured in hours, minutes and seconds.
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Duration {
     pub hours: u8,
     pub minutes: u8,
@@ -23,6 +24,13 @@ pub struct Duration {
 }
 
 impl Duration {
+    /// Converts the seconds into a duration.
+    ///
+    /// ```
+    /// use efb::Duration;
+    /// let duration = Duration::from_seconds(3600);
+    /// assert_eq!(duration, Duration { hours: 1, minutes: 0, seconds: 0 });
+    /// ```
     pub fn from_seconds(s: u32) -> Self {
         Self {
             hours: (s / 3600 % 24) as u8,
@@ -31,6 +39,7 @@ impl Duration {
         }
     }
 
+    /// Returns self with the seconds rounded to the nearest minute.
     pub fn round(self) -> Self {
         Self {
             hours: self.hours,
@@ -55,5 +64,27 @@ impl Display for Duration {
         } else {
             write!(f, "{:02}:{:02}", self.hours, self.minutes)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_seconds() {
+        let duration = Duration::from_seconds(3661);
+        assert_eq!(duration.hours, 1);
+        assert_eq!(duration.minutes, 1);
+        assert_eq!(duration.seconds, 1);
+    }
+
+    #[test]
+    fn round() {
+        let duration = Duration::from_seconds(29);
+        assert_eq!(duration.round().minutes, 0);
+
+        let duration = Duration::from_seconds(30);
+        assert_eq!(duration.round().minutes, 1);
     }
 }

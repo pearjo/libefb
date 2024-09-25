@@ -18,7 +18,11 @@ use efb::fp::Route;
 
 use clap::Parser;
 
-/// Search for a pattern in a file and display the lines that contain it.
+/// Computes a flight plan from a route.
+///
+/// The flight planner uses navaids provided by an ARINC 424 database. The route
+/// is composed out of route elements that provide performance data and fix
+/// points. For more, please refer to the Route documentation.
 #[derive(Parser)]
 struct Cli {
     /// The path to the ARINC 424 navigation data to use

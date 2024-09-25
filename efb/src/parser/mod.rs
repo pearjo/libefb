@@ -30,7 +30,7 @@ pub trait Parser {
     /// Parse the string `s`.
     fn parse(s: &str) -> Result<NavigationData, ParserError>;
 
-    /// Read the file from [`path`] and parses the airspaces from it.
+    /// Read the file from `path` and parses the airspaces from it.
     fn read(path: &Path) -> Result<NavigationData, ParserError> {
         match fs::read_to_string(path) {
             Ok(string) => Self::parse(&string),

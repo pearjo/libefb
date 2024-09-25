@@ -17,6 +17,7 @@ use crate::error::Error;
 use std::fmt;
 use std::str::FromStr;
 
+/// The speed in either nautical or metrical units.
 #[derive(Copy, Clone)]
 pub enum Speed {
     Knots(f32),
@@ -24,6 +25,7 @@ pub enum Speed {
 }
 
 impl Speed {
+    /// Consumes `self`, returning its inner value.
     pub fn into_inner(self) -> f32 {
         match self {
             Self::Knots(value) => value,
@@ -31,6 +33,7 @@ impl Speed {
         }
     }
 
+    /// Converts `self` into knots.
     pub fn to_kt(self) -> Self {
         match self {
             Self::Knots(_) => self,
@@ -38,6 +41,7 @@ impl Speed {
         }
     }
 
+    /// Converts `self` into m/s.
     pub fn to_ms(self) -> Self {
         match self {
             Self::Knots(value) => Self::MeterPerSecond(value * 0.514444),

@@ -21,7 +21,7 @@ mod constants {
     pub const NAUTICAL_MILE_IN_METER: f32 = 1852.0;
 }
 
-/// A vertical distance value.
+/// A vertical distance.
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum VerticalDistance {
@@ -64,6 +64,7 @@ impl Display for VerticalDistance {
     }
 }
 
+/// A metrical or nautical distance.
 #[derive(Debug, PartialEq)]
 pub enum Distance {
     Meter(f32),
@@ -71,7 +72,7 @@ pub enum Distance {
 }
 
 impl Distance {
-    /// Consumes the Distance, returning its inner value.
+    /// Consumes the `self`, returning its inner value.
     pub fn into_inner(self) -> f32 {
         match self {
             Self::Meter(v) => v,
@@ -124,5 +125,11 @@ mod tests {
     fn distance() {
         let nm = Distance::NauticalMiles(1.0);
         assert_eq!(nm.to_m(), Distance::Meter(1852.0));
+    }
+
+    #[test]
+    fn div() {
+        let time = Distance::NauticalMiles(1.0) / Speed::Knots(1.0);
+        assert_eq!(time, Duration { hours: 1, minutes: 0, seconds: 0 });
     }
 }

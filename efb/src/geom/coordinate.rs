@@ -94,7 +94,7 @@ mod tests {
     #[test]
     fn bearing() {
         // TODO why are we off by 4°
-        assert_eq!(DHE.bearing(&EDHF).deg(), 97);
+        assert_eq!(DHE.bearing(&EDHF).as_degrees(), 97);
     }
 
     #[test]

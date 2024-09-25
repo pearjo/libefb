@@ -18,18 +18,25 @@ use std::fmt::{Display, Formatter, Result};
 use time::OffsetDateTime;
 use wmm::declination;
 
+/// The magnetic variation (declination) of a point.
+///
+/// Any [Coordinate] can be converted into a declination.
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum MagneticVariation {
+    /// The declination is towards the east.
     East(f32),
+    /// The declination is towards the west.
     West(f32),
+    /// The point is oriented to true north.
     OrientedToTrueNorth,
 }
 
 impl From<Coordinate> for MagneticVariation {
     fn from(value: Coordinate) -> Self {
         let date = OffsetDateTime::now_utc().date();
-        // TODO this can be improved to not only unwrap
+        // TODO write an own implementation of the WMM that returns the last
+        // known declination, even if the coefficients are outdated.
         let mag_var = declination(date, value.latitude, value.longitude).unwrap();
 
         if mag_var.is_sign_negative() {

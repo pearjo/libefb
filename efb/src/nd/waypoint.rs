@@ -50,7 +50,7 @@ pub struct Waypoint {
 }
 
 impl Waypoint {
-    /// Returns the identifier used in routes. This is the [fix_ident] with a
+    /// Returns the identifier used in routes. This is the `fix_ident` with a
     /// region prefix in case the waypoint is within a terminal area. In that
     /// case, the last two character of the airport ident are prefixed. For
     /// example, a waypoint with ident `W1` at the Hamburg terminal area `EDDH`

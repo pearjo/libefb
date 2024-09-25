@@ -19,10 +19,13 @@ use std::str::FromStr;
 
 use super::{Angle, Speed};
 
+/// The wind with a speed and direction
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct Wind {
+    /// The direction from which the wind comes.
     pub direction: Angle,
+    /// The wind speed.
     pub speed: Speed,
 }
 

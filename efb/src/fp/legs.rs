@@ -50,7 +50,7 @@ impl Leg<'_> {
             (tas.powi(2) + ws.powi(2)
                 - ((2.0 * tas * ws)
                     * (self.bearing() - self.wind.direction + self.wca())
-                        .rad()
+                        .as_radians()
                         .cos()))
             .sqrt(),
         )
@@ -62,7 +62,7 @@ impl Leg<'_> {
         let tas = self.tas.to_kt().into_inner();
         let ws = self.wind.speed.to_kt().into_inner();
 
-        (ws / tas * (self.bearing() - 180 + self.wind.direction).rad().sin())
+        (ws / tas * (self.bearing() - 180 + self.wind.direction).as_radians().sin())
             .asin()
             .into()
     }
