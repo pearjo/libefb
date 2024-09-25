@@ -13,8 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Speed;
-
+use super::{Duration, Speed};
 use std::fmt::{Display, Formatter, Result};
 use std::ops::Div;
 
@@ -98,13 +97,15 @@ impl Distance {
 }
 
 impl Div<Speed> for Distance {
-    type Output = u32;
+    type Output = Duration;
 
     fn div(self, rhs: Speed) -> Self::Output {
-        match self {
-            Distance::Meter(v) => (v / rhs.to_ms()).round() as u32,
-            Distance::NauticalMiles(v) => (v / rhs.to_kt()).round() as u32 * 3600,
-        }
+        Duration::from_seconds(
+            match self {
+                Distance::Meter(v) => (v / rhs.to_ms().into_inner()).round() as u32,
+                Distance::NauticalMiles(v) => (v / rhs.to_kt().into_inner()).round() as u32 * 3600,
+            }
+        )
     }
 }
 

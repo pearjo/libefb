@@ -14,7 +14,6 @@
 // limitations under the License.
 
 //! Flight Plan.
-mod decoder;
 mod legs;
 mod route;
 

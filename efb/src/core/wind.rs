@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::fmt::{Display, Formatter, Result};
+use std::fmt;
+use std::str::FromStr;
+use crate::error::Error;
 
 use super::{Angle, Speed};
 
@@ -24,8 +26,29 @@ pub struct Wind {
     pub speed: Speed,
 }
 
-impl Display for Wind {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{0}@{1}", self.direction, self.speed.to_kt())
+impl FromStr for Wind {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.len() == 6 && &s[3..4] == "@" {
+            let direction = s[0..3].parse::<i16>();
+            let speed = s[4..6].parse::<f32>();
+
+            match (direction, speed) {
+                (Ok(direction), Ok(speed)) => Ok(Wind {
+                    direction: direction.into(),
+                    speed: Speed::Knots(speed),
+                }),
+                _ => Err(Error::UnexpectedString),
+            }
+        } else {
+            Err(Error::UnexpectedString)
+        }
+    }
+}
+
+impl fmt::Display for Wind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{0}/{1}", self.direction, self.speed.to_kt())
     }
 }

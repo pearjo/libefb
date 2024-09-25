@@ -43,8 +43,8 @@ impl Leg<'_> {
     // TODO add test to verify calculation
     /// The ground speed in knots.
     pub fn gs(&self) -> Speed {
-        let tas = self.tas.to_kt();
-        let ws = self.wind.speed.to_kt();
+        let tas = self.tas.to_kt().into_inner();
+        let ws = self.wind.speed.to_kt().into_inner();
 
         Speed::Knots(
             (tas.powi(2) + ws.powi(2)
@@ -59,8 +59,8 @@ impl Leg<'_> {
     // TODO add test to verify calculation
     /// The wind correction angle based on the wind.
     fn wca(&self) -> Angle {
-        let tas = self.tas.to_kt();
-        let ws = self.wind.speed.to_kt();
+        let tas = self.tas.to_kt().into_inner();
+        let ws = self.wind.speed.to_kt().into_inner();
 
         (ws / tas * (self.bearing() - 180 + self.wind.direction).rad().sin()).asin().into()
     }
@@ -68,6 +68,6 @@ impl Leg<'_> {
     // TODO add test to verify calculation
     /// The estimated time enroute the leg.
     pub fn ete(&self) -> Duration {
-        Duration::from_seconds(self.dist() / self.gs())
+        self.dist() / self.gs()
     }
 }
