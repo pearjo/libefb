@@ -79,12 +79,11 @@ impl NavigationData {
             .iter()
             .find(|&wp| wp.route_ident() == ident)
             .map(|wp| Fix::Waypoint(wp))
-            .or(
-                self.airports
-                    .iter()
-                    .find(|&aprt| aprt.route_ident() == ident)
-                    .map(|aprt| Fix::Airport(aprt))
-            )
+            .or(self
+                .airports
+                .iter()
+                .find(|&aprt| aprt.route_ident() == ident)
+                .map(|aprt| Fix::Airport(aprt)))
     }
 }
 

@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use crate::geom::Coordinate;
 use std::fmt::{Display, Formatter, Result};
 use time::OffsetDateTime;
 use wmm::declination;
-use crate::geom::Coordinate;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]

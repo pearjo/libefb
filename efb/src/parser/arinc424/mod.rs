@@ -33,13 +33,15 @@ impl Parser for Arinc424Parser {
                 if let Ok(waypoint_record) = arinc424::Waypoint::from_str(line) {
                     waypoints.push(waypoint_record.into());
                 }
-            },
-            "P " => match &line[12..13] {
-                "A" => if let Ok(airport_record) = arinc424::Airport::from_str(line) {
-                    airports.push(airport_record.into());
-                },
-                _ => {}
             }
+            "P " => match &line[12..13] {
+                "A" => {
+                    if let Ok(airport_record) = arinc424::Airport::from_str(line) {
+                        airports.push(airport_record.into());
+                    }
+                }
+                _ => {}
+            },
             _ => {}
         });
 

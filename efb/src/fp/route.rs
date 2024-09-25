@@ -74,7 +74,10 @@ impl<'a> Route<'a> {
 
         let legs = Self::legs_from_elements(&elements)?;
 
-        Ok(Self { _elements: elements, legs })
+        Ok(Self {
+            _elements: elements,
+            legs,
+        })
     }
 
     pub fn legs(&self) -> &Vec<Leg<'a>> {

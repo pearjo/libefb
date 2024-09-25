@@ -47,7 +47,11 @@ impl Duration {
 impl Display for Duration {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         if self.seconds > 0 {
-            write!(f, "{:02}:{:02}:{:02}", self.hours, self.minutes, self.seconds)
+            write!(
+                f,
+                "{:02}:{:02}:{:02}",
+                self.hours, self.minutes, self.seconds
+            )
         } else {
             write!(f, "{:02}:{:02}", self.hours, self.minutes)
         }

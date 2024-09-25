@@ -62,7 +62,9 @@ impl Leg<'_> {
         let tas = self.tas.to_kt().into_inner();
         let ws = self.wind.speed.to_kt().into_inner();
 
-        (ws / tas * (self.bearing() - 180 + self.wind.direction).rad().sin()).asin().into()
+        (ws / tas * (self.bearing() - 180 + self.wind.direction).rad().sin())
+            .asin()
+            .into()
     }
 
     // TODO add test to verify calculation

@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use crate::error::Error;
 use std::fmt;
 use std::str::FromStr;
-use crate::error::Error;
 
 #[derive(Copy, Clone)]
 pub enum Speed {
@@ -40,7 +40,7 @@ impl Speed {
 
     pub fn to_ms(self) -> Self {
         match self {
-            Self::Knots(value) => Self::MeterPerSecond( value * 0.514444),
+            Self::Knots(value) => Self::MeterPerSecond(value * 0.514444),
             Self::MeterPerSecond(_) => self,
         }
     }

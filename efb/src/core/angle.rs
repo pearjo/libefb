@@ -38,7 +38,7 @@ impl From<i16> for Angle {
                 } else {
                     ((value % 360) as f32).to_radians()
                 }
-            }
+            },
         }
     }
 }
@@ -50,7 +50,7 @@ impl From<f32> for Angle {
                 constants::PI2 + (value % (constants::PI2))
             } else {
                 value % constants::PI2
-            }
+            },
         }
     }
 }
