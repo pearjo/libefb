@@ -23,10 +23,10 @@
 
 use std::str::FromStr;
 
-use super::{Parser, ParserError};
 use crate::fc;
+use crate::error::Error;
 use crate::geom::{Coordinate, Polygon};
-use crate::nd::{Airspace, AirspaceClass, NavigationData};
+use crate::nd::{Airspace, AirspaceClass};
 use crate::VerticalDistance;
 
 /// An element representing an airspace.
@@ -195,9 +195,11 @@ impl FromStr for VerticalDistance {
     }
 }
 
-pub struct OpenAirParser;
+pub struct OpenAirRecord {
+    pub airspaces: Vec<Airspace>,
+}
 
-impl OpenAirParser {
+impl OpenAirRecord {
     fn parse_command(command: &str, element: &mut OpenAirElement) -> Option<Airspace> {
         let record_type = command.get(0..2);
         let record = command.get(3..);
@@ -228,20 +230,22 @@ impl OpenAirParser {
     }
 }
 
-impl Parser for OpenAirParser {
-    fn parse(s: &str) -> Result<NavigationData, ParserError> {
-        let mut nd = NavigationData::default();
+impl FromStr for OpenAirRecord {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut airspaces = Vec::new();
         let mut element = OpenAirElement::new();
 
         s.lines().for_each(|command| {
             if let Some(airspace) = Self::parse_command(command, &mut element) {
-                nd.airspaces.push(airspace);
+                airspaces.push(airspace);
             }
         });
 
-        nd.airspaces.push((&mut element).into());
+        airspaces.push((&mut element).into());
 
-        Ok(nd)
+        Ok(Self { airspaces })
     }
 }
 
@@ -252,8 +256,7 @@ mod tests {
 
     #[test]
     fn parses_command() {
-        let nd = OpenAirParser::parse(
-            r#"AC D
+        let record = r#"AC D
 AN TMA BREMEN A
 AH FL 65
 AL 1500msl
@@ -262,8 +265,7 @@ DP 53:06:10 N 9:04:45 E
 DP 52:58:13 N 9:05:04 E
 DP 52:58:08 N 8:58:56 E
 DP 53:06:04 N 8:58:30 E
-"#,
-        );
+"#.parse::<OpenAirRecord>();
 
         let tma_bremen_a = Airspace {
             name: String::from("TMA BREMEN A"),
@@ -279,7 +281,7 @@ DP 53:06:04 N 8:58:30 E
             ],
         };
 
-        assert_eq!(nd.unwrap().airspaces, vec!(tma_bremen_a));
+        assert_eq!(record.unwrap().airspaces, vec!(tma_bremen_a));
     }
 
     #[test]

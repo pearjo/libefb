@@ -32,4 +32,3 @@ pub mod fms;
 pub mod fp;
 pub mod geom;
 pub mod nd;
-pub mod parser;

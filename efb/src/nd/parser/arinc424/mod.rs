@@ -13,17 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Parser, ParserError};
-use crate::nd::*;
 use std::str::FromStr;
+
+use crate::error::Error;
+use crate::nd::*;
 
 mod from;
 
-pub struct Arinc424Parser;
+pub struct Arinc424Record {
+    pub airports: Vec<Airport>,
+    pub waypoints: Vec<Waypoint>,
+}
 
-impl Parser for Arinc424Parser {
-    fn parse(s: &str) -> Result<NavigationData, ParserError> {
-        let airspaces = Airspaces::new();
+impl FromStr for Arinc424Record {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut airports: Vec<Airport> = Vec::new();
         let mut waypoints = Waypoints::new();
 
@@ -45,8 +50,7 @@ impl Parser for Arinc424Parser {
             _ => {}
         });
 
-        Ok(NavigationData {
-            airspaces,
+        Ok(Self {
             airports,
             waypoints,
         })

@@ -14,8 +14,7 @@
 // limitations under the License.
 
 use efb::fms::*;
-use efb::fp::Route;
-use efb::nd::Fix;
+use efb::nd::{Fix, InputFormat};
 
 use clap::Parser;
 
@@ -34,29 +33,33 @@ struct Cli {
 
 fn main() {
     let args = Cli::parse();
+    let mut fms = FMS::new();
 
-    if let Ok(fms) = FMS::from_arinc424(&args.path) {
-        match Route::decode(args.route.as_str(), &fms.navigation_data) {
-            Ok(route) => {
-                println!("╭──────┬──────────┬──────┬──────┬───────┬───────╮");
-                println!("│ TC   │  DIST    │ MC   │ MH   │ ETE   │ TO    │");
-                println!("├──────┼──────────┼──────┼──────┼───────┼───────┤");
+    if let Err(e) = fms.nd().read_file(&args.path, InputFormat::Arinc424) {
+        eprintln!("Error reading ARINC 424: {e:?}");
+    }
 
-                for leg in route.legs() {
-                    println!(
-                        "│ {} │ {} │ {} │ {} │ {} │ {:5} │",
-                        leg.bearing(),
-                        leg.dist().to_nm(),
-                        leg.mc(),
-                        leg.mh(),
-                        leg.ete().round(),
-                        leg.to.ident(),
-                    );
-                }
+    if let Err(e) = fms.decode(args.route.as_str()) {
+        eprintln!("Error decoding route: {e:?}");
+    }
 
-                println!("╰──────┴──────────┴──────┴──────┴───────┴───────╯");
-            }
-            Err(e) => eprintln!("Error: {e:?}"),
+    if let Some(route) = fms.route() {
+        println!("╭──────┬──────────┬──────┬──────┬───────┬───────╮");
+        println!("│ TC   │  DIST    │ MC   │ MH   │ ETE   │ TO    │");
+        println!("├──────┼──────────┼──────┼──────┼───────┼───────┤");
+
+        for leg in route.legs() {
+            println!(
+                "│ {} │ {} │ {} │ {} │ {} │ {:5} │",
+                leg.bearing(),
+                leg.dist().to_nm(),
+                leg.mc(),
+                leg.mh(),
+                leg.ete().round(),
+                leg.to.ident(),
+            );
         }
+
+        println!("╰──────┴──────────┴──────┴──────┴───────┴───────╯");
     }
 }

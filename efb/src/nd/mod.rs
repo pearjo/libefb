@@ -15,6 +15,10 @@
 
 //! Navigation Data.
 
+use std::fs;
+use std::path::Path;
+
+use crate::error::Error;
 use crate::geom::Coordinate;
 use crate::MagneticVariation;
 
@@ -22,6 +26,7 @@ mod airac_cycle;
 mod airport;
 mod airspace;
 mod fix;
+mod parser;
 mod waypoint;
 
 pub use airac_cycle::AiracCycle;
@@ -29,6 +34,7 @@ pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use fix::Fix;
 pub use waypoint::*;
+use parser::*;
 
 #[repr(C)]
 #[derive(Clone)]
@@ -60,6 +66,11 @@ impl Fix for NavAid {
     }
 }
 
+pub enum InputFormat {
+    Arinc424,
+    OpenAir,
+}
+
 #[derive(Default)]
 pub struct NavigationData {
     pub airports: Vec<Airport>,
@@ -68,6 +79,14 @@ pub struct NavigationData {
 }
 
 impl NavigationData {
+    pub fn new() -> Self {
+        Self {
+            airports: Vec::new(),
+            airspaces: Vec::new(),
+            waypoints: Vec::new(),
+        }
+    }
+
     pub fn at(&self, point: &Coordinate) -> Vec<&Airspace> {
         self.airspaces
             .iter()
@@ -85,6 +104,34 @@ impl NavigationData {
                 .iter()
                 .find(|&aprt| aprt.ident() == ident)
                 .map(|aprt| NavAid::Airport(aprt.clone())))
+    }
+
+    pub fn read(&mut self, s: &str, fmt: InputFormat) -> Result<(), Error> {
+        match fmt {
+            InputFormat::Arinc424 => {
+                let mut record = s.parse::<Arinc424Record>()?;
+                self.airports.append(&mut record.airports);
+                self.waypoints.append(&mut record.waypoints);
+            },
+            InputFormat::OpenAir => {
+                let mut record = s.parse::<OpenAirRecord>()?;
+                self.airspaces.append(&mut record.airspaces);
+            },
+        };
+
+        Ok(())
+    }
+
+    pub fn read_file(&mut self, path: &Path, fmt: InputFormat) -> Result<(), Error> {
+        match fs::read_to_string(path) {
+            Ok(string) => self.read(&string, fmt),
+            // Err(err) => Err(match err.kind() {
+            //     ErrorKind::NotFound => ParserError::NotFound,
+            //     ErrorKind::PermissionDenied => ParserError::PermissionDenied,
+            //     _ => ParserError::FileNotRead,
+            // }),
+            Err(_) => Err(Error::UnexpectedString),
+        }
     }
 }
 
