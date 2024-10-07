@@ -1,11 +1,12 @@
 use super::Leg;
+use crate::error::Error;
 use crate::nd::*;
 use crate::{Speed, Wind};
 
-enum RouteElement<'a> {
+enum RouteElement {
     Tas(Speed),
     Wind(Wind),
-    NavAid(NavAid<'a>),
+    NavAid(NavAid),
 }
 
 #[derive(Debug)]
@@ -49,15 +50,15 @@ pub enum RouteError {
 ///
 /// [`leg`]: crate::fp::legs::Leg
 /// [`fixes`]: crate::nd::Fix
-pub struct Route<'a> {
-    _elements: Vec<RouteElement<'a>>,
-    legs: Vec<Leg<'a>>,
+pub struct Route {
+    _elements: Vec<RouteElement>,
+    legs: Vec<Leg>,
 }
 
-impl<'a> Route<'a> {
+impl Route {
     /// Decodes a `route` that is composed of a space separated list of fix
     /// idents read from the navigation data `nd`.
-    pub fn decode(route: &str, nd: &'a NavigationData) -> Result<Self, RouteError> {
+    pub fn decode(route: &str, nd: &NavigationData) -> Result<Self, Error> {
         let mut elements: Vec<RouteElement> = Vec::new();
 
         for element in route.split_whitespace() {
@@ -68,7 +69,7 @@ impl<'a> Route<'a> {
             } else if let Ok(value) = element.parse::<Wind>() {
                 elements.push(RouteElement::Wind(value));
             } else {
-                return Err(RouteError::UnexpectedElement);
+                return Err(Error::UnexpectedRouteElement);
             }
         }
 
@@ -80,31 +81,31 @@ impl<'a> Route<'a> {
         })
     }
 
-    pub fn legs(&self) -> &Vec<Leg<'a>> {
+    pub fn legs(&self) -> &Vec<Leg> {
         &self.legs
     }
 
-    fn legs_from_elements(elements: &Vec<RouteElement<'a>>) -> Result<Vec<Leg<'a>>, RouteError> {
+    fn legs_from_elements(elements: &Vec<RouteElement>) -> Result<Vec<Leg>, Error> {
         let mut tas: Option<Speed> = None;
         let mut wind: Option<Wind> = None;
-        let mut from: Option<NavAid<'a>> = None;
-        let mut to: Option<NavAid<'a>> = None;
+        let mut from: Option<NavAid> = None;
+        let mut to: Option<NavAid> = None;
         let mut legs: Vec<Leg> = Vec::new();
 
         for element in elements {
-            match *element {
-                RouteElement::Tas(value) => tas = Some(value),
-                RouteElement::Wind(value) => wind = Some(value),
+            match element {
+                RouteElement::Tas(value) => tas = Some(value.clone()),
+                RouteElement::Wind(value) => wind = Some(value.clone()),
                 RouteElement::NavAid(navaid) => {
                     if from.is_none() {
-                        from = Some(navaid);
+                        from = Some(navaid.clone());
                     } else if to.is_none() {
-                        to = Some(navaid);
+                        to = Some(navaid.clone());
                     }
                 }
             }
 
-            match (tas, wind, from, to) {
+            match (tas, wind, from.clone(), to.clone()) {
                 (Some(tas), Some(wind), Some(from), Some(to)) => {
                     legs.push(Leg {
                         from,
@@ -113,8 +114,8 @@ impl<'a> Route<'a> {
                         wind,
                     });
                 }
-                (None, _, Some(_), Some(_)) => return Err(RouteError::NoSpeed),
-                (_, None, Some(_), Some(_)) => return Err(RouteError::NoWind),
+                (None, _, Some(_), Some(_)) => return Err(Error::ExpectedSpeedOnLeg),
+                (_, None, Some(_), Some(_)) => return Err(Error::ExpectedWindOnLeg),
                 _ => continue,
             }
 

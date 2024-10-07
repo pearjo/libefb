@@ -33,7 +33,7 @@ mod constants {
 /// assert_eq!(west.as_degrees(), 270);
 /// ```
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Angle {
     True(f32),
     Magnetic(f32),

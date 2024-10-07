@@ -17,7 +17,7 @@ use super::*;
 use crate::geom::Coordinate;
 
 #[repr(C)]
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Airport {
     pub icao_ident: String,
     pub iata_designator: String,

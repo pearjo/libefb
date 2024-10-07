@@ -2,18 +2,18 @@ use crate::nd::*;
 use crate::{Angle, Distance, Duration, Speed, Wind};
 
 /// A leg `from` one point `to` another.
-pub struct Leg<'a> {
+pub struct Leg {
     /// The point from which the leg starts.
-    pub from: NavAid<'a>,
+    pub from: NavAid,
     /// The point to which the leg is going.
-    pub to: NavAid<'a>,
+    pub to: NavAid,
     /// The desired true airspeed (TAS).
     pub tas: Speed,
     /// The wind to take into account.
     pub wind: Wind,
 }
 
-impl Leg<'_> {
+impl Leg {
     /// The true heading considering the wind correction angle (WCA).
     pub fn heading(&self) -> Angle {
         self.bearing() + self.wca()

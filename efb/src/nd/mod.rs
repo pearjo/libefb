@@ -31,13 +31,13 @@ pub use fix::Fix;
 pub use waypoint::*;
 
 #[repr(C)]
-#[derive(Clone, Copy)]
-pub enum NavAid<'a> {
-    Airport(&'a Airport),
-    Waypoint(&'a Waypoint),
+#[derive(Clone)]
+pub enum NavAid {
+    Airport(Airport),
+    Waypoint(Waypoint),
 }
 
-impl<'a> Fix for NavAid<'a> {
+impl Fix for NavAid {
     fn ident(&self) -> String {
         match self {
             Self::Airport(aprt) => aprt.ident(),
@@ -75,16 +75,16 @@ impl NavigationData {
             .collect()
     }
 
-    pub fn find<'a>(&self, ident: &str) -> Option<NavAid> {
+    pub fn find(&self, ident: &str) -> Option<NavAid> {
         self.waypoints
             .iter()
             .find(|&wp| wp.ident() == ident)
-            .map(|wp| NavAid::Waypoint(wp))
+            .map(|wp| NavAid::Waypoint(wp.clone()))
             .or(self
                 .airports
                 .iter()
                 .find(|&aprt| aprt.ident() == ident)
-                .map(|aprt| NavAid::Airport(aprt)))
+                .map(|aprt| NavAid::Airport(aprt.clone())))
     }
 }
 

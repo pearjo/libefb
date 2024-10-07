@@ -14,7 +14,7 @@
 // limitations under the License.
 
 #[repr(C)]
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct AiracCycle {
     pub year: u8,
     pub month: u8,
