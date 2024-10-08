@@ -101,7 +101,7 @@ impl Div<Speed> for Distance {
     type Output = Duration;
 
     fn div(self, rhs: Speed) -> Self::Output {
-        Duration::from_seconds(match self {
+        Duration::from(match self {
             Distance::Meter(v) => (v / rhs.to_ms().into_inner()).round() as u32,
             Distance::NauticalMiles(v) => (v / rhs.to_kt().into_inner()).round() as u32 * 3600,
         })

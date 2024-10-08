@@ -24,21 +24,6 @@ pub struct Duration {
 }
 
 impl Duration {
-    /// Converts the seconds into a duration.
-    ///
-    /// ```
-    /// use efb::Duration;
-    /// let duration = Duration::from_seconds(3600);
-    /// assert_eq!(duration, Duration { hours: 1, minutes: 0, seconds: 0 });
-    /// ```
-    pub fn from_seconds(s: u32) -> Self {
-        Self {
-            hours: (s / 3600 % 24) as u8,
-            minutes: (s / 60 % 60) as u8,
-            seconds: (s % 60) as u8,
-        }
-    }
-
     /// Returns self with the seconds rounded to the nearest minute.
     pub fn round(self) -> Self {
         Self {
@@ -50,6 +35,36 @@ impl Duration {
             },
             seconds: 0,
         }
+    }
+}
+
+impl From<u32> for Duration {
+    /// Converts the seconds into a duration.
+    ///
+    /// ```
+    /// use efb::Duration;
+    /// let duration = Duration::from(3600);
+    /// assert_eq!(duration, Duration { hours: 1, minutes: 0, seconds: 0 });
+    /// ```
+    fn from(seconds: u32) -> Self {
+        Self {
+            hours: (seconds / 3600 % 24) as u8,
+            minutes: (seconds / 60 % 60) as u8,
+            seconds: (seconds % 60) as u8,
+        }
+    }
+}
+
+impl From<Duration> for u32 {
+    /// Converts the duration into seconds.
+    ///
+    /// ```
+    /// use efb::Duration;
+    /// let duration = Duration { hours: 1, minutes: 0, seconds: 0 };
+    /// assert_eq!(3600, duration.into());
+    /// ```
+    fn from(value: Duration) -> Self {
+        value.hours as u32 * 3600 + value.minutes as u32 * 60 + value.seconds as u32
     }
 }
 
@@ -73,18 +88,24 @@ mod tests {
 
     #[test]
     fn from_seconds() {
-        let duration = Duration::from_seconds(3661);
+        let duration = Duration::from(3661);
         assert_eq!(duration.hours, 1);
         assert_eq!(duration.minutes, 1);
         assert_eq!(duration.seconds, 1);
     }
 
     #[test]
+    fn to_seconds() {
+        let duration = Duration { hours: 1, minutes: 1, seconds: 1};
+        assert_eq!(3661u32, duration.into());
+    }
+
+    #[test]
     fn round() {
-        let duration = Duration::from_seconds(29);
+        let duration = Duration::from(29);
         assert_eq!(duration.round().minutes, 0);
 
-        let duration = Duration::from_seconds(30);
+        let duration = Duration::from(30);
         assert_eq!(duration.round().minutes, 1);
     }
 }
