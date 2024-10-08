@@ -1,7 +1,7 @@
 use super::Leg;
 use crate::error::Error;
 use crate::nd::*;
-use crate::{Speed, Wind};
+use crate::{Speed, VerticalDistance, Wind};
 
 enum RouteElement {
     Tas(Speed),
@@ -91,6 +91,8 @@ impl Route {
         let mut from: Option<NavAid> = None;
         let mut to: Option<NavAid> = None;
         let mut legs: Vec<Leg> = Vec::new();
+        // TODO add altitude from route element
+        let vd = VerticalDistance::Altitude(2000);
 
         for element in elements {
             match element {
@@ -110,6 +112,7 @@ impl Route {
                     legs.push(Leg {
                         from,
                         to,
+                        vd,
                         tas,
                         wind,
                     });

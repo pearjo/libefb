@@ -1,5 +1,6 @@
+use crate::*;
 use crate::nd::*;
-use crate::{Angle, Distance, Duration, Speed, Wind};
+use super::perf::Performance;
 
 /// A leg `from` one point `to` another.
 pub struct Leg {
@@ -7,6 +8,8 @@ pub struct Leg {
     pub from: NavAid,
     /// The point to which the leg is going.
     pub to: NavAid,
+    /// The vertical distance of the leg.
+    pub vd: VerticalDistance,
     /// The desired true airspeed (TAS).
     pub tas: Speed,
     /// The wind to take into account.
@@ -71,5 +74,13 @@ impl Leg {
     /// The estimated time enroute the leg.
     pub fn ete(&self) -> Duration {
         self.dist() / self.gs()
+    }
+
+    /// The [Fuel] consumed on the leg with the given [Performance].
+    pub fn fuel<P>(&self, perf: &P) -> Fuel
+    where
+        P: Performance
+    {
+        perf.ff(self.vd) * self.ete()
     }
 }
