@@ -13,11 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Flight Plan.
-mod legs;
-mod perf;
-mod route;
+use crate::{FuelFlow, Speed, VerticalDistance};
 
-pub use legs::Leg;
-pub use perf::Performance;
-pub use route::{Route, RouteError};
+/// Used to provide [Speed] or [FuelFlow] for a defined performance setting at
+/// different vertical distances.
+pub trait Performance {
+    /// Returns the true airspeed at a vertical distance.
+    fn tas(&self, vd: VerticalDistance) -> Speed;
+
+    /// Returns the fuel flow at a vertical distance.
+    fn ff(&self, vd: VerticalDistance) -> FuelFlow;
+}
