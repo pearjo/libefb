@@ -13,22 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod angle;
-mod density;
-mod dist;
-mod duration;
-mod mag_var;
-mod mass;
-mod speed;
-mod volume;
-mod wind;
-
-pub use angle::*;
-pub use density::*;
-pub use dist::*;
-pub use duration::*;
-pub use mag_var::*;
-pub use mass::Mass;
-pub use speed::*;
-pub use volume::*;
-pub use wind::*;
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum Density {
+    KilogramPerLiter(f32),
+}
