@@ -15,6 +15,7 @@
 
 use efb::fms::*;
 use efb::fp::Route;
+use efb::nd::Fix;
 
 use clap::Parser;
 

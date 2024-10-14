@@ -5,7 +5,7 @@ use crate::{Speed, Wind};
 enum RouteElement<'a> {
     Tas(Speed),
     Wind(Wind),
-    Fix(Fix<'a>),
+    NavAid(NavAid<'a>),
 }
 
 #[derive(Debug)]
@@ -61,8 +61,8 @@ impl<'a> Route<'a> {
         let mut elements: Vec<RouteElement> = Vec::new();
 
         for element in route.split_whitespace() {
-            if let Some(fix) = nd.find(element) {
-                elements.push(RouteElement::Fix(fix));
+            if let Some(navaid) = nd.find(element) {
+                elements.push(RouteElement::NavAid(navaid));
             } else if let Ok(value) = element.parse::<Speed>() {
                 elements.push(RouteElement::Tas(value));
             } else if let Ok(value) = element.parse::<Wind>() {
@@ -87,19 +87,19 @@ impl<'a> Route<'a> {
     fn legs_from_elements(elements: &Vec<RouteElement<'a>>) -> Result<Vec<Leg<'a>>, RouteError> {
         let mut tas: Option<Speed> = None;
         let mut wind: Option<Wind> = None;
-        let mut from: Option<Fix<'a>> = None;
-        let mut to: Option<Fix<'a>> = None;
+        let mut from: Option<NavAid<'a>> = None;
+        let mut to: Option<NavAid<'a>> = None;
         let mut legs: Vec<Leg> = Vec::new();
 
         for element in elements {
             match *element {
                 RouteElement::Tas(value) => tas = Some(value),
                 RouteElement::Wind(value) => wind = Some(value),
-                RouteElement::Fix(fix) => {
+                RouteElement::NavAid(navaid) => {
                     if from.is_none() {
-                        from = Some(fix);
+                        from = Some(navaid);
                     } else if to.is_none() {
-                        to = Some(fix);
+                        to = Some(navaid);
                     }
                 }
             }

@@ -21,40 +21,41 @@ use crate::MagneticVariation;
 mod airac_cycle;
 mod airport;
 mod airspace;
+mod fix;
 mod waypoint;
 
 pub use airac_cycle::AiracCycle;
 pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
-pub use waypoint::{Region, Waypoint, WaypointUsage, Waypoints};
+pub use fix::Fix;
+pub use waypoint::*;
 
-/// A fix location with coordinates.
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub enum Fix<'a> {
+pub enum NavAid<'a> {
     Airport(&'a Airport),
     Waypoint(&'a Waypoint),
 }
 
-impl Fix<'_> {
-    pub fn ident(&self) -> String {
+impl<'a> Fix for NavAid<'a> {
+    fn ident(&self) -> String {
         match self {
-            Self::Airport(aprt) => aprt.icao_ident.clone(),
-            Self::Waypoint(wp) => wp.fix_ident.clone(),
+            Self::Airport(aprt) => aprt.ident(),
+            Self::Waypoint(wp) => wp.ident(),
         }
     }
 
-    pub fn coordinate(&self) -> Coordinate {
+    fn coordinate(&self) -> Coordinate {
         match self {
-            Self::Airport(aprt) => aprt.coordinate,
-            Self::Waypoint(wp) => wp.coordinate,
+            Self::Airport(aprt) => aprt.coordinate(),
+            Self::Waypoint(wp) => wp.coordinate(),
         }
     }
 
-    pub fn var(&self) -> MagneticVariation {
+    fn mag_var(&self) -> MagneticVariation {
         match self {
-            Self::Airport(aprt) => aprt.mag_var,
-            Self::Waypoint(wp) => wp.mag_var,
+            Self::Airport(aprt) => aprt.mag_var(),
+            Self::Waypoint(wp) => wp.mag_var(),
         }
     }
 }
@@ -74,16 +75,16 @@ impl NavigationData {
             .collect()
     }
 
-    pub fn find<'a>(&self, ident: &str) -> Option<Fix> {
+    pub fn find<'a>(&self, ident: &str) -> Option<NavAid> {
         self.waypoints
             .iter()
-            .find(|&wp| wp.route_ident() == ident)
-            .map(|wp| Fix::Waypoint(wp))
+            .find(|&wp| wp.ident() == ident)
+            .map(|wp| NavAid::Waypoint(wp))
             .or(self
                 .airports
                 .iter()
-                .find(|&aprt| aprt.route_ident() == ident)
-                .map(|aprt| Fix::Airport(aprt)))
+                .find(|&aprt| aprt.ident() == ident)
+                .map(|aprt| NavAid::Airport(aprt)))
     }
 }
 

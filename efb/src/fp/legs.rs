@@ -1,12 +1,12 @@
-use crate::nd::Fix;
+use crate::nd::*;
 use crate::{Angle, Distance, Duration, Speed, Wind};
 
 /// A leg `from` one point `to` another.
 pub struct Leg<'a> {
     /// The point from which the leg starts.
-    pub from: Fix<'a>,
+    pub from: NavAid<'a>,
     /// The point to which the leg is going.
-    pub to: Fix<'a>,
+    pub to: NavAid<'a>,
     /// The desired true airspeed (TAS).
     pub tas: Speed,
     /// The wind to take into account.
@@ -21,7 +21,7 @@ impl Leg<'_> {
 
     /// The magnetic heading considering the variation at the start of the leg.
     pub fn mh(&self) -> Angle {
-        self.heading() + self.from.var()
+        self.heading() + self.from.mag_var()
     }
 
     /// The bearing between the two points.
@@ -32,7 +32,7 @@ impl Leg<'_> {
     /// The magnetic course taking the magnetic variation from the starting
     /// point into consideration.
     pub fn mc(&self) -> Angle {
-        self.bearing() + self.from.var()
+        self.bearing() + self.from.mag_var()
     }
 
     /// The distance between the leg's two points.

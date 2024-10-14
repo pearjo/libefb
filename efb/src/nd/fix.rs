@@ -13,32 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::*;
 use crate::geom::Coordinate;
+use crate::MagneticVariation;
 
-#[repr(C)]
-#[derive(Debug, PartialEq)]
-pub struct Airport {
-    pub icao_ident: String,
-    pub iata_designator: String,
-    pub name: String,
-    pub coordinate: Coordinate,
-    pub mag_var: MagneticVariation,
-    pub cycle: AiracCycle,
-}
+/// A fix location with coordinates.
+pub trait Fix: Sized {
+    fn ident(&self) -> String;
 
-impl Airport {
-    pub fn route_ident(&self) -> String {
-        self.icao_ident.clone()
-    }
-}
+    fn coordinate(&self) -> Coordinate;
 
-impl Fix for Airport {
-    fn ident(&self) -> String {
-        self.icao_ident.clone()
-    }
-
-    fn coordinate(&self) -> Coordinate {
-        self.coordinate
+    fn mag_var(&self) -> MagneticVariation {
+        self.coordinate().into()
     }
 }
