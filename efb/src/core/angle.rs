@@ -34,47 +34,53 @@ mod constants {
 /// ```
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub struct Angle {
-    rad: f32,
+pub enum Angle {
+    True(f32),
+    Magnetic(f32),
 }
 
 impl From<i16> for Angle {
     /// Converts the angle in degree into an Angle.
     fn from(value: i16) -> Self {
-        Self {
-            rad: {
-                if value.is_negative() {
-                    ((360 + (value % 360)) as f32).to_radians()
-                } else {
-                    ((value % 360) as f32).to_radians()
-                }
-            },
-        }
+        Self::True(
+            if value.is_negative() {
+                ((360 + (value % 360)) as f32).to_radians()
+            } else {
+                ((value % 360) as f32).to_radians()
+            }
+        )
     }
 }
 
 impl From<f32> for Angle {
     /// Converts the angle in radians into an Angle.
     fn from(value: f32) -> Self {
-        Self {
-            rad: if value.is_sign_negative() {
+        Self::True(
+            if value.is_sign_negative() {
                 constants::PI2 + (value % (constants::PI2))
             } else {
                 value % constants::PI2
-            },
-        }
+            }
+        )
     }
 }
 
 impl Angle {
     /// Returns the inner value in degree.
     pub fn as_degrees(&self) -> u16 {
-        self.rad.to_degrees().round() as u16
+        self.into_inner().to_degrees().round() as u16
     }
 
     /// Returns the inner value in radians.
     pub fn as_radians(&self) -> f32 {
-        self.rad
+        self.into_inner()
+    }
+
+    pub fn into_inner(self) -> f32 {
+        match self {
+            Self::True(value) => value,
+            Self::Magnetic(value) => value,
+        }
     }
 }
 
@@ -82,7 +88,7 @@ impl Add for Angle {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        (self.rad + other.rad).into()
+        (self.into_inner() + other.into_inner()).into()
     }
 }
 
@@ -98,9 +104,9 @@ impl Sub for Angle {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self {
-            rad: self.rad - other.rad,
-        }
+        Self::True(
+            self.into_inner() - other.into_inner()
+        )
     }
 }
 
@@ -124,7 +130,9 @@ impl Add<MagneticVariation> for Angle {
             MagneticVariation::OrientedToTrueNorth => 0.0,
         };
 
-        (self.rad + other_deg.to_radians()).into()
+        Self::Magnetic(
+            self.into_inner() + other_deg.to_radians()
+        )
     }
 }
 
