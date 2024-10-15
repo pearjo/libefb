@@ -23,7 +23,7 @@ mod constants {
 
 /// A vertical distance.
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 pub enum VerticalDistance {
     /// Absolute distance above ground level in feet.
     Agl(u16),

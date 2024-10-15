@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use efb::*;
 use efb::fms::*;
+use efb::fp::Performance;
 use efb::nd::{Fix, InputFormat};
 
 use clap::Parser;
@@ -31,8 +33,35 @@ struct Cli {
     route: String,
 }
 
+/// Performance setting with 65% load in cruise.
+///
+/// This is the performance profile of a Cessna C172 with an TAE125-02-114
+/// Diesel engine.
+struct Performance65PercentLoad {}
+
+impl Performance for Performance65PercentLoad {
+    fn tas(&self, vd: VerticalDistance) -> Speed {
+        if vd >= VerticalDistance::Altitude(10000) {
+            Speed::Knots(114.0)
+        } else if vd >= VerticalDistance::Altitude(8000) {
+            Speed::Knots(112.0)
+        } else if vd >= VerticalDistance::Altitude(6000) {
+            Speed::Knots(110.0)
+        } else if vd >= VerticalDistance::Altitude(4000) {
+            Speed::Knots(109.0)
+        } else {
+            Speed::Knots(107.0)
+        }
+    }
+
+    fn ff(&self, _: VerticalDistance) -> FuelFlow {
+        FuelFlow::PerHour(Fuel::Diesel(Volume::Liter(21.0)))
+    }
+}
+
 fn main() {
     let args = Cli::parse();
+    let perf = Performance65PercentLoad {};
     let mut fms = FMS::new();
 
     if let Err(e) = fms.nd().read_file(&args.path, InputFormat::Arinc424) {
@@ -61,5 +90,9 @@ fn main() {
         }
 
         println!("╰──────┴──────────┴──────┴──────┴───────┴───────╯");
+
+        println!("╭─────────────┬──────────╮");
+        println!("│ PERFORMANCE │ {:8.0} │", route.fuel(&perf).unwrap());
+        println!("╰─────────────┴──────────╯");
     }
 }
