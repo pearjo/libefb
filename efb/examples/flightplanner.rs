@@ -93,6 +93,8 @@ fn main() {
 
         println!("╭─────────────┬──────────╮");
         println!("│ PERFORMANCE │ {:8.0} │", route.fuel(&perf).unwrap());
+        println!("├─────────────┼──────────┤");
+        println!("│ ETE         │ {:8.0} │", route.ete().unwrap());
         println!("╰─────────────┴──────────╯");
     }
 }
