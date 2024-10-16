@@ -14,6 +14,7 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
+use std::ops::Add;
 
 /// A duration measured in hours, minutes and seconds.
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -35,6 +36,16 @@ impl Duration {
             },
             seconds: 0,
         }
+    }
+}
+
+impl Add for Duration {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let seconds: u32 = self.into();
+        let rhs: u32 = rhs.into();
+        Duration::from(seconds + rhs)
     }
 }
 
@@ -98,6 +109,14 @@ mod tests {
     fn to_seconds() {
         let duration = Duration { hours: 1, minutes: 1, seconds: 1};
         assert_eq!(3661u32, duration.into());
+    }
+
+    #[test]
+    fn add() {
+        let sum = Duration::from(3561) + Duration::from(100);
+        assert_eq!(sum.hours, 1);
+        assert_eq!(sum.minutes, 1);
+        assert_eq!(sum.seconds, 1);
     }
 
     #[test]

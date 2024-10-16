@@ -1,7 +1,7 @@
 use super::{Leg, Performance};
 use crate::error::Error;
 use crate::nd::*;
-use crate::{Fuel, Speed, VerticalDistance, Wind};
+use crate::{Duration, Fuel, Speed, VerticalDistance, Wind};
 
 enum RouteElement {
     Tas(Speed),
@@ -81,10 +81,12 @@ impl Route {
         })
     }
 
+    /// Returns the legs of the route.
     pub fn legs(&self) -> &Vec<Leg> {
         &self.legs
     }
 
+    /// Returns the fuel consumption en-route for the given performance.
     pub fn fuel<P>(&self, perf: &P) -> Option<Fuel>
     where
         P: Performance
@@ -92,6 +94,13 @@ impl Route {
         self.legs.iter()
             .map(|leg| leg.fuel(perf))
             .reduce(|acc, fuel| acc + fuel)
+    }
+
+    /// Returns the estimated time en-route.
+    pub fn ete(&self) -> Option<Duration> {
+        self.legs.iter()
+            .map(|leg| leg.ete())
+            .reduce(|acc, ete| acc + ete)
     }
 
     fn legs_from_elements(elements: &Vec<RouteElement>) -> Result<Vec<Leg>, Error> {
