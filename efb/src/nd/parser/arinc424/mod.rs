@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::rc::Rc;
 use std::str::FromStr;
 
 use crate::error::Error;
@@ -21,28 +22,28 @@ use crate::nd::*;
 mod from;
 
 pub struct Arinc424Record {
-    pub airports: Vec<Airport>,
-    pub waypoints: Vec<Waypoint>,
+    pub airports: Vec<Rc<Airport>>,
+    pub waypoints: Vec<Rc<Waypoint>>,
 }
 
 impl FromStr for Arinc424Record {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut airports: Vec<Airport> = Vec::new();
-        let mut waypoints = Waypoints::new();
+        let mut airports: Vec<Rc<Airport>> = Vec::new();
+        let mut waypoints: Vec<Rc<Waypoint>> = Vec::new();
 
         // TODO add some nice error handling
         s.lines().for_each(|line| match &line[4..6] {
             "EA" | "PC" => {
                 if let Ok(waypoint_record) = arinc424::Waypoint::from_str(line) {
-                    waypoints.push(waypoint_record.into());
+                    waypoints.push(Rc::new(waypoint_record.into()));
                 }
             }
             "P " => match &line[12..13] {
                 "A" => {
                     if let Ok(airport_record) = arinc424::Airport::from_str(line) {
-                        airports.push(airport_record.into());
+                        airports.push(Rc::new(airport_record.into()));
                     }
                 }
                 _ => {}

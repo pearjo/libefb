@@ -17,6 +17,7 @@
 
 use std::fs;
 use std::path::Path;
+use std::rc::Rc;
 
 use crate::error::Error;
 use crate::geom::Coordinate;
@@ -39,8 +40,8 @@ pub use waypoint::*;
 #[repr(C)]
 #[derive(Clone)]
 pub enum NavAid {
-    Airport(Airport),
-    Waypoint(Waypoint),
+    Airport(Rc<Airport>),
+    Waypoint(Rc<Waypoint>),
 }
 
 impl Fix for NavAid {
@@ -73,9 +74,9 @@ pub enum InputFormat {
 
 #[derive(Default)]
 pub struct NavigationData {
-    pub airports: Vec<Airport>,
+    pub airports: Vec<Rc<Airport>>,
     pub airspaces: Airspaces,
-    pub waypoints: Waypoints,
+    pub waypoints: Vec<Rc<Waypoint>>,
 }
 
 impl NavigationData {
@@ -98,12 +99,12 @@ impl NavigationData {
         self.waypoints
             .iter()
             .find(|&wp| wp.ident() == ident)
-            .map(|wp| NavAid::Waypoint(wp.clone()))
+            .map(|wp| NavAid::Waypoint(Rc::clone(&wp)))
             .or(self
                 .airports
                 .iter()
                 .find(|&aprt| aprt.ident() == ident)
-                .map(|aprt| NavAid::Airport(aprt.clone())))
+                .map(|aprt| NavAid::Airport(Rc::clone(&aprt))))
     }
 
     pub fn read(&mut self, s: &str, fmt: InputFormat) -> Result<(), Error> {
@@ -162,7 +163,7 @@ mod tests {
                 ],
             }],
             airports: Vec::new(),
-            waypoints: Waypoints::new(),
+            waypoints: Vec::new(),
         };
 
         assert_eq!(nd.at(&inside), vec![&nd.airspaces[0]]);
