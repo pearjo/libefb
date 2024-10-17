@@ -130,6 +130,13 @@ mod tests {
     #[test]
     fn div() {
         let time = Distance::NauticalMiles(1.0) / Speed::Knots(1.0);
-        assert_eq!(time, Duration { hours: 1, minutes: 0, seconds: 0 });
+        assert_eq!(
+            time,
+            Duration {
+                hours: 1,
+                minutes: 0,
+                seconds: 0
+            }
+        );
     }
 }

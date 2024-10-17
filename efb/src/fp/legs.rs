@@ -1,6 +1,6 @@
-use crate::*;
-use crate::nd::*;
 use super::perf::Performance;
+use crate::nd::*;
+use crate::*;
 
 /// A leg `from` one point `to` another.
 pub struct Leg {
@@ -65,9 +65,12 @@ impl Leg {
         let tas = self.tas.to_kt().into_inner();
         let ws = self.wind.speed.to_kt().into_inner();
 
-        (ws / tas * (self.bearing() - 180 + self.wind.direction).as_radians().sin())
-            .asin()
-            .into()
+        (ws / tas
+            * (self.bearing() - 180 + self.wind.direction)
+                .as_radians()
+                .sin())
+        .asin()
+        .into()
     }
 
     // TODO add test to verify calculation
@@ -79,7 +82,7 @@ impl Leg {
     /// The [Fuel] consumed on the leg with the given [Performance].
     pub fn fuel<P>(&self, perf: &P) -> Fuel
     where
-        P: Performance
+        P: Performance,
     {
         perf.ff(self.vd) * self.ete()
     }

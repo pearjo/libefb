@@ -65,8 +65,8 @@ impl Mul<Density> for Volume {
     fn mul(self, rhs: Density) -> Self::Output {
         match self {
             Self::Liter(v) => match rhs {
-                Density::KilogramPerLiter(rho) => Mass::Kilogram(v * rho)
-            }
+                Density::KilogramPerLiter(rho) => Mass::Kilogram(v * rho),
+            },
         }
     }
 }

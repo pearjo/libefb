@@ -107,7 +107,11 @@ mod tests {
 
     #[test]
     fn to_seconds() {
-        let duration = Duration { hours: 1, minutes: 1, seconds: 1};
+        let duration = Duration {
+            hours: 1,
+            minutes: 1,
+            seconds: 1,
+        };
         assert_eq!(3661u32, duration.into());
     }
 

@@ -23,8 +23,8 @@
 
 use std::str::FromStr;
 
-use crate::fc;
 use crate::error::Error;
+use crate::fc;
 use crate::geom::{Coordinate, Polygon};
 use crate::nd::{Airspace, AirspaceClass};
 use crate::VerticalDistance;
@@ -265,7 +265,8 @@ DP 53:06:10 N 9:04:45 E
 DP 52:58:13 N 9:05:04 E
 DP 52:58:08 N 8:58:56 E
 DP 53:06:04 N 8:58:30 E
-"#.parse::<OpenAirRecord>();
+"#
+        .parse::<OpenAirRecord>();
 
         let tma_bremen_a = Airspace {
             name: String::from("TMA BREMEN A"),

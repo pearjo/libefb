@@ -33,8 +33,8 @@ pub use airac_cycle::AiracCycle;
 pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use fix::Fix;
-pub use waypoint::*;
 use parser::*;
+pub use waypoint::*;
 
 #[repr(C)]
 #[derive(Clone)]
@@ -112,11 +112,11 @@ impl NavigationData {
                 let mut record = s.parse::<Arinc424Record>()?;
                 self.airports.append(&mut record.airports);
                 self.waypoints.append(&mut record.waypoints);
-            },
+            }
             InputFormat::OpenAir => {
                 let mut record = s.parse::<OpenAirRecord>()?;
                 self.airspaces.append(&mut record.airspaces);
-            },
+            }
         };
 
         Ok(())

@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::*;
 use efb::fms::*;
 use efb::fp::Performance;
 use efb::nd::{Fix, InputFormat};
+use efb::*;
 
 use clap::Parser;
 

@@ -89,16 +89,18 @@ impl Route {
     /// Returns the fuel consumption en-route for the given performance.
     pub fn fuel<P>(&self, perf: &P) -> Option<Fuel>
     where
-        P: Performance
+        P: Performance,
     {
-        self.legs.iter()
+        self.legs
+            .iter()
             .map(|leg| leg.fuel(perf))
             .reduce(|acc, fuel| acc + fuel)
     }
 
     /// Returns the estimated time en-route.
     pub fn ete(&self) -> Option<Duration> {
-        self.legs.iter()
+        self.legs
+            .iter()
             .map(|leg| leg.ete())
             .reduce(|acc, ete| acc + ete)
     }

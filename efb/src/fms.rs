@@ -15,8 +15,8 @@
 
 //! Flight Management System.
 use crate::error::Error;
-use crate::nd::NavigationData;
 use crate::fp::Route;
+use crate::nd::NavigationData;
 
 #[repr(C)]
 pub struct FMS {
