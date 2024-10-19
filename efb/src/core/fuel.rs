@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 
 use super::{Density, Duration, Mass, Volume};
 
@@ -67,6 +67,23 @@ impl Add for Fuel {
             },
             Self::JetA(fuel) => match rhs {
                 Self::JetA(fuel_rhs) => Self::JetA(fuel + fuel_rhs),
+                _ => Self::JetA(fuel),
+            },
+        }
+    }
+}
+
+impl Sub for Fuel {
+    type Output = Fuel;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        match self {
+            Self::Diesel(fuel) => match rhs {
+                Self::Diesel(fuel_rhs) => Self::Diesel(fuel - fuel_rhs),
+                _ => Self::Diesel(fuel),
+            },
+            Self::JetA(fuel) => match rhs {
+                Self::JetA(fuel_rhs) => Self::JetA(fuel - fuel_rhs),
                 _ => Self::JetA(fuel),
             },
         }

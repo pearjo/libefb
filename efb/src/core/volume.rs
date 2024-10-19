@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 
 use super::{Density, Mass};
 
@@ -44,6 +44,18 @@ impl Add for Volume {
         match self {
             Self::Liter(v) => match rhs {
                 Self::Liter(v_rhs) => Self::Liter(v + v_rhs),
+            },
+        }
+    }
+}
+
+impl Sub for Volume {
+    type Output = Volume;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        match self {
+            Self::Liter(v) => match rhs {
+                Self::Liter(v_rhs) => Self::Liter(v - v_rhs),
             },
         }
     }
