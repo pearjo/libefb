@@ -84,6 +84,6 @@ impl Leg {
     where
         P: Performance,
     {
-        perf.ff(self.vd) * self.ete()
+        perf.ff(&self.vd) * self.ete()
     }
 }

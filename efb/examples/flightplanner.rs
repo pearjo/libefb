@@ -40,21 +40,21 @@ struct Cli {
 struct Performance65PercentLoad {}
 
 impl Performance for Performance65PercentLoad {
-    fn tas(&self, vd: VerticalDistance) -> Speed {
-        if vd >= VerticalDistance::Altitude(10000) {
+    fn tas(&self, vd: &VerticalDistance) -> Speed {
+        if *vd >= VerticalDistance::Altitude(10000) {
             Speed::Knots(114.0)
-        } else if vd >= VerticalDistance::Altitude(8000) {
+        } else if *vd >= VerticalDistance::Altitude(8000) {
             Speed::Knots(112.0)
-        } else if vd >= VerticalDistance::Altitude(6000) {
+        } else if *vd >= VerticalDistance::Altitude(6000) {
             Speed::Knots(110.0)
-        } else if vd >= VerticalDistance::Altitude(4000) {
+        } else if *vd >= VerticalDistance::Altitude(4000) {
             Speed::Knots(109.0)
         } else {
             Speed::Knots(107.0)
         }
     }
 
-    fn ff(&self, _: VerticalDistance) -> FuelFlow {
+    fn ff(&self, _: &VerticalDistance) -> FuelFlow {
         FuelFlow::PerHour(Fuel::Diesel(Volume::Liter(21.0)))
     }
 }

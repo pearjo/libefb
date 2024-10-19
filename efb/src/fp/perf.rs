@@ -19,8 +19,8 @@ use crate::{FuelFlow, Speed, VerticalDistance};
 /// different vertical distances.
 pub trait Performance {
     /// Returns the true airspeed at a vertical distance.
-    fn tas(&self, vd: VerticalDistance) -> Speed;
+    fn tas(&self, vd: &VerticalDistance) -> Speed;
 
     /// Returns the fuel flow at a vertical distance.
-    fn ff(&self, vd: VerticalDistance) -> FuelFlow;
+    fn ff(&self, vd: &VerticalDistance) -> FuelFlow;
 }
