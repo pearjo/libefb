@@ -86,6 +86,18 @@ impl Route {
         &self.legs
     }
 
+    /// Returns the final leg but going to the alternate.
+    pub fn alternate(&self, alternate: NavAid) -> Leg {
+        let final_leg = self.legs[self.legs.len() - 1].clone();
+        Leg {
+            from: final_leg.from,
+            to: alternate,
+            vd: final_leg.vd,
+            tas: final_leg.tas,
+            wind: final_leg.wind,
+        }
+    }
+
     /// Returns the fuel consumption en-route for the given performance.
     pub fn fuel<P>(&self, perf: &P) -> Option<Fuel>
     where
