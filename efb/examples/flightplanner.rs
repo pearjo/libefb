@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use efb::fms::*;
-use efb::fp::Performance;
+use efb::fp::*;
 use efb::nd::{Fix, InputFormat};
 use efb::*;
 
@@ -55,7 +55,7 @@ impl Performance for Performance65PercentLoad {
     }
 
     fn ff(&self, _: &VerticalDistance) -> FuelFlow {
-        FuelFlow::PerHour(Fuel::Diesel(Volume::Liter(21.0)))
+        FuelFlow::PerHour(diesel!(Volume::Liter(21.0)))
     }
 }
 
@@ -73,7 +73,9 @@ fn main() {
     }
 
     if let Some(route) = fms.route() {
-        println!("╭──────┬──────────┬──────┬──────┬───────┬───────╮");
+        println!("╭───────────────────────────────────────────────╮");
+        println!("│ ROUTE                                         │");
+        println!("├──────┬──────────┬──────┬──────┬───────┬───────┤");
         println!("│ TC   │  DIST    │ MC   │ MH   │ ETE   │ TO    │");
         println!("├──────┼──────────┼──────┼──────┼───────┼───────┤");
 
@@ -89,12 +91,43 @@ fn main() {
             );
         }
 
-        println!("╰──────┴──────────┴──────┴──────┴───────┴───────╯");
+        println!("├──────┴──────────┴──────┴──────┴───────┴───────┤");
+        println!("│ ETE {:8.0}                                  │", route.ete().unwrap());
+        println!("├───────────────────────────────────────────────┤");
+        println!("│ FUEL                                          │");
+        println!("├───────────┬───────────────────────────────────┤");
 
-        println!("╭─────────────┬──────────╮");
-        println!("│ PERFORMANCE │ {:8.0} │", route.fuel(&perf).unwrap());
-        println!("├─────────────┼──────────┤");
-        println!("│ ETE         │ {:8.0} │", route.ete().unwrap());
-        println!("╰─────────────┴──────────╯");
+        let fuel = FuelPlanning::new(
+            FuelPolicy::Manual(diesel!(Volume::Liter(80.0))),
+            diesel!(Volume::Liter(10.0)),
+            route,
+            &Reserve::Manual(Duration::from(1800)), // 30 min
+            None,
+            &perf,
+        );
+
+        println!("│ TRIP      │ {:<8.0}                          │", fuel.trip);
+
+        if let Some(climb) = fuel.climb {
+            println!("│ CLIMB     │ {:<8.0}                          │", climb);
+        }
+
+        println!("│ TAXI      │ {:<8.0}                          │", fuel.taxi);
+
+        if let Some(alternate) = fuel.alternate {
+            println!("│ ALTERNATE │ {:<8.0}                          │", alternate);
+        }
+
+        println!("│ RESERVE   │ {:<8.0}                          │", fuel.reserve);
+        println!("├───────────┼───────────────────────────────────┤");
+        println!("│ MINIMUM   │ {:<8.0}                          │", fuel.min());
+
+        if let Some(extra) = fuel.extra() {
+            println!("│ EXTRA     │ {:<8.0}                          │", extra);
+        }
+
+        println!("├───────────┼───────────────────────────────────┤");
+        println!("│ TOTAL     │ {:<8.0}                          │", fuel.total());
+        println!("╰───────────┴───────────────────────────────────╯");
     }
 }
