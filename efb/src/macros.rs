@@ -13,6 +13,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// Creates Diesel [`Fuel`] from the [`Volume`] at ISA conditions.
+///
+/// [`Fuel`]: crate::Fuel
+/// [`Volume`]: crate::Volume
+#[macro_export]
+macro_rules! diesel {
+    ($volume:expr) => {
+        Fuel {
+            fuel_type: crate::FuelType::Diesel,
+            mass: $volume * crate::FuelType::Diesel.density(),
+        }
+    };
+}
+
+/// Creates Jet-A [`Fuel`] from the [`Volume`] at ISA conditions.
+///
+/// [`Fuel`]: crate::Fuel
+/// [`Volume`]: crate::Volume
+#[macro_export]
+macro_rules! jet_a {
+    ($volume:expr) => {
+        Fuel {
+            fuel_type: crate::FuelType::JetA,
+            mass: $volume * crate::FuelType::Diesel.density(),
+        }
+    };
+}
+
 /// Creates a [`Coordinate`].
 ///
 /// [`Coordinate`]: crate::geom::Coordinate

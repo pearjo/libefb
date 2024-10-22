@@ -25,31 +25,39 @@ mod constants {
     pub const JET_A_AT_ISA: Density = Density::KilogramPerLiter(0.8);
 }
 
-pub enum Fuel {
-    Diesel(Volume),
-    JetA(Volume),
+#[derive(Copy, Clone, PartialEq)]
+pub enum FuelType {
+    Diesel,
+    JetA,
+}
+
+impl FuelType {
+    pub fn density(&self) -> Density {
+        match self {
+            Self::Diesel => constants::DIESEL_AT_ISA,
+            Self::JetA => constants::JET_A_AT_ISA,
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct Fuel {
+    pub fuel_type: FuelType,
+    pub mass: Mass,
 }
 
 impl Fuel {
-    pub fn mass(self) -> Mass {
-        match self {
-            Self::Diesel(v) => v * constants::DIESEL_AT_ISA,
-            Self::JetA(v) => v * constants::JET_A_AT_ISA,
-        }
+    pub fn volume(self) -> Volume {
+        self.mass / self.fuel_type.density()
     }
 }
 
 impl Display for Fuel {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        let v = match self {
-            Self::Diesel(v) => v,
-            Self::JetA(v) => v,
-        };
-
         let tmp = if let Some(precision) = f.precision() {
-            format!("{v:.precision$}")
+            format!("{:.precision$}", self.volume())
         } else {
-            format!("{v}")
+            format!("{}", self.volume())
         };
 
         f.pad_integral(true, "", &tmp)
@@ -60,15 +68,13 @@ impl Add for Fuel {
     type Output = Fuel;
 
     fn add(self, rhs: Self) -> Self::Output {
-        match self {
-            Self::Diesel(fuel) => match rhs {
-                Self::Diesel(fuel_rhs) => Self::Diesel(fuel + fuel_rhs),
-                _ => Self::Diesel(fuel),
-            },
-            Self::JetA(fuel) => match rhs {
-                Self::JetA(fuel_rhs) => Self::JetA(fuel + fuel_rhs),
-                _ => Self::JetA(fuel),
-            },
+        if self.fuel_type == rhs.fuel_type {
+            Fuel {
+                fuel_type: self.fuel_type,
+                mass: self.mass + rhs.mass,
+            }
+        } else {
+            self
         }
     }
 }
@@ -77,15 +83,13 @@ impl Sub for Fuel {
     type Output = Fuel;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        match self {
-            Self::Diesel(fuel) => match rhs {
-                Self::Diesel(fuel_rhs) => Self::Diesel(fuel - fuel_rhs),
-                _ => Self::Diesel(fuel),
-            },
-            Self::JetA(fuel) => match rhs {
-                Self::JetA(fuel_rhs) => Self::JetA(fuel - fuel_rhs),
-                _ => Self::JetA(fuel),
-            },
+        if self.fuel_type == rhs.fuel_type {
+            Self {
+                fuel_type: self.fuel_type,
+                mass: self.mass - rhs.mass,
+            }
+        } else {
+            self
         }
     }
 }
@@ -94,9 +98,9 @@ impl Mul<f32> for Fuel {
     type Output = Fuel;
 
     fn mul(self, rhs: f32) -> Self::Output {
-        match self {
-            Self::Diesel(fuel) => Self::Diesel(fuel * rhs),
-            Self::JetA(fuel) => Self::JetA(fuel * rhs),
+        Self {
+            fuel_type: self.fuel_type,
+            mass: self.mass * rhs,
         }
     }
 }
