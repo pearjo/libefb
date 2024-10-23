@@ -16,7 +16,7 @@
 use super::{Density, Volume};
 use std::ops::{Add, Div, Mul, Sub};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Mass {
     Kilogram(f32),
 }

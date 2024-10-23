@@ -25,7 +25,7 @@ mod constants {
     pub const JET_A_AT_ISA: Density = Density::KilogramPerLiter(0.8);
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum FuelType {
     Diesel,
     JetA,
@@ -40,7 +40,7 @@ impl FuelType {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Fuel {
     pub fuel_type: FuelType,
     pub mass: Mass,
@@ -118,5 +118,37 @@ impl Mul<Duration> for FuelFlow {
         match self {
             Self::PerHour(fuel) => fuel * hours,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add_fuel() {
+        let lhs = diesel!(Volume::Liter(10.0));
+        let rhs = diesel!(Volume::Liter(10.0));
+        assert_eq!(lhs + rhs, diesel!(Volume::Liter(20.0)));
+    }
+
+    #[test]
+    fn sub_fuel() {
+        let lhs = diesel!(Volume::Liter(10.0));
+        let rhs = diesel!(Volume::Liter(10.0));
+        assert_eq!(lhs - rhs, diesel!(Volume::Liter(0.0)));
+    }
+
+    #[test]
+    fn mul_fuel() {
+        let lhs = diesel!(Volume::Liter(10.0));
+        assert_eq!(lhs * 10.0, diesel!(Volume::Liter(100.0)));
+    }
+
+    #[test]
+    fn mul_fuel_flow() {
+        let lhs = FuelFlow::PerHour(diesel!(Volume::Liter(10.0)));
+        let rhs = Duration::from(7200); // 2h
+        assert_eq!(lhs * rhs, diesel!(Volume::Liter(20.0)));
     }
 }
