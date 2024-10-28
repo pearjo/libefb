@@ -21,7 +21,7 @@ use super::{Angle, Speed};
 
 /// The wind with a speed and direction
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Wind {
     /// The direction from which the wind comes.
     pub direction: Angle,
@@ -32,20 +32,25 @@ pub struct Wind {
 impl FromStr for Wind {
     type Err = Error;
 
+    /// Parses a string `s` to return Wind.
+    ///
+    /// The string is formatted according to the wind usage of a METAR
+    /// e.g. `23008KT` for wind from 230° with a speed of 8 Knots.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.len() == 6 && &s[3..4] == "@" {
-            let direction = s[0..3].parse::<i16>();
-            let speed = s[4..6].parse::<f32>();
+        let direction: Option<i16> = s.get(0..3).and_then(|s| s.parse().ok());
+        let speed: Option<f32> = s.get(3..5).and_then(|s| s.parse().ok());
+        let unit: &str = s.get(5..s.len()).unwrap_or_default();
 
-            match (direction, speed) {
-                (Ok(direction), Ok(speed)) => Ok(Wind {
-                    direction: direction.into(),
-                    speed: Speed::Knots(speed),
-                }),
-                _ => Err(Error::UnexpectedString),
-            }
-        } else {
-            Err(Error::UnexpectedString)
+        match (direction, speed, unit) {
+            (Some(direction), Some(speed), "KT") => Ok(Wind {
+                direction: Angle::from(direction),
+                speed: Speed::Knots(speed),
+            }),
+            (Some(direction), Some(speed), "MPS") => Ok(Wind {
+                direction: Angle::from(direction),
+                speed: Speed::MeterPerSecond(speed),
+            }),
+            _ => Err(Error::UnexpectedString),
         }
     }
 }
@@ -53,5 +58,29 @@ impl FromStr for Wind {
 impl fmt::Display for Wind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{0}/{1}", self.direction, self.speed.to_kt())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_str() {
+        assert_eq!(
+            "33008KT".parse::<Wind>(),
+            Ok(Wind {
+                direction: Angle::from(330),
+                speed: Speed::Knots(8.0),
+            }),
+        );
+        assert_eq!(
+            "33004MPS".parse::<Wind>(),
+            Ok(Wind {
+                direction: Angle::from(330),
+                speed: Speed::MeterPerSecond(4.0),
+            }),
+        );
+        assert_eq!("330".parse::<Wind>(), Err(Error::UnexpectedString));
     }
 }

@@ -42,7 +42,7 @@ pub enum RouteError {
 /// on the route. Extending our route to
 ///
 /// ```text
-/// 135@09 107KT EDDH DHD 180@09 HLW EDHL
+/// 13509KT N0107 EDDH DHD 18009KT HLW EDHL
 /// ```
 ///
 /// we would have wind from south-east (135°) on the leg from EDDH to DHD, but
