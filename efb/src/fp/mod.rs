@@ -14,11 +14,13 @@
 // limitations under the License.
 
 //! Flight Plan.
+mod flight_plan;
 mod fuel_planning;
 mod legs;
 mod perf;
 mod route;
 
+pub use flight_plan::FlightPlan;
 pub use fuel_planning::*;
 pub use legs::Leg;
 pub use perf::Performance;
