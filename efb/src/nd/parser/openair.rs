@@ -38,10 +38,10 @@ struct OpenAirElement {
     an: Option<String>,
 
     /// Airspace ceiling.
-    ah: Option<VerticalDistance>,
+    ah: Option<OpenAirVerticalDistance>,
 
     /// Airspace floor.
-    al: Option<VerticalDistance>,
+    al: Option<OpenAirVerticalDistance>,
 
     /// Polygon point.
     dp: Polygon,
@@ -95,8 +95,8 @@ impl From<&mut OpenAirElement> for Airspace {
         Self {
             name: element.an.take().unwrap_or_default(),
             class: element.ac.take().unwrap_or_default().into(),
-            ceiling: element.ah.unwrap_or_default(),
-            floor: element.al.unwrap_or_default(),
+            ceiling: element.ah.take().unwrap_or_default().into_inner(),
+            floor: element.al.take().unwrap_or_default().into_inner(),
             polygon: Polygon::from(coords),
         }
     }
@@ -164,7 +164,22 @@ impl FromStr for OpenAirCoordinate {
 #[derive(Debug, PartialEq)]
 pub struct ParseOpenAirVerticalDistanceError;
 
-impl FromStr for VerticalDistance {
+#[derive(Debug, PartialEq)]
+struct OpenAirVerticalDistance(VerticalDistance);
+
+impl OpenAirVerticalDistance {
+    pub fn into_inner(self) -> VerticalDistance {
+        self.0
+    }
+}
+
+impl Default for OpenAirVerticalDistance {
+    fn default() -> Self {
+        Self(VerticalDistance::Gnd)
+    }
+}
+
+impl FromStr for OpenAirVerticalDistance {
     type Err = ParseOpenAirVerticalDistanceError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -180,15 +195,15 @@ impl FromStr for VerticalDistance {
         value_fromstr.map_or(
             // for value less distances we get an Err as value
             match suffix_fromstr.as_str() {
-                "UNLIM" | "UNLIMITED" => Ok(VerticalDistance::Unlimited),
-                "GND" | "SFC" => Ok(VerticalDistance::Gnd),
+                "UNLIM" | "UNLIMITED" => Ok(OpenAirVerticalDistance(VerticalDistance::Unlimited)),
+                "GND" | "SFC" => Ok(OpenAirVerticalDistance(VerticalDistance::Gnd)),
                 _ => Err(ParseOpenAirVerticalDistanceError),
             },
             |value| match suffix_fromstr.as_str() {
-                "FL" => Ok(VerticalDistance::Fl(value)),
-                "FT AGL" | "AGL" => Ok(VerticalDistance::Agl(value)),
-                "FT MSL" | "MSL" => Ok(VerticalDistance::Msl(value)),
-                "FT" => Ok(VerticalDistance::Altitude(value)),
+                "FL" => Ok(OpenAirVerticalDistance(VerticalDistance::Fl(value))),
+                "FT AGL" | "AGL" => Ok(OpenAirVerticalDistance(VerticalDistance::Agl(value))),
+                "FT MSL" | "MSL" => Ok(OpenAirVerticalDistance(VerticalDistance::Msl(value))),
+                "FT" => Ok(OpenAirVerticalDistance(VerticalDistance::Altitude(value))),
                 _ => Err(ParseOpenAirVerticalDistanceError),
             },
         )
@@ -216,8 +231,8 @@ impl OpenAirRecord {
                 element.ac = record?.parse::<String>().ok();
             }
             Some("AN") => element.an = record?.parse::<String>().ok(),
-            Some("AH") => element.ah = record?.parse::<VerticalDistance>().ok(),
-            Some("AL") => element.al = record?.parse::<VerticalDistance>().ok(),
+            Some("AH") => element.ah = record?.parse::<OpenAirVerticalDistance>().ok(),
+            Some("AL") => element.al = record?.parse::<OpenAirVerticalDistance>().ok(),
             Some("DP") => {
                 if let Ok(coordinate) = record?.parse::<OpenAirCoordinate>() {
                     element.dp.push(coordinate.into_inner());
@@ -311,25 +326,28 @@ DP 53:06:04 N 8:58:30 E
 
     #[test]
     fn parses_vertical_distance() {
-        let agl = "1500 ft agl".parse::<VerticalDistance>();
-        assert_eq!(agl, Ok(VerticalDistance::Agl(1500)));
+        let agl = "1500 ft agl".parse::<OpenAirVerticalDistance>();
+        assert_eq!(agl.unwrap().into_inner(), VerticalDistance::Agl(1500));
 
-        let altitude = "6400ft".parse::<VerticalDistance>();
-        assert_eq!(altitude, Ok(VerticalDistance::Altitude(6400)));
+        let altitude = "6400ft".parse::<OpenAirVerticalDistance>();
+        assert_eq!(
+            altitude.unwrap().into_inner(),
+            VerticalDistance::Altitude(6400)
+        );
 
-        let fl = "FL95".parse::<VerticalDistance>();
-        assert_eq!(fl, Ok(VerticalDistance::Fl(95)));
+        let fl = "FL95".parse::<OpenAirVerticalDistance>();
+        assert_eq!(fl.unwrap().into_inner(), VerticalDistance::Fl(95));
 
-        let gnd = "GND".parse::<VerticalDistance>();
-        assert_eq!(gnd, Ok(VerticalDistance::Gnd));
+        let gnd = "GND".parse::<OpenAirVerticalDistance>();
+        assert_eq!(gnd.unwrap().into_inner(), VerticalDistance::Gnd);
 
-        let msl = "2500msl".parse::<VerticalDistance>();
-        assert_eq!(msl, Ok(VerticalDistance::Msl(2500)));
+        let msl = "2500msl".parse::<OpenAirVerticalDistance>();
+        assert_eq!(msl.unwrap().into_inner(), VerticalDistance::Msl(2500));
 
-        let unlimited = "UNLIM".parse::<VerticalDistance>(); // UNLIM (Mon-Fri)
-        assert_eq!(unlimited, Ok(VerticalDistance::Unlimited));
+        let unlimited = "UNLIM".parse::<OpenAirVerticalDistance>(); // UNLIM (Mon-Fri)
+        assert_eq!(unlimited.unwrap().into_inner(), VerticalDistance::Unlimited);
 
-        let err = "1500 foo".parse::<VerticalDistance>();
+        let err = "1500 foo".parse::<OpenAirVerticalDistance>();
         assert_eq!(err, Err(ParseOpenAirVerticalDistanceError));
     }
 }
