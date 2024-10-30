@@ -97,12 +97,18 @@ fn main() {
         println!("│ FUEL                                          │");
         println!("├───────────┬───────────────────────────────────┤");
 
+        let fp = FlightPlan {
+            speed: Speed::Knots(107.0),
+            level: VerticalDistance::Altitude(2500),
+            route,
+            alternate: None,
+        };
+
         let fuel = FuelPlanning::new(
             FuelPolicy::Manual(diesel!(Volume::Liter(80.0))),
             diesel!(Volume::Liter(10.0)),
-            route,
+            &fp,
             &Reserve::Manual(Duration::from(1800)), // 30 min
-            None,
             &perf,
         );
 

@@ -13,8 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Performance, Route};
-use crate::nd::NavAid;
+use super::{FlightPlan, Performance};
 use crate::{Duration, Fuel, VerticalDistance};
 
 #[derive(Copy, Clone)]
@@ -56,9 +55,8 @@ impl FuelPlanning {
     pub fn new<P>(
         policy: FuelPolicy,
         taxi: Fuel,
-        route: &Route,
+        fp: &FlightPlan,
         reserve: &Reserve,
-        alternate: Option<NavAid>,
         perf: &P,
     ) -> Self
     where
@@ -68,11 +66,8 @@ impl FuelPlanning {
             policy,
             taxi,
             climb: None,
-            trip: route.fuel(perf).unwrap(),
-            alternate: match alternate {
-                Some(alternate) => Some(route.alternate(alternate).fuel(perf)),
-                None => None,
-            },
+            trip: fp.route.fuel(perf).unwrap(),
+            alternate: fp.alternate().map(|alternate| alternate.fuel(perf)),
             reserve: reserve.fuel(perf, &VerticalDistance::Gnd), // TODO get cruise altitude once add to route or flight plan
         }
     }
