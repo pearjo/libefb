@@ -14,11 +14,14 @@
 // limitations under the License.
 
 use super::{Duration, Speed};
-use std::fmt::{Display, Formatter, Result};
+use crate::error::Error;
+use std::fmt;
 use std::ops::Div;
+use std::str::FromStr;
 
 mod constants {
     pub const NAUTICAL_MILE_IN_METER: f32 = 1852.0;
+    pub const METER_IN_FEET: f32 = 3.28084;
 }
 
 /// A vertical distance.
@@ -44,15 +47,47 @@ pub enum VerticalDistance {
     Unlimited,
 }
 
-// TODO: Do we need the default?
-impl Default for VerticalDistance {
-    fn default() -> Self {
-        Self::Gnd
+impl FromStr for VerticalDistance {
+    type Err = Error;
+
+    /// Parses a string `s` to return a VerticalDistance.
+    ///
+    /// The string should be according to ICAO Doc. 4444 Annex 2:
+    /// - Flight level, expressed as F followed by 3 figures e.g. `F085`
+    /// - Standard metric level in tens of metres, expressed by S followed by 4
+    ///   figures e.g. `S1130`
+    /// - Altitude in hundreds of feet, expressed as A followed by 3 figures
+    ///   e.g. `A045`
+    /// - Altitude in tens of metres, expressed as M followed by 4 figures e.g.
+    ///   `M0840`
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        macro_rules! value {
+            ($s:expr, $index:expr) => {
+                $s.get($index)
+                    .and_then(|s| s.parse::<u16>().ok())
+                    .ok_or(Error::UnexpectedString)
+            };
+        }
+
+        match s.get(0..1).unwrap_or_default() {
+            // first character is the unit
+            "F" => Ok(Self::Fl(value!(s, 1..4)?)),
+            "S" => Ok(Self::Fl(
+                // value in tens of meter to hundreds of feet
+                (value!(s, 1..5)? as f32 * constants::METER_IN_FEET / 10.0).round() as u16,
+            )),
+            "A" => Ok(Self::Altitude(value!(s, 1..4)? * 100)), // value in hundredth of feet
+            "M" => Ok(Self::Altitude(
+                // value in tens of meter
+                (value!(s, 1..5)? as f32 * constants::METER_IN_FEET).round() as u16,
+            )),
+            _ => Err(Error::UnexpectedString),
+        }
     }
 }
 
-impl Display for VerticalDistance {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+impl fmt::Display for VerticalDistance {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             VerticalDistance::Gnd => write!(f, "GND"),
             VerticalDistance::Fl(value) => write!(f, "FL{value}"),
@@ -108,8 +143,8 @@ impl Div<Speed> for Distance {
     }
 }
 
-impl Display for Distance {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+impl fmt::Display for Distance {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Distance::Meter(value) => write!(f, "{value:>5.1} m"),
             Distance::NauticalMiles(value) => write!(f, "{value:>5.1} NM"),
@@ -120,6 +155,15 @@ impl Display for Distance {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn vertical_distance_from_str() {
+        assert_eq!("F085".parse::<VerticalDistance>(), Ok(VerticalDistance::Fl(85)));
+        assert_eq!("S1130".parse::<VerticalDistance>(), Ok(VerticalDistance::Fl(371)));
+        assert_eq!("A025".parse::<VerticalDistance>(), Ok(VerticalDistance::Altitude(2500)));
+        assert_eq!("M0762".parse::<VerticalDistance>(), Ok(VerticalDistance::Altitude(2500)));
+        assert_eq!("F08".parse::<VerticalDistance>(), Err(Error::UnexpectedString));
+    }
 
     #[test]
     fn distance() {
