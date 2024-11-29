@@ -39,12 +39,13 @@ impl Coordinate {
     pub fn bearing(&self, other: &Coordinate) -> Angle {
         let lat_a = self.latitude.to_radians();
         let lat_b = other.latitude.to_radians();
+
         let delta_long = (other.longitude - self.longitude).to_radians();
 
-        let x = lat_b.cos() * delta_long.sin();
-        let y = lat_a.cos() * lat_b.sin() - lat_a.sin() * lat_b.cos() * delta_long.cos();
+        let x = lat_a.cos() * lat_b.sin() - lat_a.sin() * lat_b.cos() * delta_long.cos();
+        let y = lat_b.cos() * delta_long.sin();
 
-        x.atan2(y).into()
+        y.atan2(x).into()
     }
 
     // TODO fix distance calculation and add some comments regarding Haversine
@@ -86,6 +87,11 @@ pub type Line = (Coordinate, Coordinate);
 mod tests {
     use super::*;
 
+    // As benchmark for our testing we use the directions to an airfield as
+    // published in the German AIP. The airfield Hungriger Wolf in Itzehoe
+    // (EDHF) has two directions from two VOR published in its visual operation
+    // chart (25 JUL 2024).
+
     // Helgoland VOR
     const DHE: Coordinate = coord!(54.18568611, 7.91070000);
     // Itzehoe Hungriger Wolf
@@ -93,12 +99,15 @@ mod tests {
 
     #[test]
     fn bearing() {
-        // TODO why are we off by 4°
-        assert_eq!(DHE.bearing(&EDHF).as_degrees(), 97);
+        // From the AIP we get a magnetic heading from the Helgoland VOR (DHE)
+        // to EDHF of 97°. With an magnetic variation of 4° east in EDHF, we get
+        // a bearing of 101°.
+        assert_eq!(DHE.bearing(&EDHF).as_degrees(), 101);
     }
 
     #[test]
     fn dist() {
+        // the AIP provides only rounded values
         assert_eq!(DHE.dist(&EDHF).to_nm().into_inner().round(), 60.0);
     }
 }
