@@ -72,7 +72,7 @@ impl From<Duration> for u32 {
     /// ```
     /// use efb::Duration;
     /// let duration = Duration { hours: 1, minutes: 0, seconds: 0 };
-    /// assert_eq!(3600, duration.into());
+    /// assert_eq!(3600u32, duration.into());
     /// ```
     fn from(value: Duration) -> Self {
         value.hours as u32 * 3600 + value.minutes as u32 * 60 + value.seconds as u32

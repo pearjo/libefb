@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Duration, Speed};
+use super::{Duration, Speed, Unit};
 use crate::error::Error;
 use std::fmt;
 use std::ops::Div;
@@ -100,7 +100,7 @@ impl fmt::Display for VerticalDistance {
 }
 
 /// A metrical or nautical distance.
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Distance {
     Meter(f32),
     NauticalMiles(f32),
@@ -129,6 +129,16 @@ impl Distance {
             Self::Meter(m) => Self::NauticalMiles(m / constants::NAUTICAL_MILE_IN_METER),
             Self::NauticalMiles(_) => self,
         }
+    }
+}
+
+impl Unit for Distance {
+    fn from_si(value: f32) -> Self {
+        Self::Meter(value)
+    }
+
+    fn si(&self) -> f32 {
+        self.to_m().into_inner()
     }
 }
 

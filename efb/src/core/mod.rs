@@ -34,3 +34,41 @@ pub use mass::Mass;
 pub use speed::*;
 pub use volume::*;
 pub use wind::*;
+
+/// A trait to convert to and from the International System of Units (SI).
+///
+/// Implementing this trait on a type that represents a physical value e.g. a
+/// distance, allows to convert to and from a float which represents the value
+/// in the corresponding International System of Units (SI) e.g. Meter for a
+/// distance.
+///
+/// # Examples
+///
+/// ```
+/// use efb::Unit;
+///
+/// enum Distance {
+///     Meter(f32),
+///     Feet(f32),
+/// }
+///
+/// impl Unit for Distance {
+///     fn si(&self) -> f32 {
+///         match self {
+///             Self::Meter(m) => m.clone(),
+///             Self::Feet(ft) => ft * 0.3048,
+///         }
+///     }
+///
+///     fn from_si(value: f32) -> Self {
+///         Self::Meter(value)
+///     }
+/// }
+/// ```
+pub trait Unit {
+    /// Converts this types to its value in the SI unit.
+    fn si(&self) -> f32;
+
+    /// Converts to this type from the value in SI unit.
+    fn from_si(value: f32) -> Self;
+}

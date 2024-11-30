@@ -13,12 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Density, Volume};
+use super::{Density, Unit, Volume};
 use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Mass {
     Kilogram(f32),
+}
+
+impl Unit for Mass {
+    fn si(&self) -> f32 {
+        match self {
+            Self::Kilogram(value) => value.clone(),
+        }
+    }
+
+    fn from_si(value: f32) -> Self {
+        Self::Kilogram(value)
+    }
+}
+
+impl From<f32> for Mass {
+    fn from(value: f32) -> Self {
+        Self::from_si(value)
+    }
 }
 
 impl Add for Mass {
@@ -63,6 +81,16 @@ impl Div<Density> for Mass {
             Self::Kilogram(m) => match rhs {
                 Density::KilogramPerLiter(density) => Volume::Liter(m / density),
             },
+        }
+    }
+}
+
+impl Div<f32> for Mass {
+    type Output = Mass;
+
+    fn div(self, rhs: f32) -> Self::Output {
+        match self {
+            Self::Kilogram(m) => Self::Kilogram(m / rhs),
         }
     }
 }
