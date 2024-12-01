@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{FlightPlan, Performance};
+use super::{Aircraft, FlightPlan, Performance};
 use crate::{Duration, Fuel, VerticalDistance};
 
 #[derive(Copy, Clone)]
@@ -33,17 +33,17 @@ impl Reserve {
 }
 
 #[derive(Copy, Clone)]
-pub enum FuelPolicy {
+pub enum FuelPolicy<'a> {
     MinimumFuel,
-    MaximumFuel,
+    MaximumFuel(&'a Aircraft),
     Manual(Fuel),
     Landing(Fuel),
     Extra(Fuel),
 }
 
 #[derive(Copy, Clone)]
-pub struct FuelPlanning {
-    policy: FuelPolicy,
+pub struct FuelPlanning<'a> {
+    policy: FuelPolicy<'a>,
     pub taxi: Fuel,
     pub climb: Option<Fuel>,
     pub trip: Fuel,
@@ -51,9 +51,9 @@ pub struct FuelPlanning {
     pub reserve: Fuel,
 }
 
-impl FuelPlanning {
+impl<'a> FuelPlanning<'a> {
     pub fn new<P>(
-        policy: FuelPolicy,
+        policy: FuelPolicy<'a>,
         taxi: Fuel,
         fp: &FlightPlan,
         reserve: &Reserve,
@@ -96,9 +96,13 @@ impl FuelPlanning {
     pub fn extra(&self) -> Option<Fuel> {
         match self.policy {
             FuelPolicy::MinimumFuel => None,
+            FuelPolicy::MaximumFuel(ac) => match ac.usable_fuel() {
+                Some(usable_fuel) => Some(usable_fuel - self.min()),
+                None => None,
+            },
             FuelPolicy::Manual(fuel) => Some(fuel - self.min()),
+            FuelPolicy::Landing(fuel) => Some(fuel), // TODO is this correct?
             FuelPolicy::Extra(fuel) => Some(fuel),
-            _ => unimplemented!(), // TODO add once we have an aircraft with total usable fuel, MTOW and PAX in flight plan
         }
     }
 }
