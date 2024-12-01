@@ -75,7 +75,8 @@ impl FromStr for Speed {
             };
         }
 
-        match s.get(0..1).unwrap_or_default() { // first character is the unit
+        match s.get(0..1).unwrap_or_default() {
+            // first character is the unit
             "K" => Ok(Speed::MeterPerSecond(value!(s, 1..5)? / 3.6)), // value in km/h
             "N" => Ok(Speed::Knots(value!(s, 1..5)?)),
             "M" => Ok(Speed::Mach(value!(s, 1..4)? / 100.0)), // value in hundredth of unit Mach

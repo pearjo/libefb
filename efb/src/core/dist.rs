@@ -168,11 +168,26 @@ mod tests {
 
     #[test]
     fn vertical_distance_from_str() {
-        assert_eq!("F085".parse::<VerticalDistance>(), Ok(VerticalDistance::Fl(85)));
-        assert_eq!("S1130".parse::<VerticalDistance>(), Ok(VerticalDistance::Fl(371)));
-        assert_eq!("A025".parse::<VerticalDistance>(), Ok(VerticalDistance::Altitude(2500)));
-        assert_eq!("M0762".parse::<VerticalDistance>(), Ok(VerticalDistance::Altitude(2500)));
-        assert_eq!("F08".parse::<VerticalDistance>(), Err(Error::UnexpectedString));
+        assert_eq!(
+            "F085".parse::<VerticalDistance>(),
+            Ok(VerticalDistance::Fl(85))
+        );
+        assert_eq!(
+            "S1130".parse::<VerticalDistance>(),
+            Ok(VerticalDistance::Fl(371))
+        );
+        assert_eq!(
+            "A025".parse::<VerticalDistance>(),
+            Ok(VerticalDistance::Altitude(2500))
+        );
+        assert_eq!(
+            "M0762".parse::<VerticalDistance>(),
+            Ok(VerticalDistance::Altitude(2500))
+        );
+        assert_eq!(
+            "F08".parse::<VerticalDistance>(),
+            Err(Error::UnexpectedString)
+        );
     }
 
     #[test]
