@@ -81,8 +81,6 @@ impl Display for Coordinate {
     }
 }
 
-pub type Line = (Coordinate, Coordinate);
-
 #[cfg(test)]
 mod tests {
     use super::*;

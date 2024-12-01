@@ -37,7 +37,20 @@ impl Polygon {
 
     /// Returns `true` if the given point is within the polygon's area.
     pub fn contains(&self, point: &Coordinate) -> bool {
-        algorithm::winding_number(point, &self.coords) != 0
+        algorithm::winding_number(
+            &algorithm::Point {
+                x: point.longitude,
+                y: point.latitude,
+            },
+            &self
+                .coords
+                .iter()
+                .map(|coord| algorithm::Point {
+                    x: coord.longitude,
+                    y: coord.latitude,
+                })
+                .collect(),
+        ) != 0
     }
 
     /// Consumes the Polygon, returning its inner vector of coordinates.
