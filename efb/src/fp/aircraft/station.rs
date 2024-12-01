@@ -13,19 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[derive(Debug, PartialEq)]
-pub enum Error {
-    ExpectedWindOnLeg,
-    ExpectedSpeedOnLeg,
-    UnexpectedRouteElement,
-    UnexpectedString,
-    // mass & balance
-    /// The number of masses doesn't match the number of stations to which the
-    /// masses are assigned.
-    UnexpectedMassesForStations,
-    UnexpectedNumberOfFuelStations,
-    /// The planned fuel on ramp exceeds the tank's capacity.
-    ExceededFuelCapacityOnRamp,
-    /// The planned fuel after landing exceeds the tank's capacity.
-    ExceededFuelCapacityAfterLanding,
+use crate::{Distance, Mass};
+
+/// A mass at a defined point within an aircraft.
+///
+/// An [`Aircraft`] can be loaded with _stations_ that hold a mass at a defined
+/// distance from the aircraft's reference datum. The mass may differ from when
+/// on ramp to after landing (burned fuel or a skydiver).
+///
+/// [`Aircraft`]: crate::fp::Aircraft
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Station {
+    /// The mass on ramp.
+    pub on_ramp: Mass,
+
+    /// The mass after landing.
+    pub after_landing: Mass,
+
+    /// The lever's arm from the reference datum.
+    pub arm: Distance,
 }
