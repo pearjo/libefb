@@ -21,8 +21,8 @@
 macro_rules! diesel {
     ($volume:expr) => {
         Fuel {
-            fuel_type: crate::FuelType::Diesel,
-            mass: $volume * crate::FuelType::Diesel.density(),
+            fuel_type: FuelType::Diesel,
+            mass: $volume * FuelType::Diesel.density(),
         }
     };
 }
@@ -35,8 +35,8 @@ macro_rules! diesel {
 macro_rules! jet_a {
     ($volume:expr) => {
         Fuel {
-            fuel_type: crate::FuelType::JetA,
-            mass: $volume * crate::FuelType::Diesel.density(),
+            fuel_type: FuelType::JetA,
+            mass: $volume * FuelType::Diesel.density(),
         }
     };
 }
