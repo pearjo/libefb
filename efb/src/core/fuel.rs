@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 use super::{Density, Duration, Mass, Volume};
 
@@ -94,16 +94,41 @@ impl Sub for Fuel {
     }
 }
 
-impl Mul<f32> for Fuel {
-    type Output = Fuel;
+macro_rules! mul_impl {
+    ($($t:ty)*) => ($(
+        impl Mul<$t> for Fuel {
+            type Output = Fuel;
 
-    fn mul(self, rhs: f32) -> Self::Output {
-        Self {
-            fuel_type: self.fuel_type,
-            mass: self.mass * rhs,
+            fn mul(self, rhs: $t) -> Self {
+                Self {
+                    fuel_type: self.fuel_type,
+                    mass: self.mass * rhs as f32,
+                }
+
+            }
         }
-    }
+    )*)
 }
+
+mul_impl! { usize f32 }
+
+macro_rules! div_impl {
+    ($($t:ty)*) => ($(
+        impl Div<$t> for Fuel {
+            type Output = Fuel;
+
+            fn div(self, rhs: $t) -> Self {
+                Self {
+                    fuel_type: self.fuel_type,
+                    mass: self.mass / rhs as f32,
+                }
+
+            }
+        }
+    )*)
+}
+
+div_impl! { usize f32 }
 
 pub enum FuelFlow {
     PerHour(Fuel),

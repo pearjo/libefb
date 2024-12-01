@@ -14,11 +14,11 @@
 // limitations under the License.
 
 use std::fmt::{Display, Formatter, Result};
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 use super::{Density, Mass};
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 pub enum Volume {
     Liter(f32),
 }
@@ -79,6 +79,16 @@ impl Mul<Density> for Volume {
             Self::Liter(v) => match rhs {
                 Density::KilogramPerLiter(rho) => Mass::Kilogram(v * rho),
             },
+        }
+    }
+}
+
+impl Div<usize> for Volume {
+    type Output = Volume;
+
+    fn div(self, rhs: usize) -> Self::Output {
+        match self {
+            Self::Liter(v) => Self::Liter(v / rhs as f32),
         }
     }
 }
