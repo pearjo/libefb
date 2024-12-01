@@ -47,6 +47,13 @@ pub struct Fuel {
 }
 
 impl Fuel {
+    pub fn from_volume(v: Volume, fuel_type: &FuelType) -> Self {
+        Self {
+            fuel_type: fuel_type.clone(),
+            mass: v * fuel_type.density(),
+        }
+    }
+
     pub fn volume(self) -> Volume {
         self.mass / self.fuel_type.density()
     }
@@ -149,6 +156,13 @@ impl Mul<Duration> for FuelFlow {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fuel_from_volume() {
+        let lhs = Fuel::from_volume(Volume::Liter(10.0), &FuelType::Diesel);
+        let rhs = diesel!(Volume::Liter(10.0));
+        assert_eq!(lhs, rhs);
+    }
 
     #[test]
     fn add_fuel() {
