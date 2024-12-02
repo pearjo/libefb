@@ -14,6 +14,8 @@
 // limitations under the License.
 
 use super::{Density, Unit, Volume};
+
+use std::fmt;
 use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -30,6 +32,22 @@ impl Unit for Mass {
 
     fn from_si(value: f32) -> Self {
         Self::Kilogram(value)
+    }
+}
+
+impl fmt::Display for Mass {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let (value, unit) = match self {
+            Self::Kilogram(value) => (value, "kg"),
+        };
+
+        let tmp = if let Some(precision) = f.precision() {
+            format!("{:.precision$} {}", value, unit)
+        } else {
+            format!("{} {}", value, unit)
+        };
+
+        f.pad_integral(true, "", &tmp)
     }
 }
 
