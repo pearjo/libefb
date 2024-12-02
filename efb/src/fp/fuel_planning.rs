@@ -105,4 +105,12 @@ impl<'a> FuelPlanning<'a> {
             FuelPolicy::Extra(fuel) => Some(fuel),
         }
     }
+
+    pub fn on_ramp(&self) -> Fuel {
+        self.total()
+    }
+
+    pub fn after_landing(&self) -> Fuel {
+        self.total() - self.taxi - self.trip
+    }
 }
