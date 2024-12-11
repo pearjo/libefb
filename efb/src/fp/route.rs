@@ -5,6 +5,7 @@ use crate::{Duration, Fuel, Speed, VerticalDistance, Wind};
 
 enum RouteElement {
     Tas(Speed),
+    Level(VerticalDistance),
     Wind(Wind),
     NavAid(NavAid),
 }
@@ -64,6 +65,8 @@ impl Route {
         for element in route.split_whitespace() {
             if let Some(navaid) = nd.find(element) {
                 elements.push(RouteElement::NavAid(navaid));
+            } else if let Ok(value) = element.parse::<VerticalDistance>() {
+                elements.push(RouteElement::Level(value));
             } else if let Ok(value) = element.parse::<Speed>() {
                 elements.push(RouteElement::Tas(value));
             } else if let Ok(value) = element.parse::<Wind>() {
@@ -115,7 +118,7 @@ impl Route {
     }
 
     fn legs_from_elements(elements: &Vec<RouteElement>) -> Vec<Leg> {
-        let level: Option<VerticalDistance> = None; // TODO add altitude from route element
+        let mut level: Option<VerticalDistance> = None;
         let mut tas: Option<Speed> = None;
         let mut wind: Option<Wind> = None;
         let mut from: Option<NavAid> = None;
@@ -124,6 +127,7 @@ impl Route {
 
         for element in elements {
             match element {
+                RouteElement::Level(value) => level = Some(value.clone()),
                 RouteElement::Tas(value) => tas = Some(value.clone()),
                 RouteElement::Wind(value) => wind = Some(value.clone()),
                 RouteElement::NavAid(navaid) => {
