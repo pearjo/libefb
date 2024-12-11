@@ -9,23 +9,23 @@ pub struct Leg {
     pub from: NavAid,
     /// The point to which the leg is going.
     pub to: NavAid,
-    /// The vertical distance of the leg.
-    pub vd: VerticalDistance,
+    /// The level of the leg.
+    pub level: Option<VerticalDistance>,
     /// The desired true airspeed (TAS).
-    pub tas: Speed,
+    pub tas: Option<Speed>,
     /// The wind to take into account.
-    pub wind: Wind,
+    pub wind: Option<Wind>,
 }
 
 impl Leg {
     /// The true heading considering the wind correction angle (WCA).
-    pub fn heading(&self) -> Angle {
-        self.bearing() + self.wca()
+    pub fn heading(&self) -> Option<Angle> {
+        Some(self.bearing() + self.wca()?)
     }
 
     /// The magnetic heading considering the variation at the start of the leg.
-    pub fn mh(&self) -> Angle {
-        self.heading() + self.from.mag_var()
+    pub fn mh(&self) -> Option<Angle> {
+        Some(self.heading()? + self.from.mag_var())
     }
 
     /// The bearing between the two points.
@@ -46,45 +46,47 @@ impl Leg {
 
     // TODO add test to verify calculation
     /// The ground speed in knots.
-    pub fn gs(&self) -> Speed {
-        let tas = self.tas.to_kt().into_inner();
-        let ws = self.wind.speed.to_kt().into_inner();
+    pub fn gs(&self) -> Option<Speed> {
+        let tas = self.tas?.to_kt().into_inner();
+        let ws = self.wind?.speed.to_kt().into_inner();
 
-        Speed::Knots(
+        Some(Speed::Knots(
             (tas.powi(2) + ws.powi(2)
                 - ((2.0 * tas * ws)
-                    * (self.bearing() - self.wind.direction + self.wca())
+                    * (self.bearing() - self.wind?.direction + self.wca()?)
                         .as_radians()
                         .cos()))
             .sqrt(),
-        )
+        ))
     }
 
     // TODO add test to verify calculation
     /// The wind correction angle based on the wind.
-    fn wca(&self) -> Angle {
-        let tas = self.tas.to_kt().into_inner();
-        let ws = self.wind.speed.to_kt().into_inner();
+    fn wca(&self) -> Option<Angle> {
+        let tas = self.tas?.to_kt().into_inner();
+        let ws = self.wind?.speed.to_kt().into_inner();
 
-        (ws / tas
-            * (self.bearing() - 180 + self.wind.direction)
-                .as_radians()
-                .sin())
-        .asin()
-        .into()
+        Some(
+            (ws / tas
+                * (self.bearing() - 180 + self.wind?.direction)
+                    .as_radians()
+                    .sin())
+            .asin()
+            .into(),
+        )
     }
 
     // TODO add test to verify calculation
     /// The estimated time enroute the leg.
-    pub fn ete(&self) -> Duration {
-        self.dist() / self.gs()
+    pub fn ete(&self) -> Option<Duration> {
+        Some(self.dist() / self.gs()?)
     }
 
     /// The [Fuel] consumed on the leg with the given [Performance].
-    pub fn fuel<P>(&self, perf: &P) -> Fuel
+    pub fn fuel<P>(&self, perf: &P) -> Option<Fuel>
     where
         P: Performance,
     {
-        perf.ff(&self.vd) * self.ete()
+        Some(perf.ff(&self.level?) * self.ete()?)
     }
 }

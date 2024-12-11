@@ -58,18 +58,18 @@ impl<'a> FuelPlanning<'a> {
         fp: &FlightPlan,
         reserve: &Reserve,
         perf: &P,
-    ) -> Self
+    ) -> Option<Self>
     where
         P: Performance,
     {
-        Self {
+        Some(Self {
             policy,
             taxi,
             climb: None,
             trip: fp.route.fuel(perf).unwrap(),
-            alternate: fp.alternate().map(|alternate| alternate.fuel(perf)),
-            reserve: reserve.fuel(perf, &VerticalDistance::Gnd), // TODO get cruise altitude once add to route or flight plan
-        }
+            alternate: fp.alternate().map(|alternate| alternate.fuel(perf))?,
+            reserve: reserve.fuel(perf, &fp.level),
+        })
     }
 
     pub fn total(&self) -> Fuel {

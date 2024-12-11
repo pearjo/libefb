@@ -73,12 +73,9 @@ impl Route {
             }
         }
 
-        let legs = Self::legs_from_elements(&elements)?;
+        let legs = Self::legs_from_elements(&elements);
 
-        Ok(Self {
-            _elements: elements,
-            legs,
-        })
+        Ok(Self { _elements: elements, legs })
     }
 
     /// Returns the legs of the route.
@@ -92,7 +89,7 @@ impl Route {
         Leg {
             from: final_leg.from,
             to: alternate,
-            vd: final_leg.vd,
+            level: final_leg.level,
             tas: final_leg.tas,
             wind: final_leg.wind,
         }
@@ -105,7 +102,7 @@ impl Route {
     {
         self.legs
             .iter()
-            .map(|leg| leg.fuel(perf))
+            .filter_map(|leg| leg.fuel(perf))
             .reduce(|acc, fuel| acc + fuel)
     }
 
@@ -113,18 +110,17 @@ impl Route {
     pub fn ete(&self) -> Option<Duration> {
         self.legs
             .iter()
-            .map(|leg| leg.ete())
+            .filter_map(|leg| leg.ete())
             .reduce(|acc, ete| acc + ete)
     }
 
-    fn legs_from_elements(elements: &Vec<RouteElement>) -> Result<Vec<Leg>, Error> {
+    fn legs_from_elements(elements: &Vec<RouteElement>) -> Vec<Leg> {
+        let level: Option<VerticalDistance> = None; // TODO add altitude from route element
         let mut tas: Option<Speed> = None;
         let mut wind: Option<Wind> = None;
         let mut from: Option<NavAid> = None;
         let mut to: Option<NavAid> = None;
         let mut legs: Vec<Leg> = Vec::new();
-        // TODO add altitude from route element
-        let vd = VerticalDistance::Altitude(2000);
 
         for element in elements {
             match element {
@@ -139,25 +135,22 @@ impl Route {
                 }
             }
 
-            match (tas, wind, from.clone(), to.clone()) {
-                (Some(tas), Some(wind), Some(from), Some(to)) => {
+            match (from.clone(), to.clone()) {
+                (Some(from), Some(to)) => {
                     legs.push(Leg {
                         from,
                         to,
-                        vd,
+                        level,
                         tas,
                         wind,
                     });
                 }
-                (None, _, Some(_), Some(_)) => return Err(Error::ExpectedSpeedOnLeg),
-                (_, None, Some(_), Some(_)) => return Err(Error::ExpectedWindOnLeg),
                 _ => continue,
             }
 
-            from = to;
-            to = None;
+            (from, to) = (to, None);
         }
 
-        Ok(legs)
+        legs
     }
 }
