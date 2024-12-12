@@ -68,7 +68,7 @@ impl<'a> FuelPlanning<'a> {
             climb: None,
             trip: fp.route.fuel(perf).unwrap(),
             alternate: fp.alternate().map(|alternate| alternate.fuel(perf))?,
-            reserve: reserve.fuel(perf, &fp.level),
+            reserve: reserve.fuel(perf, &fp.level()),
         })
     }
 
