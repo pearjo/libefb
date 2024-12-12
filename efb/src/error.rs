@@ -15,17 +15,31 @@
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
-    ExpectedWindOnLeg,
-    ExpectedSpeedOnLeg,
+    /// The entered flight plan does not include a cruise speed as one of the
+    /// first two elements.
+    ExpectedSpeedOnFPL,
+
+    /// The entered flight plan does not include a cruise level as one of the
+    /// first two elements.
+    ExpectedLevelOnFPL,
+
+    ExpectedRoute,
+
     UnexpectedRouteElement,
+
     UnexpectedString,
+
     // mass & balance
+
     /// The number of masses doesn't match the number of stations to which the
     /// masses are assigned.
     UnexpectedMassesForStations,
+
     UnexpectedNumberOfFuelStations,
+
     /// The planned fuel on ramp exceeds the tank's capacity.
     ExceededFuelCapacityOnRamp,
+
     /// The planned fuel after landing exceeds the tank's capacity.
     ExceededFuelCapacityAfterLanding,
 }
