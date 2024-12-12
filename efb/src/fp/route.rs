@@ -10,16 +10,6 @@ enum RouteElement {
     NavAid(NavAid),
 }
 
-#[derive(Debug)]
-pub enum RouteError {
-    /// A true airspeed is expected but not provided.
-    NoSpeed,
-    /// Wind along the route is expected but not provided.
-    NoWind,
-    /// Neither a fix nor a performance element is found.
-    UnexpectedElement,
-}
-
 /// A route that goes from an origin to a destination.
 ///
 /// The route is composed of legs where each [`leg`] describes path between two

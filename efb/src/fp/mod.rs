@@ -28,4 +28,4 @@ pub use fuel_planning::*;
 pub use legs::Leg;
 pub use mb::MassAndBalance;
 pub use perf::Performance;
-pub use route::{Route, RouteError};
+pub use route::Route;
