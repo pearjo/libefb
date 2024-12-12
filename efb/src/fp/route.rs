@@ -3,8 +3,8 @@ use crate::error::Error;
 use crate::nd::*;
 use crate::{Duration, Fuel, Speed, VerticalDistance, Wind};
 
-enum RouteElement {
-    Tas(Speed),
+pub enum RouteElement {
+    Speed(Speed),
     Level(VerticalDistance),
     Wind(Wind),
     NavAid(NavAid),
@@ -58,7 +58,7 @@ impl Route {
             } else if let Ok(value) = element.parse::<VerticalDistance>() {
                 elements.push(RouteElement::Level(value));
             } else if let Ok(value) = element.parse::<Speed>() {
-                elements.push(RouteElement::Tas(value));
+                elements.push(RouteElement::Speed(value));
             } else if let Ok(value) = element.parse::<Wind>() {
                 elements.push(RouteElement::Wind(value));
             } else {
@@ -117,8 +117,8 @@ impl Route {
 
         for element in elements {
             match element {
+                RouteElement::Speed(value) => tas = Some(value.clone()),
                 RouteElement::Level(value) => level = Some(value.clone()),
-                RouteElement::Tas(value) => tas = Some(value.clone()),
                 RouteElement::Wind(value) => wind = Some(value.clone()),
                 RouteElement::NavAid(navaid) => {
                     if from.is_none() {
