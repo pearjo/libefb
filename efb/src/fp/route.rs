@@ -42,7 +42,7 @@ pub enum RouteElement {
 /// [`leg`]: crate::fp::legs::Leg
 /// [`fixes`]: crate::nd::Fix
 pub struct Route {
-    _elements: Vec<RouteElement>,
+    elements: Vec<RouteElement>,
     legs: Vec<Leg>,
 }
 
@@ -68,7 +68,21 @@ impl Route {
 
         let legs = Self::legs_from_elements(&elements);
 
-        Ok(Self { _elements: elements, legs })
+        Ok(Self { elements, legs })
+    }
+
+    pub fn insert(&mut self, index: usize, element: RouteElement) {
+        self.elements.insert(index, element);
+        self.legs = Self::legs_from_elements(&self.elements);
+    }
+
+    pub fn push(&mut self, element: RouteElement) {
+        self.elements.push(element);
+        self.legs = Self::legs_from_elements(&self.elements);
+    }
+
+    pub fn elements(&self) -> &Vec<RouteElement> {
+        &self.elements
     }
 
     /// Returns the legs of the route.
@@ -105,6 +119,13 @@ impl Route {
             .iter()
             .filter_map(|leg| leg.ete())
             .reduce(|acc, ete| acc + ete)
+    }
+
+    pub fn set_cruise(&mut self, speed: Speed, level: VerticalDistance) {
+        for leg in self.legs.iter_mut() {
+            leg.tas.get_or_insert(speed);
+            leg.level.get_or_insert(level);
+        }
     }
 
     fn legs_from_elements(elements: &Vec<RouteElement>) -> Vec<Leg> {
