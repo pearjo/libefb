@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{Distance, Mass, Unit};
 use super::Station;
+use crate::{Distance, Mass, Unit};
 
 /// The mass & balance on ramp and after landing.
 ///

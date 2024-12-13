@@ -16,7 +16,7 @@
 pub mod cg_envelope;
 pub mod station;
 
-use super::{MassAndBalance};
+use super::MassAndBalance;
 use crate::error::Error;
 use crate::{Distance, Fuel, FuelType, Mass, Volume};
 
