@@ -80,17 +80,33 @@ fn main() {
         println!("├──────┼──────────┼──────┼──────┼───────┼───────┤");
 
         for leg in route.legs() {
-            println!(
-                "│ {} │ {} │ {} │ {} │ {} │ {:5} │",
-                leg.bearing(),
-                leg.dist().to_nm(),
-                leg.mc(),
-                leg.mh(),
-                leg.ete().round(),
-                leg.to.ident(),
-            );
+            match (leg.mh(), leg.ete()) {
+                (Some(mh), Some(ete)) => {
+                    println!(
+                        "│ {} │ {} │ {} │ {} │ {} │ {:5} │",
+                        leg.bearing(),
+                        leg.dist().to_nm(),
+                        leg.mc(),
+                        mh,
+                        ete.round(),
+                        leg.to.ident(),
+                    );
+                },
+                _ => {
+                    println!(
+                        "│ {} │ {} │ {} │      │       │ {:5} │",
+                        leg.bearing(),
+                        leg.dist().to_nm(),
+                        leg.mc(),
+                        leg.to.ident(),
+                    );
+                }
+            }
         }
 
+        println!("╰──────┴──────────┴──────┴──────┴───────┴───────╯");
+
+        /*
         println!("├──────┴──────────┴──────┴──────┴───────┴───────┤");
         println!("│ ETE {:8.0}                                  │", route.ete().unwrap());
         println!("├───────────────────────────────────────────────┤");
@@ -135,5 +151,6 @@ fn main() {
         println!("├───────────┼───────────────────────────────────┤");
         println!("│ TOTAL     │ {:<8.0}                          │", fuel.total());
         println!("╰───────────┴───────────────────────────────────╯");
+        */
     }
 }
