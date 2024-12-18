@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Aircraft, FlightPlan, Performance};
+use super::{Aircraft, Performance, Route};
 use crate::{Duration, Fuel, VerticalDistance};
 
 #[derive(Copy, Clone)]
@@ -55,7 +55,7 @@ impl<'a> FuelPlanning<'a> {
     pub fn new<P>(
         policy: FuelPolicy<'a>,
         taxi: Fuel,
-        fp: &FlightPlan,
+        route: &Route,
         reserve: &Reserve,
         perf: &P,
     ) -> Option<Self>
@@ -66,9 +66,9 @@ impl<'a> FuelPlanning<'a> {
             policy,
             taxi,
             climb: None,
-            trip: fp.fuel(perf),
-            alternate: fp.alternate().map(|alternate| alternate.fuel(perf))?,
-            reserve: reserve.fuel(perf, &fp.level()),
+            trip: route.fuel(perf)?,
+            alternate: route.alternate().map(|alternate| alternate.fuel(perf))?,
+            reserve: reserve.fuel(perf, &route.level()?),
         })
     }
 

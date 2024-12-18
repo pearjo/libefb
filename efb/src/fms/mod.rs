@@ -14,6 +14,8 @@
 // limitations under the License.
 
 //! Flight Management System.
+use std::rc::Rc;
+
 use crate::error::Error;
 use crate::fp::Route;
 use crate::nd::NavigationData;
@@ -21,15 +23,16 @@ use crate::nd::NavigationData;
 #[repr(C)]
 pub struct FMS {
     nd: NavigationData,
-    route: Option<Route>,
+    route: Rc<Route>,
 }
 
 impl FMS {
     /// Constructs a new, empty `FMS`.
     pub fn new() -> Self {
+        let route = Rc::new(Route::new());
         Self {
             nd: NavigationData::new(),
-            route: None,
+            route,
         }
     }
 
@@ -37,14 +40,13 @@ impl FMS {
         &mut self.nd
     }
 
-    pub fn route(&self) -> Option<&Route> {
-        self.route.as_ref()
+    pub fn route(&self) -> Rc<Route> {
+        self.route.clone()
     }
 
     pub fn decode(&mut self, route: &str) -> Result<(), Error> {
         let route = Route::decode(route, &self.nd)?;
-        self.route = Some(route);
-
+        self.route = Rc::new(route);
         Ok(())
     }
 }

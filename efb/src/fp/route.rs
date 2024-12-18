@@ -44,9 +44,22 @@ pub enum RouteElement {
 pub struct Route {
     elements: Vec<RouteElement>,
     legs: Vec<Leg>,
+    speed: Option<Speed>,
+    level: Option<VerticalDistance>,
+    alternate: Option<NavAid>,
 }
 
 impl Route {
+    pub fn new() -> Self {
+        Self {
+            elements: Vec::new(),
+            legs: Vec::new(),
+            speed: None,
+            level: None,
+            alternate: None,
+        }
+    }
+
     /// Decodes a `route` that is composed of a space separated list of fix
     /// idents read from the navigation data `nd`.
     pub fn decode(route: &str, nd: &NavigationData) -> Result<Self, Error> {
@@ -68,7 +81,13 @@ impl Route {
 
         let legs = Self::legs_from_elements(&elements);
 
-        Ok(Self { elements, legs })
+        Ok(Self {
+            elements,
+            legs,
+            speed: None,
+            level: None,
+            alternate: None,
+        })
     }
 
     pub fn insert(&mut self, index: usize, element: RouteElement) {
@@ -90,16 +109,39 @@ impl Route {
         &self.legs
     }
 
+    /// Sets the cruise speed and level.
+    ///
+    /// The cruise speed or level is remove from the route by setting it to
+    /// `None`.
+    pub fn set_cruise(&mut self, speed: Option<Speed>, level: Option<VerticalDistance>) {
+        todo!("Add/remove speed and level from the elements")
+    }
+
+    pub fn speed(&self) -> Option<Speed> {
+        self.speed
+    }
+
+    pub fn level(&self) -> Option<VerticalDistance> {
+        self.level
+    }
+
+    /// Sets an alternate on the route.
+    ///
+    /// The alternate is remove by setting it to `None`.
+    pub fn set_alternate(&mut self, alternate: Option<NavAid>) {
+        self.alternate = alternate;
+    }
+
     /// Returns the final leg but going to the alternate.
-    pub fn alternate(&self, alternate: NavAid) -> Leg {
+    pub fn alternate(&self) -> Option<Leg> {
         let final_leg = self.legs[self.legs.len() - 1].clone();
-        Leg {
+        Some(Leg {
             from: final_leg.from,
-            to: alternate,
+            to: self.alternate.clone()?,
             level: final_leg.level,
             tas: final_leg.tas,
             wind: final_leg.wind,
-        }
+        })
     }
 
     /// Returns the fuel consumption en-route for the given performance.
@@ -119,13 +161,6 @@ impl Route {
             .iter()
             .filter_map(|leg| leg.ete())
             .reduce(|acc, ete| acc + ete)
-    }
-
-    pub fn set_cruise(&mut self, speed: Speed, level: VerticalDistance) {
-        for leg in self.legs.iter_mut() {
-            leg.tas.get_or_insert(speed);
-            leg.level.get_or_insert(level);
-        }
     }
 
     fn legs_from_elements(elements: &Vec<RouteElement>) -> Vec<Leg> {

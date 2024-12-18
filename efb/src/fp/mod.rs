@@ -13,9 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Flight Plan.
+//! Flight Planning.
+use std::rc::Rc;
+
 mod aircraft;
-mod flight_plan;
 mod fuel_planning;
 mod legs;
 mod mb;
@@ -23,7 +24,6 @@ mod perf;
 mod route;
 
 pub use aircraft::*;
-pub use flight_plan::FlightPlan;
 pub use fuel_planning::*;
 pub use legs::Leg;
 pub use mb::MassAndBalance;
