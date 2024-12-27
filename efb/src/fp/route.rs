@@ -62,15 +62,18 @@ impl Route {
 
     /// Decodes a `route` that is composed of a space separated list of fix
     /// idents read from the navigation data `nd`.
-    pub fn decode(route: &str, nd: &NavigationData) -> Result<Self, Error> {
+    pub fn decode(&mut self, route: &str, nd: &NavigationData) -> Result<(), Error> {
         let mut elements: Vec<RouteElement> = Vec::new();
 
+        // TODO level and speed needs to be properly update from decoder
         for element in route.split_whitespace() {
             if let Some(navaid) = nd.find(element) {
                 elements.push(RouteElement::NavAid(navaid));
             } else if let Ok(value) = element.parse::<VerticalDistance>() {
+                self.level.get_or_insert(value);
                 elements.push(RouteElement::Level(value));
             } else if let Ok(value) = element.parse::<Speed>() {
+                self.speed.get_or_insert(value);
                 elements.push(RouteElement::Speed(value));
             } else if let Ok(value) = element.parse::<Wind>() {
                 elements.push(RouteElement::Wind(value));
@@ -79,15 +82,10 @@ impl Route {
             }
         }
 
-        let legs = Self::legs_from_elements(&elements);
+        self.elements = elements;
+        self.legs = Self::legs_from_elements(&self.elements);
 
-        Ok(Self {
-            elements,
-            legs,
-            speed: None,
-            level: None,
-            alternate: None,
-        })
+        Ok(())
     }
 
     pub fn insert(&mut self, index: usize, element: RouteElement) {

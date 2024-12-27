@@ -15,6 +15,7 @@
 
 //! Flight Management System.
 use std::rc::Rc;
+use std::cell::{Ref, RefCell};
 
 use crate::error::Error;
 use crate::fp::Route;
@@ -23,13 +24,13 @@ use crate::nd::NavigationData;
 #[repr(C)]
 pub struct FMS {
     nd: NavigationData,
-    route: Rc<Route>,
+    route: Rc<RefCell<Route>>,
 }
 
 impl FMS {
     /// Constructs a new, empty `FMS`.
     pub fn new() -> Self {
-        let route = Rc::new(Route::new());
+        let route = Rc::new(RefCell::new(Route::new()));
         Self {
             nd: NavigationData::new(),
             route,
@@ -40,13 +41,12 @@ impl FMS {
         &mut self.nd
     }
 
-    pub fn route(&self) -> Rc<Route> {
-        self.route.clone()
+    pub fn route(&self) -> Ref<'_, Route> {
+        self.route.borrow()
     }
 
     pub fn decode(&mut self, route: &str) -> Result<(), Error> {
-        let route = Route::decode(route, &self.nd)?;
-        self.route = Rc::new(route);
+        self.route.borrow_mut().decode(route, &self.nd)?;
         Ok(())
     }
 }
