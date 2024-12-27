@@ -103,52 +103,48 @@ fn main() {
         }
     }
 
-    println!("╰──────┴──────────┴──────┴──────┴───────┴───────╯");
-
-    /*
     println!("├──────┴──────────┴──────┴──────┴───────┴───────┤");
-    println!("│ ETE {:8.0}                                  │", route.ete().unwrap());
-    println!("├───────────────────────────────────────────────┤");
-    println!("│ FUEL                                          │");
-    println!("├───────────┬───────────────────────────────────┤");
 
-    let fp = FlightPlan {
-        speed: Speed::Knots(107.0),
-        level: VerticalDistance::Altitude(2500),
-        route,
-        alternate: None,
-    };
+    if let Some(ete) = fms.route().ete() {
+        println!("│ ETE {:8.0}                                  │", ete);
+        println!("├───────────────────────────────────────────────┤");
+    }
 
-    let fuel = FuelPlanning::new(
+    fms.fp().create_fuel_planning(
         FuelPolicy::Manual(diesel!(Volume::Liter(80.0))),
         diesel!(Volume::Liter(10.0)),
-        &fp,
         &Reserve::Manual(Duration::from(1800)), // 30 min
         &perf,
     );
 
-    println!("│ TRIP      │ {:<8.0}                          │", fuel.trip);
+    if let Some(fuel) = fms.fp().fuel_planning() {
+        println!("│ FUEL                                          │");
+        println!("├───────────┬───────────────────────────────────┤");
+        println!("│ TRIP      │ {:<8.0}                          │", fuel.trip);
 
-    if let Some(climb) = fuel.climb {
-        println!("│ CLIMB     │ {:<8.0}                          │", climb);
+        if let Some(climb) = fuel.climb {
+            println!("│ CLIMB     │ {:<8.0}                          │", climb);
+        }
+
+        println!("│ TAXI      │ {:<8.0}                          │", fuel.taxi);
+
+        if let Some(alternate) = fuel.alternate {
+            println!("│ ALTERNATE │ {:<8.0}                          │", alternate);
+        }
+
+        println!("│ RESERVE   │ {:<8.0}                          │", fuel.reserve);
+        println!("├───────────┼───────────────────────────────────┤");
+        println!("│ MINIMUM   │ {:<8.0}                          │", fuel.min());
+
+        if let Some(extra) = fuel.extra() {
+            println!("│ EXTRA     │ {:<8.0}                          │", extra);
+        }
+
+        println!("├───────────┼───────────────────────────────────┤");
+        println!("│ TOTAL     │ {:<8.0}                          │", fuel.total());
+        println!("├───────────┴───────────────────────────────────┤");
     }
 
-    println!("│ TAXI      │ {:<8.0}                          │", fuel.taxi);
-
-    if let Some(alternate) = fuel.alternate {
-        println!("│ ALTERNATE │ {:<8.0}                          │", alternate);
-    }
-
-    println!("│ RESERVE   │ {:<8.0}                          │", fuel.reserve);
-    println!("├───────────┼───────────────────────────────────┤");
-    println!("│ MINIMUM   │ {:<8.0}                          │", fuel.min());
-
-    if let Some(extra) = fuel.extra() {
-        println!("│ EXTRA     │ {:<8.0}                          │", extra);
-    }
-
-    println!("├───────────┼───────────────────────────────────┤");
-    println!("│ TOTAL     │ {:<8.0}                          │", fuel.total());
-    println!("╰───────────┴───────────────────────────────────╯");
-    */
+    println!("│                                               │");
+    println!("╰───────────────────────────────────────────────╯");
 }
