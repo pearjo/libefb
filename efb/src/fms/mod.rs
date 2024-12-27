@@ -49,4 +49,21 @@ impl FMS {
         self.route.borrow_mut().decode(route, &self.nd)?;
         Ok(())
     }
+
+    /// Sets an alternate on the route.
+    ///
+    /// Returns an [UnknownIdent] error if no [NavAid] is found for the ident
+    /// within the navigation data.
+    ///
+    /// [UnknownIdent]: Error::UnknownIdent
+    /// [NavAid]: crate::nd::NavAid
+    pub fn set_alternate(&mut self, ident: &str) -> Result<(), Error> {
+        match self.nd.find(ident) {
+            Some(alternate) => {
+                self.route.borrow_mut().set_alternate(Some(alternate));
+                Ok(())
+            },
+            None => Err(Error::UnknownIdent)
+        }
+    }
 }

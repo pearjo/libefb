@@ -29,6 +29,10 @@ pub enum Error {
 
     UnexpectedString,
 
+    // navigation data
+    /// The requested identifier is not know.
+    UnknownIdent,
+
     // mass & balance
     /// The number of masses doesn't match the number of stations to which the
     /// masses are assigned.
