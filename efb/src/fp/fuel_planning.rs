@@ -69,7 +69,12 @@ impl<'a> FuelPlanning {
             taxi,
             climb: None,
             trip: route.fuel(perf)?,
-            alternate: route.alternate().map(|alternate| alternate.fuel(perf))?,
+            alternate: {
+                match route.alternate() {
+                    Some(alternate) => alternate.fuel(perf),
+                    _ => None,
+                }
+            },
             reserve: reserve.fuel(perf, &route.level()?),
         })
     }
