@@ -14,6 +14,7 @@
 // limitations under the License.
 
 //! Flight Planning.
+use std::cell::RefCell;
 use std::rc::Rc;
 
 mod aircraft;
@@ -29,3 +30,50 @@ pub use legs::Leg;
 pub use mb::MassAndBalance;
 pub use perf::Performance;
 pub use route::{Route, RouteElement};
+
+use crate::Fuel;
+
+pub struct FlightPlanning {
+    aircraft: Option<Aircraft>,
+    route: Rc<RefCell<Route>>,
+    fuel_planning: Option<FuelPlanning>,
+}
+
+impl FlightPlanning {
+    pub fn new(route: Rc<RefCell<Route>>) -> Self {
+        Self {
+            aircraft: None,
+            route,
+            fuel_planning: None,
+        }
+    }
+
+    pub fn aircraft(&self) -> Option<&Aircraft> {
+        self.aircraft.as_ref()
+    }
+
+    pub fn set_aircraft(&mut self, aircraft: Aircraft) {
+        self.aircraft = Some(aircraft);
+    }
+
+    pub fn create_fuel_planning<P>(
+        &mut self,
+        policy: FuelPolicy,
+        taxi: Fuel,
+        reserve: &Reserve,
+        perf: &P)
+    where
+        P: Performance, {
+        self.fuel_planning = FuelPlanning::new(
+            policy,
+            taxi,
+            self.route.borrow(),
+            reserve,
+            perf
+        );
+    }
+
+    pub fn fuel_planning(&self) -> Option<&FuelPlanning> {
+        self.fuel_planning.as_ref()
+    }
+}

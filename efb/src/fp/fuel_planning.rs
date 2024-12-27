@@ -34,18 +34,18 @@ impl Reserve {
     }
 }
 
-#[derive(Copy, Clone)]
-pub enum FuelPolicy<'a> {
+#[derive(Clone)]
+pub enum FuelPolicy {
     MinimumFuel,
-    MaximumFuel(&'a Aircraft),
+    MaximumFuel(Aircraft), // TODO remove need to clone an aircraft here
     Manual(Fuel),
     Landing(Fuel),
     Extra(Fuel),
 }
 
-#[derive(Copy, Clone)]
-pub struct FuelPlanning<'a> {
-    policy: FuelPolicy<'a>,
+#[derive(Clone)]
+pub struct FuelPlanning {
+    policy: FuelPolicy,
     pub taxi: Fuel,
     pub climb: Option<Fuel>,
     pub trip: Fuel,
@@ -53,9 +53,9 @@ pub struct FuelPlanning<'a> {
     pub reserve: Fuel,
 }
 
-impl<'a> FuelPlanning<'a> {
+impl<'a> FuelPlanning {
     pub fn new<P>(
-        policy: FuelPolicy<'a>,
+        policy: FuelPolicy,
         taxi: Fuel,
         route: Ref<'a, Route>,
         reserve: &Reserve,
@@ -96,15 +96,15 @@ impl<'a> FuelPlanning<'a> {
     }
 
     pub fn extra(&self) -> Option<Fuel> {
-        match self.policy {
+        match &self.policy {
             FuelPolicy::MinimumFuel => None,
             FuelPolicy::MaximumFuel(ac) => match ac.usable_fuel() {
                 Some(usable_fuel) => Some(usable_fuel - self.min()),
                 None => None,
             },
-            FuelPolicy::Manual(fuel) => Some(fuel - self.min()),
-            FuelPolicy::Landing(fuel) => Some(fuel), // TODO is this correct?
-            FuelPolicy::Extra(fuel) => Some(fuel),
+            FuelPolicy::Manual(fuel) => Some(*fuel - self.min()),
+            FuelPolicy::Landing(fuel) => Some(*fuel), // TODO is this correct?
+            FuelPolicy::Extra(fuel) => Some(*fuel),
         }
     }
 
