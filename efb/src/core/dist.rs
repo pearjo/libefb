@@ -15,6 +15,7 @@
 
 use super::{Duration, Speed, Unit};
 use crate::error::Error;
+use std::cmp::{Ord, Ordering, PartialOrd};
 use std::fmt;
 use std::ops::Div;
 use std::str::FromStr;
@@ -26,13 +27,13 @@ mod constants {
 
 /// A vertical distance.
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum VerticalDistance {
-    /// Absolute distance above ground level in feet.
+    /// Absolute Altitude as distance above ground level in feet.
     Agl(u16),
 
     /// Altitude in feet with reference to a local air pressure.
-    Altitude(u16),
+    Altitude(u16), // TODO does it make sense to have ALT?
 
     /// Flight level in hundreds of feet as altitude at standard air pressure.
     Fl(u16),
@@ -40,7 +41,7 @@ pub enum VerticalDistance {
     /// Ground level.
     Gnd,
 
-    /// Distance above mean sea level at standard air pressure.
+    /// True Altitude as distance above mean sea level.
     Msl(u16),
 
     /// An unlimited vertical distance.
@@ -73,7 +74,7 @@ impl FromStr for VerticalDistance {
             // first character is the unit
             "F" => Ok(Self::Fl(value!(s, 1..4)?)),
             "S" => Ok(Self::Fl(
-                // value in tens of meter to hundreds of feet
+                // value in tens of meter or hundreds of feet
                 (value!(s, 1..5)? as f32 * constants::METER_IN_FEET / 10.0).round() as u16,
             )),
             "A" => Ok(Self::Altitude(value!(s, 1..4)? * 100)), // value in hundredth of feet
@@ -96,6 +97,50 @@ impl fmt::Display for VerticalDistance {
             VerticalDistance::Altitude(value) => write!(f, "{value} ALT"),
             VerticalDistance::Unlimited => write!(f, "unlimited"),
         }
+    }
+}
+
+/// # Panics
+///
+/// Explain why and when we panic...
+impl Ord for VerticalDistance {
+    fn cmp(&self, other: &Self) -> Ordering {
+        match (self, other) {
+            // ground is always less
+            (Self::Gnd, Self::Gnd) => Ordering::Equal,
+            (Self::Gnd, _) => Ordering::Less,
+            (_, Self::Gnd) => Ordering::Greater,
+
+            // and unlimited is always greater
+            (Self::Unlimited, Self::Unlimited) => Ordering::Equal,
+            (Self::Unlimited, _) => Ordering::Greater,
+            (_, Self::Unlimited) => Ordering::Less,
+
+            // now compare what can only be compared to the same type
+            (Self::Agl(v), Self::Agl(o)) => v.cmp(o),
+
+            _ => {
+                fn to_msl(vd: &VerticalDistance) -> u16 {
+                    match vd {
+                        VerticalDistance::Fl(v) => v * 100,
+                        VerticalDistance::Msl(v) => *v,
+                        VerticalDistance::Altitude(v) => *v,
+                        _ => panic!(
+                            "We can't compare {} here, since it doesn't reference to common datum.",
+                            vd
+                        ),
+                    }
+                }
+
+                to_msl(self).cmp(&to_msl(other))
+            }
+        }
+    }
+}
+
+impl PartialOrd for VerticalDistance {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
 
@@ -188,6 +233,33 @@ mod tests {
             "F08".parse::<VerticalDistance>(),
             Err(Error::UnexpectedString)
         );
+    }
+
+    #[test]
+    fn gnd_is_least() {
+        assert!(VerticalDistance::Gnd < VerticalDistance::Agl(1000));
+        assert!(VerticalDistance::Gnd < VerticalDistance::Altitude(1000));
+        assert!(VerticalDistance::Gnd < VerticalDistance::Fl(10));
+        assert!(VerticalDistance::Gnd == VerticalDistance::Gnd);
+        assert!(VerticalDistance::Gnd < VerticalDistance::Msl(100));
+        assert!(VerticalDistance::Gnd < VerticalDistance::Unlimited);
+    }
+
+    #[test]
+    fn unlimited_is_greatest() {
+        assert!(VerticalDistance::Unlimited > VerticalDistance::Agl(1000));
+        assert!(VerticalDistance::Unlimited > VerticalDistance::Altitude(1000));
+        assert!(VerticalDistance::Unlimited > VerticalDistance::Fl(10));
+        assert!(VerticalDistance::Unlimited > VerticalDistance::Gnd);
+        assert!(VerticalDistance::Unlimited > VerticalDistance::Msl(100));
+        assert!(VerticalDistance::Unlimited == VerticalDistance::Unlimited);
+    }
+
+    #[test]
+    fn cmp_vertical_distances() {
+        assert!(VerticalDistance::Agl(1000) < VerticalDistance::Agl(2000));
+        assert!(VerticalDistance::Altitude(1000) < VerticalDistance::Altitude(2000));
+        assert!(VerticalDistance::Msl(1000) < VerticalDistance::Fl(100));
     }
 
     #[test]
