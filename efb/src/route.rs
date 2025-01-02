@@ -1,5 +1,5 @@
-use super::{Leg, Performance};
 use crate::error::Error;
+use crate::fp::{Leg, Performance};
 use crate::nd::*;
 use crate::{Duration, Fuel, Speed, VerticalDistance, Wind};
 

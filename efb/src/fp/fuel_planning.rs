@@ -15,7 +15,8 @@
 
 use std::cell::Ref;
 
-use super::{Aircraft, Performance, Route};
+use super::{Aircraft, Performance};
+use crate::route::Route;
 use crate::{Duration, Fuel, VerticalDistance};
 
 #[derive(Copy, Clone)]

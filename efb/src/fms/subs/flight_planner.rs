@@ -19,6 +19,7 @@ use std::rc::Rc;
 
 use crate::error::Error;
 use crate::fp::*;
+use crate::route::Route;
 use crate::{Fuel, Mass};
 
 use super::SubSystem;
