@@ -25,9 +25,14 @@ pub enum Error {
 
     ExpectedRoute,
 
+    ExpectedAircraft,
+    ExpectedFuelPlanning,
+
     UnexpectedRouteElement,
 
     UnexpectedString,
+
+    UnexpectedInput,
 
     // navigation data
     /// The requested identifier is not know.

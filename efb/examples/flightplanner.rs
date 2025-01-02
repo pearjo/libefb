@@ -60,6 +60,34 @@ fn main() {
         },
         VerticalDistance::Altitude(10000),
     );
+
+    let aircraft = Aircraft {
+        station_arms: vec![
+            // the front seats
+            Distance::Meter(0.94),
+            // the back seats
+            Distance::Meter(1.85),
+            // the first cargo compartment
+            Distance::Meter(2.41),
+            // the second cargo compartment
+            Distance::Meter(3.12),
+        ],
+        empty_mass: Mass::Kilogram(807.0),
+        empty_balance: Distance::Meter(1.0),
+        fuel_type: FuelType::Diesel,
+        tanks: vec![FuelTank {
+            capacity: Volume::Liter(168.8),
+            arm: Distance::Meter(1.22),
+        }],
+        cg_envelope: CGEnvelope::new(vec![
+            (Mass::Kilogram(0.0), Distance::Meter(0.89)),
+            (Mass::Kilogram(885.0), Distance::Meter(0.89)),
+            (Mass::Kilogram(1111.0), Distance::Meter(1.02)),
+            (Mass::Kilogram(1111.0), Distance::Meter(1.20)),
+            (Mass::Kilogram(0.0), Distance::Meter(1.20)),
+        ]),
+    };
+
     let mut fms = FMS::new();
 
     if let Err(e) = fms.nd().read_file(&args.path, InputFormat::Arinc424) {
@@ -108,33 +136,88 @@ fn main() {
         println!("├───────────────────────────────────────────────┤");
     }
 
+    if let Err(e) = fms.flight_planner().enter(FlightPlannerInput {
+        aircraft: Some(aircraft),
+        mass: Some(vec![
+            // we're in the front
+            Mass::Kilogram(80.0),
+            // and no mass on the other stations
+            Mass::Kilogram(0.0),
+            Mass::Kilogram(0.0),
+            Mass::Kilogram(0.0),
+        ]),
+        policy: Some(FuelPolicy::Manual(diesel!(Volume::Liter(80.0)))),
+        taxi: Some(diesel!(Volume::Liter(10.0))),
+        reserve: Some(Reserve::Manual(Duration::from(1800))), // 30 min
+        perf: Some(perf),
+    }) {
+        eprintln!("Error when entering data into flight planner: {e:?}");
+    }
 
-    if let Some(fuel) = fms.fp().fuel_planning() {
+    if let Some(fuel) = fms.flight_planner().fuel_planning() {
         println!("│ FUEL                                          │");
         println!("├───────────┬───────────────────────────────────┤");
-        println!("│ TRIP      │ {:<8.0}                          │", fuel.trip);
+        println!(
+            "│ TRIP      │ {:<8.0}                          │",
+            fuel.trip
+        );
 
         if let Some(climb) = fuel.climb {
             println!("│ CLIMB     │ {:<8.0}                          │", climb);
         }
 
-        println!("│ TAXI      │ {:<8.0}                          │", fuel.taxi);
+        println!(
+            "│ TAXI      │ {:<8.0}                          │",
+            fuel.taxi
+        );
 
         if let Some(alternate) = fuel.alternate {
-            println!("│ ALTERNATE │ {:<8.0}                          │", alternate);
+            println!(
+                "│ ALTERNATE │ {:<8.0}                          │",
+                alternate
+            );
         }
 
-        println!("│ RESERVE   │ {:<8.0}                          │", fuel.reserve);
+        println!(
+            "│ RESERVE   │ {:<8.0}                          │",
+            fuel.reserve
+        );
         println!("├───────────┼───────────────────────────────────┤");
-        println!("│ MINIMUM   │ {:<8.0}                          │", fuel.min());
+        println!(
+            "│ MINIMUM   │ {:<8.0}                          │",
+            fuel.min()
+        );
 
         if let Some(extra) = fuel.extra() {
             println!("│ EXTRA     │ {:<8.0}                          │", extra);
         }
 
         println!("├───────────┼───────────────────────────────────┤");
-        println!("│ TOTAL     │ {:<8.0}                          │", fuel.total());
+        println!(
+            "│ TOTAL     │ {:<8.0}                          │",
+            fuel.total()
+        );
         println!("├───────────┴───────────────────────────────────┤");
+    }
+
+    let flight_planner = fms.flight_planner();
+
+    if let Some(mb) = flight_planner.mb() {
+        println!("│ MASS & BALANCE                                │");
+        println!("├───────────────┬───────────────────────────────┤");
+        println!(
+            "│ BALANCED      │ {}                          │",
+            flight_planner.is_balanced().unwrap()
+        );
+        println!(
+            "│ ON RAMP       │ {:<8.0}                      │",
+            mb.mass_on_ramp()
+        );
+        println!(
+            "│ AFTER LANDING │ {:<8.0}                      │",
+            mb.mass_after_landing()
+        );
+        println!("├───────────────┴───────────────────────────────┤");
     }
 
     println!("│                                               │");

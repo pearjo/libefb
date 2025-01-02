@@ -19,6 +19,10 @@ use std::rc::Rc;
 use crate::error::Error;
 use crate::fp::Route;
 
+mod flight_planner;
+
+pub use flight_planner::*;
+
 /// A trait to implement a type as FMS sub-system.
 ///
 /// A sub-system implements an encapsulated part of the FMS e.g. a flight

@@ -14,11 +14,11 @@
 // limitations under the License.
 
 //! Flight Management System.
-use std::rc::Rc;
 use std::cell::{Ref, RefCell};
+use std::rc::Rc;
 
 use crate::error::Error;
-use crate::fp::{FlightPlanning, Route};
+use crate::fp::Route;
 use crate::nd::NavigationData;
 
 mod subs;
@@ -27,26 +27,22 @@ pub use subs::*;
 
 #[repr(C)]
 pub struct FMS {
-    fp: FlightPlanning,
     nd: NavigationData,
     route: Rc<RefCell<Route>>,
+    flight_planner: FlightPlanner,
 }
 
 impl FMS {
     /// Constructs a new, empty `FMS`.
     pub fn new() -> Self {
         let route = Rc::new(RefCell::new(Route::new()));
-        let fp = FlightPlanning::new(route.clone());
+        let flight_planner = FlightPlanner::new(route.clone());
 
         Self {
-            fp,
             nd: NavigationData::new(),
             route,
+            flight_planner,
         }
-    }
-
-    pub fn fp(&mut self) -> &mut FlightPlanning {
-        &mut self.fp
     }
 
     pub fn nd(&mut self) -> &mut NavigationData {
@@ -59,6 +55,7 @@ impl FMS {
 
     pub fn decode(&mut self, route: &str) -> Result<(), Error> {
         self.route.borrow_mut().decode(route, &self.nd)?;
+        self.flight_planner.notify()?;
         Ok(())
     }
 
@@ -74,8 +71,12 @@ impl FMS {
             Some(alternate) => {
                 self.route.borrow_mut().set_alternate(Some(alternate));
                 Ok(())
-            },
-            None => Err(Error::UnknownIdent)
+            }
+            None => Err(Error::UnknownIdent),
         }
+    }
+
+    pub fn flight_planner(&mut self) -> &mut FlightPlanner {
+        &mut self.flight_planner
     }
 }
