@@ -18,28 +18,15 @@ use efb::fp::*;
 use efb::nd::{Fix, InputFormat};
 use efb::*;
 
-use clap::Parser;
-
-/// Computes a flight plan from a route.
-///
-/// The flight planner uses navaids provided by an ARINC 424 database. The route
-/// is composed out of route elements that provide performance data and fix
-/// points. For more, please refer to the Route documentation.
-#[derive(Parser)]
-struct Cli {
-    /// The path to the ARINC 424 navigation data to use
-    path: std::path::PathBuf,
-    /// The route and performance elements
-    route: String,
-}
+const ARINC_424_RECORDS: &'static str = r#"SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
+SEURPCEDDHED N1    ED0    V     N53482105E010015451                                 WGE           NOVEMBER1                359892409
+SEURPCEDDHED N2    ED0    V     N53405701E010000576                                 WGE           NOVEMBER2                359902409
+SEURP EDHFEDA        0        N N53593300E009343600E000000082                   P    MWGE    ITZEHOE/HUNGRIGER WOLF        320782409
+"#;
 
 fn main() {
-    let args = Cli::parse();
-
-    // Performance setting with 65% load in cruise.
-    //
-    // This is the performance profile of a Cessna C172 with an TAE125-02-114
-    // Diesel engine.
+    // Performance setting with 65% load in cruise. This is the performance
+    // profile of a Cessna C172 with an TAE125-02-114 Diesel engine.
     let perf = Performance::from(
         |vd| {
             let tas = if *vd >= VerticalDistance::Altitude(10000) {
@@ -58,6 +45,8 @@ fn main() {
 
             (tas, ff)
         },
+        // The data end at 10000 ft so we don't need to create the Performance
+        // with more values.
         VerticalDistance::Altitude(10000),
     );
 
@@ -90,53 +79,33 @@ fn main() {
 
     let mut fms = FMS::new();
 
-    if let Err(e) = fms.nd().read_file(&args.path, InputFormat::Arinc424) {
-        eprintln!("Error reading ARINC 424: {e:?}");
-    }
+    // read the ARINC database
+    let _ = fms.nd().read(ARINC_424_RECORDS, InputFormat::Arinc424);
 
-    if let Err(e) = fms.decode(args.route.as_str()) {
-        eprintln!("Error decoding route: {e:?}");
-    }
+    // decode a route from EDDH to EDHF with winds at 20 kt from 290° and
+    // cruising speed of 107 kt and an altitude of 2500 ft.
+    let _ = fms.decode("29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF");
 
-    println!("╭───────────────────────────────────────────────╮");
-    println!("│ ROUTE                                         │");
-    println!("├──────┬──────────┬──────┬──────┬───────┬───────┤");
-    println!("│ TC   │  DIST    │ MC   │ MH   │ ETE   │ TO    │");
-    println!("├──────┼──────────┼──────┼──────┼───────┼───────┤");
+    println!("\n   Route\n");
 
     for leg in fms.route().legs() {
-        match (leg.mh(), leg.ete()) {
-            (Some(mh), Some(ete)) => {
-                println!(
-                    "│ {} │ {} │ {} │ {} │ {} │ {:5} │",
-                    leg.bearing(),
-                    leg.dist().to_nm(),
-                    leg.mc(),
-                    mh,
-                    ete.round(),
-                    leg.to.ident(),
-                );
-            }
-            _ => {
-                println!(
-                    "│ {} │ {} │ {} │      │       │ {:5} │",
-                    leg.bearing(),
-                    leg.dist().to_nm(),
-                    leg.mc(),
-                    leg.to.ident(),
-                );
-            }
-        }
+        println!(
+            "{} - {}: TC: {}, dist: {}, MC: {}, MH: {}, ETE: {}",
+            leg.from.ident(),
+            leg.to.ident(),
+            leg.bearing(),
+            leg.dist().to_nm(),
+            leg.mc(),
+            leg.mh().unwrap(),
+            leg.ete().unwrap(),
+        );
     }
 
-    println!("├──────┴──────────┴──────┴──────┴───────┴───────┤");
+    println!("\nETE: {}", fms.route().ete().unwrap());
 
-    if let Some(ete) = fms.route().ete() {
-        println!("│ ETE {:8.0}                                  │", ete);
-        println!("├───────────────────────────────────────────────┤");
-    }
-
-    if let Err(e) = fms.flight_planner().enter(FlightPlannerInput {
+    // Now we can enter some data into the flight planner to get a fuel planning
+    // and mass & balance calculation.
+    let _ = fms.flight_planner().enter(FlightPlannerInput {
         aircraft: Some(aircraft),
         mass: Some(vec![
             // we're in the front
@@ -150,76 +119,37 @@ fn main() {
         taxi: Some(diesel!(Volume::Liter(10.0))),
         reserve: Some(Reserve::Manual(Duration::from(1800))), // 30 min
         perf: Some(perf),
-    }) {
-        eprintln!("Error when entering data into flight planner: {e:?}");
-    }
+    });
 
-    if let Some(fuel) = fms.flight_planner().fuel_planning() {
-        println!("│ FUEL                                          │");
-        println!("├───────────┬───────────────────────────────────┤");
-        println!(
-            "│ TRIP      │ {:<8.0}                          │",
-            fuel.trip
-        );
+    let fuel_planning = fms.flight_planner().fuel_planning().unwrap();
 
-        if let Some(climb) = fuel.climb {
-            println!("│ CLIMB     │ {:<8.0}                          │", climb);
-        }
+    println!("\n   Fuel\n");
 
-        println!(
-            "│ TAXI      │ {:<8.0}                          │",
-            fuel.taxi
-        );
+    println!(
+        "trip:    {:>4.0}, taxi:  {:>4.0}, reserve: {:>4.0}",
+        fuel_planning.trip, fuel_planning.taxi, fuel_planning.reserve
+    );
 
-        if let Some(alternate) = fuel.alternate {
-            println!(
-                "│ ALTERNATE │ {:<8.0}                          │",
-                alternate
-            );
-        }
+    println!(
+        "minimum: {:>4.0}, extra: {:>4.0}, total:   {:>4.0}",
+        fuel_planning.min(),
+        fuel_planning.extra().unwrap(),
+        fuel_planning.total()
+    );
 
-        println!(
-            "│ RESERVE   │ {:<8.0}                          │",
-            fuel.reserve
-        );
-        println!("├───────────┼───────────────────────────────────┤");
-        println!(
-            "│ MINIMUM   │ {:<8.0}                          │",
-            fuel.min()
-        );
+    println!("\n   Mass & Balance\n");
 
-        if let Some(extra) = fuel.extra() {
-            println!("│ EXTRA     │ {:<8.0}                          │", extra);
-        }
+    // With a proper configured aircraft and fuel planning, we get our mass &
+    // balance and can check whether the aircraft is balanced.
+    println!("balanced: {}", fms.flight_planner().is_balanced().unwrap());
 
-        println!("├───────────┼───────────────────────────────────┤");
-        println!(
-            "│ TOTAL     │ {:<8.0}                          │",
-            fuel.total()
-        );
-        println!("├───────────┴───────────────────────────────────┤");
-    }
+    let mb = fms.flight_planner().mb().unwrap();
 
-    let flight_planner = fms.flight_planner();
+    println!(
+        "on ramp: {} - after landing: {}",
+        mb.mass_on_ramp(),
+        mb.mass_after_landing()
+    );
 
-    if let Some(mb) = flight_planner.mb() {
-        println!("│ MASS & BALANCE                                │");
-        println!("├───────────────┬───────────────────────────────┤");
-        println!(
-            "│ BALANCED      │ {}                          │",
-            flight_planner.is_balanced().unwrap()
-        );
-        println!(
-            "│ ON RAMP       │ {:<8.0}                      │",
-            mb.mass_on_ramp()
-        );
-        println!(
-            "│ AFTER LANDING │ {:<8.0}                      │",
-            mb.mass_after_landing()
-        );
-        println!("├───────────────┴───────────────────────────────┤");
-    }
-
-    println!("│                                               │");
-    println!("╰───────────────────────────────────────────────╯");
+    println!("");
 }
