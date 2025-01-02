@@ -21,6 +21,10 @@ use crate::error::Error;
 use crate::fp::{FlightPlanning, Route};
 use crate::nd::NavigationData;
 
+mod subs;
+
+pub use subs::*;
+
 #[repr(C)]
 pub struct FMS {
     fp: FlightPlanning,
