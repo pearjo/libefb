@@ -143,10 +143,7 @@ impl Route {
     }
 
     /// Returns the fuel consumption en-route for the given performance.
-    pub fn fuel<P>(&self, perf: &P) -> Option<Fuel>
-    where
-        P: Performance,
-    {
+    pub fn fuel(&self, perf: &Performance) -> Option<Fuel> {
         self.legs
             .iter()
             .filter_map(|leg| leg.fuel(perf))

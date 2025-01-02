@@ -83,10 +83,7 @@ impl Leg {
     }
 
     /// The [Fuel] consumed on the leg with the given [Performance].
-    pub fn fuel<P>(&self, perf: &P) -> Option<Fuel>
-    where
-        P: Performance,
-    {
+    pub fn fuel(&self, perf: &Performance) -> Option<Fuel> {
         Some(perf.ff(&self.level?) * self.ete()?)
     }
 }

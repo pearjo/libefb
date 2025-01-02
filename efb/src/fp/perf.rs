@@ -13,14 +13,65 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::collections::HashMap;
+
 use crate::{FuelFlow, Speed, VerticalDistance};
 
 /// Used to provide [Speed] or [FuelFlow] for a defined performance setting at
-/// different vertical distances.
-pub trait Performance {
-    /// Returns the true airspeed at a vertical distance.
-    fn tas(&self, vd: &VerticalDistance) -> Speed;
+/// different level.
+pub struct Performance {
+    map: HashMap<VerticalDistance, (Speed, FuelFlow)>,
+}
 
-    /// Returns the fuel flow at a vertical distance.
-    fn ff(&self, vd: &VerticalDistance) -> FuelFlow;
+impl Performance {
+    /// Creates the performance profile from a function.
+    ///
+    /// The function `f` is called in 1000 ft intervals up to the ceiling.
+    pub fn from<F>(f: F, ceiling: VerticalDistance) -> Self
+    where
+        F: Fn(&VerticalDistance) -> (Speed, FuelFlow),
+    {
+        let mut map: HashMap<VerticalDistance, (Speed, FuelFlow)> = HashMap::new();
+        let mut vd = VerticalDistance::Gnd;
+        let mut alt = 0;
+
+        while vd <= ceiling {
+            let (tas, ff) = f(&vd);
+            map.insert(vd, (tas, ff));
+
+            alt += 1000;
+            vd = VerticalDistance::Altitude(alt);
+        }
+
+        Self { map }
+    }
+
+    /// Returns the true airspeed at a level.
+    pub fn tas(&self, level: &VerticalDistance) -> Speed {
+        self.at_level(level).0
+    }
+
+    /// Returns the fuel flow at a level.
+    pub fn ff(&self, level: &VerticalDistance) -> FuelFlow {
+        self.at_level(level).1
+    }
+
+    /// Returns the speed and fuel flow at a level.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the map holds no performance value which should never happen.
+    fn at_level(&self, level: &VerticalDistance) -> &(Speed, FuelFlow) {
+        self.map
+            .keys()
+            .reduce(|nearest, key| {
+                if level >= key {
+                    key.max(nearest)
+                } else {
+                    key.min(nearest)
+                }
+            })
+            .and_then(|key| self.map.get(key))
+            .expect("There should be at least one performance value.")
+    }
 }

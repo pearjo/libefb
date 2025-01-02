@@ -33,35 +33,33 @@ struct Cli {
     route: String,
 }
 
-/// Performance setting with 65% load in cruise.
-///
-/// This is the performance profile of a Cessna C172 with an TAE125-02-114
-/// Diesel engine.
-struct Performance65PercentLoad {}
-
-impl Performance for Performance65PercentLoad {
-    fn tas(&self, vd: &VerticalDistance) -> Speed {
-        if *vd >= VerticalDistance::Altitude(10000) {
-            Speed::Knots(114.0)
-        } else if *vd >= VerticalDistance::Altitude(8000) {
-            Speed::Knots(112.0)
-        } else if *vd >= VerticalDistance::Altitude(6000) {
-            Speed::Knots(110.0)
-        } else if *vd >= VerticalDistance::Altitude(4000) {
-            Speed::Knots(109.0)
-        } else {
-            Speed::Knots(107.0)
-        }
-    }
-
-    fn ff(&self, _: &VerticalDistance) -> FuelFlow {
-        FuelFlow::PerHour(diesel!(Volume::Liter(21.0)))
-    }
-}
-
 fn main() {
     let args = Cli::parse();
-    let perf = Performance65PercentLoad {};
+
+    // Performance setting with 65% load in cruise.
+    //
+    // This is the performance profile of a Cessna C172 with an TAE125-02-114
+    // Diesel engine.
+    let perf = Performance::from(
+        |vd| {
+            let tas = if *vd >= VerticalDistance::Altitude(10000) {
+                Speed::Knots(114.0)
+            } else if *vd >= VerticalDistance::Altitude(8000) {
+                Speed::Knots(112.0)
+            } else if *vd >= VerticalDistance::Altitude(6000) {
+                Speed::Knots(110.0)
+            } else if *vd >= VerticalDistance::Altitude(4000) {
+                Speed::Knots(109.0)
+            } else {
+                Speed::Knots(107.0)
+            };
+
+            let ff = FuelFlow::PerHour(diesel!(Volume::Liter(21.0)));
+
+            (tas, ff)
+        },
+        VerticalDistance::Altitude(10000),
+    );
     let mut fms = FMS::new();
 
     if let Err(e) = fms.nd().read_file(&args.path, InputFormat::Arinc424) {
@@ -110,12 +108,6 @@ fn main() {
         println!("├───────────────────────────────────────────────┤");
     }
 
-    fms.fp().create_fuel_planning(
-        FuelPolicy::Manual(diesel!(Volume::Liter(80.0))),
-        diesel!(Volume::Liter(10.0)),
-        &Reserve::Manual(Duration::from(1800)), // 30 min
-        &perf,
-    );
 
     if let Some(fuel) = fms.fp().fuel_planning() {
         println!("│ FUEL                                          │");

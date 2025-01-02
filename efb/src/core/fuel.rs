@@ -137,6 +137,7 @@ macro_rules! div_impl {
 
 div_impl! { usize f32 }
 
+#[derive(Copy, Clone, Debug)]
 pub enum FuelFlow {
     PerHour(Fuel),
 }

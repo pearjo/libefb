@@ -24,10 +24,7 @@ pub enum Reserve {
 }
 
 impl Reserve {
-    pub fn fuel<P>(self, perf: &P, cruise: &VerticalDistance) -> Fuel
-    where
-        P: Performance,
-    {
+    pub fn fuel(self, perf: &Performance, cruise: &VerticalDistance) -> Fuel {
         match self {
             Self::Manual(duration) => perf.ff(cruise) * duration,
         }
@@ -54,16 +51,13 @@ pub struct FuelPlanning {
 }
 
 impl<'a> FuelPlanning {
-    pub fn new<P>(
+    pub fn new(
         policy: FuelPolicy,
         taxi: Fuel,
         route: Ref<'a, Route>,
         reserve: &Reserve,
-        perf: &P,
-    ) -> Option<Self>
-    where
-        P: Performance,
-    {
+        perf: &Performance,
+    ) -> Option<Self> {
         Some(Self {
             policy,
             taxi,
