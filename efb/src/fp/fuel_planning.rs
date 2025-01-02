@@ -62,7 +62,7 @@ impl<'a> FuelPlanning {
         Some(Self {
             policy,
             taxi,
-            climb: None,
+            climb: None, // TODO add climb fuel
             trip: route.fuel(perf)?,
             alternate: {
                 match route.alternate() {

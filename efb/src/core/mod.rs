@@ -65,6 +65,8 @@ pub use wind::*;
 ///     }
 /// }
 /// ```
+// TODO Add symbol method to implement a format and display method etc on the
+// trait or add a derivable macro.
 pub trait Unit {
     /// Converts this types to its value in the SI unit.
     fn si(&self) -> f32;
