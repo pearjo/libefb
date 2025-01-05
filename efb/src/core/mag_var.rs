@@ -15,7 +15,7 @@
 
 use crate::geom::Coordinate;
 use std::fmt::{Display, Formatter, Result};
-use time::OffsetDateTime;
+use time::{Date, Month, OffsetDateTime, Time};
 use wmm::declination;
 
 /// The magnetic variation (declination) of a point.
@@ -34,7 +34,13 @@ pub enum MagneticVariation {
 
 impl From<Coordinate> for MagneticVariation {
     fn from(value: Coordinate) -> Self {
-        let date = OffsetDateTime::now_utc().date();
+        // TODO Use a new WMM library which has the 2025 model implemented!
+        let date = OffsetDateTime::new_utc(
+            Date::from_calendar_date(2024, Month::December, 31).unwrap(),
+            Time::from_hms_nano(12, 59, 59, 500_000_000).unwrap(),
+        )
+        .date();
+
         // TODO write an own implementation of the WMM that returns the last
         // known declination, even if the coefficients are outdated.
         let mag_var = declination(date, value.latitude, value.longitude).unwrap();
