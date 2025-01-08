@@ -17,12 +17,10 @@
 
 mod aircraft;
 mod fuel_planning;
-mod legs;
 mod mb;
 mod perf;
 
 pub use aircraft::*;
 pub use fuel_planning::*;
-pub use legs::Leg;
 pub use mb::MassAndBalance;
 pub use perf::Performance;
