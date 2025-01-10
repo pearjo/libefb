@@ -23,4 +23,3 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 efb = { path = "../efb" }
-libc = "0.2"
