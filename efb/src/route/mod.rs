@@ -22,6 +22,7 @@ use crate::fp::Performance;
 use crate::nd::*;
 use crate::{Duration, Fuel, Speed, VerticalDistance, Wind};
 
+#[derive(Debug)]
 pub enum RouteElement {
     Speed(Speed),
     Level(VerticalDistance),
@@ -60,6 +61,7 @@ pub enum RouteElement {
 ///
 /// [`leg`]: crate::fp::legs::Leg
 /// [`fixes`]: crate::nd::Fix
+#[derive(Debug)]
 pub struct Route {
     elements: Vec<RouteElement>,
     legs: Vec<Leg>,

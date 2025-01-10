@@ -38,7 +38,7 @@ use parser::*;
 pub use waypoint::*;
 
 #[repr(C)]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum NavAid {
     Airport(Rc<Airport>),
     Waypoint(Rc<Waypoint>),
@@ -72,7 +72,7 @@ pub enum InputFormat {
     OpenAir,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct NavigationData {
     pub airports: Vec<Rc<Airport>>,
     pub airspaces: Airspaces,

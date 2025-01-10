@@ -18,7 +18,7 @@ use crate::nd::{Fix, NavAid};
 use crate::*;
 
 /// A leg `from` one point `to` another.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Leg {
     /// The point from which the leg starts.
     pub from: NavAid,
