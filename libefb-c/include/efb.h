@@ -34,6 +34,16 @@ typedef struct EfbFms EfbFms;
 extern "C" {
 #endif // __cplusplus
 
+/// Frees the string `s`.
+///
+/// # Safety
+///
+/// The caller must make sure that only strings that are allocated by the libefb
+/// are passed to this function. It is unsafe to try freeing any string that was
+/// returned by a function of this library.
+void
+efb_string_free(char *s);
+
 /// Creates and returns a new FMS.
 ///
 /// # Safety
