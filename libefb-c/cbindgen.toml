@@ -29,6 +29,10 @@ usize_is_size_t = true
 
 [export.rename]
 "InputFormat" = "EfbInputFormat"
+"Leg" = "EfbLeg"
+
+[export.mangle]
+remove_underscores = true
 
 [macro_expansion]
 bitflags = true

@@ -30,6 +30,25 @@ typedef enum {
 /// FMS holds all information like the navigation data or the route.
 typedef struct EfbFms EfbFms;
 
+/// The [Route] to fly.
+///
+/// This type is a wrapper around the [Route] with an initial cruise speed and
+/// level and all legs along the route.
+typedef struct EfbRoute EfbRoute;
+
+/// A leg `from` one point `to` another.
+typedef struct EfbLeg EfbLeg;
+
+/// An array.
+typedef struct {
+  /// The pointer to the first element within the array.
+  const EfbLeg **data;
+  /// The length of the array.
+  size_t len;
+  /// The capacity of the array.
+  size_t capacity;
+} EfbArrayLeg;
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -79,6 +98,32 @@ efb_fms_nd_read_file(EfbFms *fms, const char *path, EfbInputFormat fmt);
 /// It is up to the caller to guarantee that `route` points to a valid string.
 void
 efb_fms_decode(EfbFms *fms, const char *route);
+
+/// Returns a new route from the FMS.
+///
+/// # Safety
+///
+/// It's up to the caller to unref the returned route.
+EfbRoute *
+efb_fms_route_ref(const EfbFms *fms);
+
+/// Decreases the reference count of the route.
+void
+efb_fms_route_unref(EfbRoute *route);
+
+/// Returns an array of pointer to the legs.
+///
+/// # Safety
+///
+/// It's up to the caller to free the allocated memory of the array by
+/// calling [efb_route_legs_free].
+///
+EfbArrayLeg
+efb_route_legs_new(const EfbRoute *route);
+
+/// Frees the memory of the legs array.
+void
+efb_route_legs_free(EfbArrayLeg *legs);
 
 #ifdef __cplusplus
 } // extern "C"

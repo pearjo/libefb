@@ -19,6 +19,8 @@ use std::path::Path;
 use efb::fms::FMS;
 use efb::nd::InputFormat;
 
+use super::EfbRoute;
+
 /// The Flight Management System (FMS).
 ///
 /// This type wraps the [FMS] which is the integral system of this library. The
@@ -84,4 +86,20 @@ pub unsafe extern "C" fn efb_fms_decode(fms: &mut EfbFms, route: *const c_char) 
     if let Ok(route) = unsafe { CStr::from_ptr(route).to_str() } {
         let _ = fms.inner.decode(route);
     }
+}
+
+/// Returns a new route from the FMS.
+///
+/// # Safety
+///
+/// It's up to the caller to unref the returned route.
+#[no_mangle]
+pub unsafe extern "C" fn efb_fms_route_ref(fms: &EfbFms) -> Box<EfbRoute> {
+    Box::new(EfbRoute::from(fms.inner.route()))
+}
+
+/// Decreases the reference count of the route.
+#[no_mangle]
+pub extern "C" fn efb_fms_route_unref(route: Option<Box<EfbRoute>>) {
+    drop(route);
 }
