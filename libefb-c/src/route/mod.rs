@@ -15,6 +15,10 @@
 
 use efb::route::{Leg, Route};
 
+mod leg;
+
+pub use leg::*;
+
 /// The [Route] to fly.
 ///
 /// This type is a wrapper around the [Route] with an initial cruise speed,

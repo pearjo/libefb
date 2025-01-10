@@ -236,6 +236,64 @@ efb_route_legs_first(EfbRoute *route);
 const EfbLeg *
 efb_route_legs_next(EfbRoute *route);
 
+/// Returns the ident from where the leg starts.
+///
+/// # Safety
+///
+/// The returned value needs to be freed by [`efb_string_free`].
+char *
+efb_leg_get_from(const EfbLeg *leg);
+
+/// Returns the ident to where the leg ends.
+///
+/// # Safety
+///
+/// The returned value needs to be freed by [`efb_string_free`].
+char *
+efb_leg_get_to(const EfbLeg *leg);
+
+/// Returns the leg's level or null if unknown.
+const EfbVerticalDistance *
+efb_leg_get_level(const EfbLeg *leg);
+
+/// Returns the wind along the leg or null if unknown.
+const EfbWind *
+efb_leg_get_wind(const EfbLeg *leg);
+
+/// Returns the leg's true airspeed or null if unknown.
+const EfbSpeed *
+efb_leg_get_tas(const EfbLeg *leg);
+
+/// Returns the true heading considering the WCA or null if unknown.
+const EfbAngle *
+efb_leg_get_heading(const EfbLeg *leg);
+
+/// Returns the magnetic heading considering the variation at the start of the
+/// leg or null if unknown.
+const EfbAngle *
+efb_leg_get_mh(const EfbLeg *leg);
+
+/// Returns the bearing between the two points.
+const EfbAngle *
+efb_leg_get_bearing(const EfbLeg *leg);
+
+/// Returns the magnetic course taking the magnetic variation from the starting
+/// point into consideration.
+const EfbAngle *
+efb_leg_get_mc(const EfbLeg *leg);
+
+/// Returns the distance between the leg's two points.
+const EfbDistance *
+efb_leg_get_dist(const EfbLeg *leg);
+
+/// Returns the ground speed in knots or null if unknown.
+const EfbSpeed *
+efb_leg_get_gs(const EfbLeg *leg);
+
+/// Returns the estimated time enroute the leg or null if unknown.
+const EfbDuration *
+efb_leg_get_ete(const EfbLeg *leg);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus
