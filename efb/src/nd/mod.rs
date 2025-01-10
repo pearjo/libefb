@@ -67,6 +67,7 @@ impl Fix for NavAid {
     }
 }
 
+#[repr(C)]
 pub enum InputFormat {
     Arinc424,
     OpenAir,
