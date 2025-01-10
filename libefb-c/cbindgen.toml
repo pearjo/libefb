@@ -28,8 +28,14 @@ style = "type"
 usize_is_size_t = true
 
 [export.rename]
+"Angle" = "EfbAngle"
+"Distance" = "EfbDistance"
+"Duration" = "EfbDuration"
 "InputFormat" = "EfbInputFormat"
 "Leg" = "EfbLeg"
+"Speed" = "EfbSpeed"
+"VerticalDistance" = "EfbVerticalDistance"
+"Wind" = "EfbWind"
 
 [export.mangle]
 remove_underscores = true

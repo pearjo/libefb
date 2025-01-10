@@ -17,6 +17,7 @@ use std::fmt::{Display, Formatter, Result};
 use std::ops::Add;
 
 /// A duration measured in hours, minutes and seconds.
+#[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Duration {
     pub hours: u8,

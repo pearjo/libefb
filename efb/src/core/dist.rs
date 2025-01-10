@@ -145,6 +145,7 @@ impl PartialOrd for VerticalDistance {
 }
 
 /// A metrical or nautical distance.
+#[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Distance {
     Meter(f32),

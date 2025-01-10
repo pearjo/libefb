@@ -19,6 +19,7 @@ use std::fmt;
 use std::str::FromStr;
 
 /// The speed in either nautical or metrical units.
+#[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Speed {
     Knots(f32),

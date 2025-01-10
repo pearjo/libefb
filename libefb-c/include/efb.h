@@ -39,6 +39,63 @@ typedef struct EfbRoute EfbRoute;
 /// A leg `from` one point `to` another.
 typedef struct EfbLeg EfbLeg;
 
+/// An angle in the range from 0° to 360°.
+///
+/// An angle in degree as [`i16`] or in radians as [`f32`] can be converted into
+/// an Angle and it's value will be wrapped into the range from 0° to 360°.
+///
+/// ```
+/// use efb::Angle;
+/// let west: Angle = (-90).into();
+/// assert_eq!(west.as_degrees(), 270);
+/// ```
+typedef enum {
+  True,
+  Magnetic,
+} EfbAngle_Tag;
+
+typedef struct {
+  EfbAngle_Tag tag;
+  union {
+    struct {
+      float true_;
+    };
+    struct {
+      float magnetic;
+    };
+  };
+} EfbAngle;
+
+/// The speed in either nautical or metrical units.
+typedef enum {
+  Knots,
+  MeterPerSecond,
+  Mach,
+} EfbSpeed_Tag;
+
+typedef struct {
+  EfbSpeed_Tag tag;
+  union {
+    struct {
+      float knots;
+    };
+    struct {
+      float meter_per_second;
+    };
+    struct {
+      float mach;
+    };
+  };
+} EfbSpeed;
+
+/// The wind with a speed and direction
+typedef struct {
+  /// The direction from which the wind comes.
+  EfbAngle direction;
+  /// The wind speed.
+  EfbSpeed speed;
+} EfbWind;
+
 /// An array.
 typedef struct {
   /// The pointer to the first element within the array.
@@ -48,6 +105,65 @@ typedef struct {
   /// The capacity of the array.
   size_t capacity;
 } EfbArrayLeg;
+
+/// A vertical distance.
+typedef enum {
+  /// Absolute Altitude as distance above ground level in feet.
+  Agl,
+  /// Altitude in feet with reference to a local air pressure.
+  Altitude,
+  /// Flight level in hundreds of feet as altitude at standard air pressure.
+  Fl,
+  /// Ground level.
+  Gnd,
+  /// True Altitude as distance above mean sea level.
+  Msl,
+  /// An unlimited vertical distance.
+  Unlimited,
+} EfbVerticalDistance_Tag;
+
+typedef struct {
+  EfbVerticalDistance_Tag tag;
+  union {
+    struct {
+      uint16_t agl;
+    };
+    struct {
+      uint16_t altitude;
+    };
+    struct {
+      uint16_t fl;
+    };
+    struct {
+      uint16_t msl;
+    };
+  };
+} EfbVerticalDistance;
+
+/// A metrical or nautical distance.
+typedef enum {
+  Meter,
+  NauticalMiles,
+} EfbDistance_Tag;
+
+typedef struct {
+  EfbDistance_Tag tag;
+  union {
+    struct {
+      float meter;
+    };
+    struct {
+      float nautical_miles;
+    };
+  };
+} EfbDistance;
+
+/// A duration measured in hours, minutes and seconds.
+typedef struct {
+  uint8_t hours;
+  uint8_t minutes;
+  uint8_t seconds;
+} EfbDuration;
 
 #ifdef __cplusplus
 extern "C" {

@@ -24,6 +24,8 @@ use std::mem::ManuallyDrop;
 use std::ptr::NonNull;
 use std::string::ToString;
 
+use efb::{Speed, Wind};
+
 /// Returns the value as C string if [`ToString`] is implemented.
 fn to_string<T>(value: *const T) -> *mut c_char
 where
