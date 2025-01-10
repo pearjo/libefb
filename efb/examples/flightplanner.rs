@@ -88,7 +88,10 @@ fn main() {
 
     println!("\n   Route\n");
 
-    for leg in fms.route().legs() {
+    let binding = fms.route();
+    let route = binding.borrow();
+
+    for leg in route.legs() {
         println!(
             "{} - {}: TC: {}, dist: {}, MC: {}, MH: {}, ETE: {}",
             leg.from.ident(),
@@ -101,7 +104,7 @@ fn main() {
         );
     }
 
-    println!("\nETE: {}", fms.route().ete().unwrap());
+    println!("\nETE: {}", route.ete().unwrap());
 
     // Now we can enter some data into the flight planner to get a fuel planning
     // and mass & balance calculation.

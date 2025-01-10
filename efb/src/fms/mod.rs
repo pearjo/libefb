@@ -14,7 +14,7 @@
 // limitations under the License.
 
 //! Flight Management System.
-use std::cell::{Ref, RefCell};
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::error::Error;
@@ -49,12 +49,12 @@ impl FMS {
         &mut self.nd
     }
 
-    pub fn route(&self) -> Ref<'_, Route> {
-        self.route.borrow()
+    pub fn route(&self) -> Rc<RefCell<Route>> {
+        Rc::clone(&self.route)
     }
 
     pub fn decode(&mut self, route: &str) -> Result<(), Error> {
-        self.route.borrow_mut().decode(route, &self.nd)?;
+        Rc::clone(&self.route).borrow_mut().decode(route, &self.nd)?;
         self.flight_planner.notify()?;
         Ok(())
     }
