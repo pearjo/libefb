@@ -17,9 +17,13 @@
 name = "efb-c"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 efb = { path = "../efb" }
+
+[build-dependencies]
+cbindgen = "0.27.0"
