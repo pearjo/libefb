@@ -215,13 +215,13 @@ efb_fms_nd_read_file(EfbFms *fms, const char *path, EfbInputFormat fmt);
 void
 efb_fms_decode(EfbFms *fms, const char *route);
 
-/// Returns a new route from the FMS.
+/// Returns a reference to the FMS route.
 ///
 /// # Safety
 ///
-/// It's up to the caller to unref the returned route.
+/// It's up to the caller to unref the returned pointer.
 EfbRoute *
-efb_fms_route_ref(const EfbFms *fms);
+efb_fms_route_ref(EfbFms *fms);
 
 /// Decreases the reference count of the route.
 void
@@ -233,7 +233,6 @@ efb_fms_route_unref(EfbRoute *route);
 ///
 /// It's up to the caller to free the allocated memory of the array by
 /// calling [efb_route_legs_free].
-///
 EfbArrayLeg
 efb_route_legs_new(const EfbRoute *route);
 

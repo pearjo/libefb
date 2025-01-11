@@ -88,8 +88,7 @@ fn main() {
 
     println!("\n   Route\n");
 
-    let binding = fms.route();
-    let route = binding.borrow();
+    let route = fms.route();
 
     for leg in route.legs() {
         println!(
@@ -104,55 +103,60 @@ fn main() {
         );
     }
 
-    println!("\nETE: {}", route.ete().unwrap());
+    if let Some(ete) = route.ete() {
+        println!("\nETE: {}", ete);
+    }
 
     // Now we can enter some data into the flight planner to get a fuel planning
     // and mass & balance calculation.
-    let _ = fms.flight_planner().enter(FlightPlannerInput {
-        aircraft: Some(aircraft),
-        mass: Some(vec![
+    fms.flight_planner_builder()
+        .aircraft(aircraft)
+        .mass(vec![
             // we're in the front
             Mass::Kilogram(80.0),
             // and no mass on the other stations
             Mass::Kilogram(0.0),
             Mass::Kilogram(0.0),
             Mass::Kilogram(0.0),
-        ]),
-        policy: Some(FuelPolicy::Manual(diesel!(Volume::Liter(80.0)))),
-        taxi: Some(diesel!(Volume::Liter(10.0))),
-        reserve: Some(Reserve::Manual(Duration::from(1800))), // 30 min
-        perf: Some(perf),
-    });
+        ])
+        .policy(FuelPolicy::Manual(diesel!(Volume::Liter(80.0))))
+        .taxi(diesel!(Volume::Liter(10.0)))
+        .reserve(Reserve::Manual(Duration::from(1800))) // 30 min
+        .perf(perf);
 
-    let fuel_planning = fms.flight_planner().fuel_planning().unwrap();
+    if let Ok(flight_planner) = fms.flight_planner() {
+        if let Some(fuel_planning) = flight_planner.fuel_planning() {
+            println!("\n   Fuel\n");
 
-    println!("\n   Fuel\n");
+            println!(
+                "trip:    {:>4.0}, taxi:  {:>4.0}, reserve: {:>4.0}",
+                fuel_planning.trip, fuel_planning.taxi, fuel_planning.reserve
+            );
 
-    println!(
-        "trip:    {:>4.0}, taxi:  {:>4.0}, reserve: {:>4.0}",
-        fuel_planning.trip, fuel_planning.taxi, fuel_planning.reserve
-    );
+            println!(
+                "minimum: {:>4.0}, extra: {:>4.0}, total:   {:>4.0}",
+                fuel_planning.min(),
+                fuel_planning.extra().unwrap(),
+                fuel_planning.total()
+            );
+        }
 
-    println!(
-        "minimum: {:>4.0}, extra: {:>4.0}, total:   {:>4.0}",
-        fuel_planning.min(),
-        fuel_planning.extra().unwrap(),
-        fuel_planning.total()
-    );
+        if let Some(is_balanced) = flight_planner.is_balanced() {
+            println!("\n   Mass & Balance\n");
 
-    println!("\n   Mass & Balance\n");
+            // With a proper configured aircraft and fuel planning, we get our mass &
+            // balance and can check whether the aircraft is balanced.
+            println!("balanced: {}", is_balanced);
+        }
 
-    // With a proper configured aircraft and fuel planning, we get our mass &
-    // balance and can check whether the aircraft is balanced.
-    println!("balanced: {}", fms.flight_planner().is_balanced().unwrap());
+        if let Some(mb) = flight_planner.mb() {
+            println!(
+                "on ramp: {} - after landing: {}",
+                mb.mass_on_ramp(),
+                mb.mass_after_landing()
+            );
+        }
 
-    let mb = fms.flight_planner().mb().unwrap();
-
-    println!(
-        "on ramp: {} - after landing: {}",
-        mb.mass_on_ramp(),
-        mb.mass_after_landing()
-    );
-
-    println!("");
+        println!("");
+    }
 }

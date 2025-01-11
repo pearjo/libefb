@@ -14,9 +14,6 @@
 // limitations under the License.
 
 //! Flight Management System.
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use crate::error::Error;
 use crate::nd::NavigationData;
 use crate::route::Route;
@@ -28,20 +25,20 @@ pub use subs::*;
 #[repr(C)]
 pub struct FMS {
     nd: NavigationData,
-    route: Rc<RefCell<Route>>,
-    flight_planner: FlightPlanner,
+    route: Route,
+    flight_planner_builder: FlightPlannerBuilder,
 }
 
 impl FMS {
     /// Constructs a new, empty `FMS`.
     pub fn new() -> Self {
-        let route = Rc::new(RefCell::new(Route::new()));
-        let flight_planner = FlightPlanner::new(route.clone());
+        let route = Route::default();
+        let flight_planner_builder = FlightPlannerBuilder::default();
 
         Self {
             nd: NavigationData::new(),
             route,
-            flight_planner,
+            flight_planner_builder,
         }
     }
 
@@ -49,13 +46,12 @@ impl FMS {
         &mut self.nd
     }
 
-    pub fn route(&self) -> Rc<RefCell<Route>> {
-        Rc::clone(&self.route)
+    pub fn route(&mut self) -> &mut Route {
+        &mut self.route
     }
 
     pub fn decode(&mut self, route: &str) -> Result<(), Error> {
-        Rc::clone(&self.route).borrow_mut().decode(route, &self.nd)?;
-        self.flight_planner.notify()?;
+        self.route.decode(route, &self.nd)?;
         Ok(())
     }
 
@@ -69,15 +65,19 @@ impl FMS {
     pub fn set_alternate(&mut self, ident: &str) -> Result<(), Error> {
         match self.nd.find(ident) {
             Some(alternate) => {
-                self.route.borrow_mut().set_alternate(Some(alternate));
+                self.route.set_alternate(Some(alternate));
                 Ok(())
             }
             None => Err(Error::UnknownIdent),
         }
     }
 
-    pub fn flight_planner(&mut self) -> &mut FlightPlanner {
-        &mut self.flight_planner
+    pub fn flight_planner_builder(&mut self) -> &mut FlightPlannerBuilder {
+        &mut self.flight_planner_builder
+    }
+
+    pub fn flight_planner(&self) -> Result<FlightPlanner, Error> {
+        self.flight_planner_builder.build(&self.route)
     }
 }
 

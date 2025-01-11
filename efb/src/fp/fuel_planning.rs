@@ -13,8 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::cell::Ref;
-
 use super::{Aircraft, Performance};
 use crate::route::Route;
 use crate::{Duration, Fuel, VerticalDistance};
@@ -55,7 +53,7 @@ impl FuelPlanning {
     pub fn new(
         policy: FuelPolicy,
         taxi: Fuel,
-        route: Ref<'_, Route>,
+        route: &Route,
         reserve: &Reserve,
         perf: &Performance,
     ) -> Option<Self> {

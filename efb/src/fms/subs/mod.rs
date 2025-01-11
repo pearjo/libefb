@@ -13,9 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use crate::error::Error;
 use crate::route::Route;
 
@@ -26,21 +23,20 @@ pub use flight_planner::*;
 /// A trait to implement a type as FMS sub-system.
 ///
 /// A sub-system implements an encapsulated part of the FMS e.g. a flight
-/// planner. It borrows the FMS's route and inputs are entered into it.
+/// planner. It is created by a builder that holds optional values that are
+/// needed to create the system and a reference to the Route during creation.
 pub trait SubSystem {
     /// The associated input that is entered into this type.
-    type Input;
+    type Builder: SubSystemBuilder;
 
-    /// Creates a new sub-system.
-    fn new(route: Rc<RefCell<Route>>) -> Self;
+    /// Returns the builder to create the sub-system.
+    fn builder() -> Self::Builder {
+        Self::Builder::default()
+    }
+}
 
-    /// Notifies this type that the route changed.
-    ///
-    /// Returns an [`Err`] if something goes wrong while updating the sub-system.
-    fn notify(&mut self) -> Result<(), Error>;
+pub trait SubSystemBuilder: Default {
+    type SubSystem: SubSystem;
 
-    /// Enters a new input for this type.
-    ///
-    /// Returns an [`Err`] if something goes wrong while updating the sub-system.
-    fn enter(&mut self, input: Self::Input) -> Result<(), Error>;
+    fn build(&self, route: &Route) -> Result<Self::SubSystem, Error>;
 }

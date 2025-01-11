@@ -88,13 +88,13 @@ pub unsafe extern "C" fn efb_fms_decode(fms: &mut EfbFms, route: *const c_char) 
     }
 }
 
-/// Returns a new route from the FMS.
+/// Returns a reference to the FMS route.
 ///
 /// # Safety
 ///
-/// It's up to the caller to unref the returned route.
+/// It's up to the caller to unref the returned pointer.
 #[no_mangle]
-pub unsafe extern "C" fn efb_fms_route_ref(fms: &EfbFms) -> Box<EfbRoute> {
+pub unsafe extern "C" fn efb_fms_route_ref(fms: &mut EfbFms) -> Box<EfbRoute<'_>> {
     Box::new(EfbRoute::from(fms.inner.route()))
 }
 
