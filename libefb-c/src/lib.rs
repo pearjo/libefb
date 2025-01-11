@@ -20,8 +20,6 @@ pub use fms::*;
 pub use route::*;
 
 use std::ffi::{c_char, CString};
-use std::mem::ManuallyDrop;
-use std::ptr::NonNull;
 use std::string::ToString;
 
 use efb::{Speed, Wind};
@@ -39,41 +37,6 @@ where
     };
 
     CString::new(s).unwrap().into_raw()
-}
-
-/// An array.
-#[repr(C)]
-pub struct EfbArray<T> {
-    /// The pointer to the first element within the array.
-    data: *mut T,
-
-    /// The length of the array.
-    len: usize,
-
-    /// The capacity of the array.
-    capacity: usize,
-}
-
-impl<T> EfbArray<T> {
-    fn into_vec(&mut self) -> Vec<T> {
-        let vec = unsafe { Vec::<T>::from_raw_parts(self.data, self.len, self.capacity) };
-        self.data = NonNull::dangling().as_ptr();
-        self.len = 0;
-        self.capacity = 0;
-        vec
-    }
-}
-
-impl<T> From<Vec<T>> for EfbArray<T> {
-    fn from(value: Vec<T>) -> Self {
-        let mut v = ManuallyDrop::new(value);
-
-        Self {
-            data: v.as_mut_ptr(),
-            len: v.len(),
-            capacity: v.capacity(),
-        }
-    }
 }
 
 /// Frees the string `s`.

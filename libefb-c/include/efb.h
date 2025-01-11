@@ -32,8 +32,17 @@ typedef struct EfbFms EfbFms;
 
 /// The [Route] to fly.
 ///
-/// This type is a wrapper around the [Route] with an initial cruise speed and
+/// This type is a wrapper around the [Route] with an initial cruise speed,
 /// level and all legs along the route.
+///
+/// The [`efb_route_legs_first`] and [`efb_route_legs_next`] functions return a
+/// leg of the route and can be used to iterate over the route:
+///
+/// ```
+/// for (const EfbLeg *leg = efb_route_legs_first(route);
+///      leg != NULL;
+///      leg = efb_route_legs_next(route))
+/// ```
 typedef struct EfbRoute EfbRoute;
 
 /// A leg `from` one point `to` another.
@@ -95,16 +104,6 @@ typedef struct {
   /// The wind speed.
   EfbSpeed speed;
 } EfbWind;
-
-/// An array.
-typedef struct {
-  /// The pointer to the first element within the array.
-  const EfbLeg **data;
-  /// The length of the array.
-  size_t len;
-  /// The capacity of the array.
-  size_t capacity;
-} EfbArrayLeg;
 
 /// A vertical distance.
 typedef enum {
@@ -227,18 +226,15 @@ efb_fms_route_ref(EfbFms *fms);
 void
 efb_fms_route_unref(EfbRoute *route);
 
-/// Returns an array of pointer to the legs.
-///
-/// # Safety
-///
-/// It's up to the caller to free the allocated memory of the array by
-/// calling [efb_route_legs_free].
-EfbArrayLeg
-efb_route_legs_new(const EfbRoute *route);
+/// Returns the first leg in the route.
+const EfbLeg *
+efb_route_legs_first(EfbRoute *route);
 
-/// Frees the memory of the legs array.
-void
-efb_route_legs_free(EfbArrayLeg *legs);
+/// Returns the next leg in the route.
+///
+/// When the end of the legs is reached, this function returns a null pointer.
+const EfbLeg *
+efb_route_legs_next(EfbRoute *route);
 
 #ifdef __cplusplus
 } // extern "C"
