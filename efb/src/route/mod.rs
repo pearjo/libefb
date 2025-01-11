@@ -154,13 +154,13 @@ impl Route {
     /// Returns the final leg but going to the alternate.
     pub fn alternate(&self) -> Option<Leg> {
         let final_leg = self.legs[self.legs.len() - 1].clone();
-        Some(Leg {
-            from: final_leg.from,
-            to: self.alternate.clone()?,
-            level: final_leg.level,
-            tas: final_leg.tas,
-            wind: final_leg.wind,
-        })
+        Some(Leg::new(
+            final_leg.from().clone(),
+            self.alternate.clone()?,
+            final_leg.level().copied(),
+            final_leg.tas().copied(),
+            final_leg.wind().copied(),
+        ))
     }
 
     /// Returns the fuel consumption en-route for the given performance.
@@ -175,7 +175,7 @@ impl Route {
     pub fn ete(&self) -> Option<Duration> {
         self.legs
             .iter()
-            .filter_map(|leg| leg.ete())
+            .filter_map(|leg| leg.ete().cloned())
             .reduce(|acc, ete| acc + ete)
     }
 
@@ -203,13 +203,7 @@ impl Route {
 
             match (from.clone(), to.clone()) {
                 (Some(from), Some(to)) => {
-                    legs.push(Leg {
-                        from,
-                        to,
-                        level,
-                        tas,
-                        wind,
-                    });
+                    legs.push(Leg::new(from, to, level, tas, wind));
                 }
                 _ => continue,
             }

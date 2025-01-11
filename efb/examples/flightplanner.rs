@@ -93,8 +93,8 @@ fn main() {
     for leg in route.legs() {
         println!(
             "{} - {}: TC: {}, dist: {}, MC: {}, MH: {}, ETE: {}",
-            leg.from.ident(),
-            leg.to.ident(),
+            leg.from().ident(),
+            leg.to().ident(),
             leg.bearing(),
             leg.dist().to_nm(),
             leg.mc(),
