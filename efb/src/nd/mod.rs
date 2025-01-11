@@ -100,12 +100,12 @@ impl NavigationData {
         self.waypoints
             .iter()
             .find(|&wp| wp.ident() == ident)
-            .map(|wp| NavAid::Waypoint(Rc::clone(&wp)))
+            .map(|wp| NavAid::Waypoint(Rc::clone(wp)))
             .or(self
                 .airports
                 .iter()
                 .find(|&aprt| aprt.ident() == ident)
-                .map(|aprt| NavAid::Airport(Rc::clone(&aprt))))
+                .map(|aprt| NavAid::Airport(Rc::clone(aprt))))
     }
 
     pub fn read(&mut self, s: &str, fmt: InputFormat) -> Result<(), Error> {

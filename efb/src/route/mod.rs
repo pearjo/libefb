@@ -132,7 +132,7 @@ impl Route {
     ///
     /// The cruise speed or level is remove from the route by setting it to
     /// `None`.
-    pub fn set_cruise(&mut self, speed: Option<Speed>, level: Option<VerticalDistance>) {
+    pub fn set_cruise(&mut self, _speed: Option<Speed>, _level: Option<VerticalDistance>) {
         todo!("Add/remove speed and level from the elements")
     }
 
@@ -189,9 +189,9 @@ impl Route {
 
         for element in elements {
             match element {
-                RouteElement::Speed(value) => tas = Some(value.clone()),
-                RouteElement::Level(value) => level = Some(value.clone()),
-                RouteElement::Wind(value) => wind = Some(value.clone()),
+                RouteElement::Speed(value) => tas = Some(*value),
+                RouteElement::Level(value) => level = Some(*value),
+                RouteElement::Wind(value) => wind = Some(*value),
                 RouteElement::NavAid(navaid) => {
                     if from.is_none() {
                         from = Some(navaid.clone());
@@ -218,5 +218,11 @@ impl Route {
         }
 
         legs
+    }
+}
+
+impl Default for Route {
+    fn default() -> Self {
+        Self::new()
     }
 }

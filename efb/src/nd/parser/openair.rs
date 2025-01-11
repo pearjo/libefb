@@ -83,13 +83,10 @@ impl From<&mut OpenAirElement> for Airspace {
     fn from(element: &mut OpenAirElement) -> Self {
         let mut coords = element.dp.clone().into_inner();
 
-        match coords.first() {
-            Some(first) => {
-                if first != coords.last().unwrap() {
-                    coords.push(first.clone());
-                }
+        if let Some(first) = coords.first() {
+            if first != coords.last().unwrap() {
+                coords.push(*first);
             }
-            None => (),
         }
 
         Self {

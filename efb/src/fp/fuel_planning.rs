@@ -51,11 +51,11 @@ pub struct FuelPlanning {
     pub reserve: Fuel,
 }
 
-impl<'a> FuelPlanning {
+impl FuelPlanning {
     pub fn new(
         policy: FuelPolicy,
         taxi: Fuel,
-        route: Ref<'a, Route>,
+        route: Ref<'_, Route>,
         reserve: &Reserve,
         perf: &Performance,
     ) -> Option<Self> {
@@ -98,10 +98,9 @@ impl<'a> FuelPlanning {
     pub fn extra(&self) -> Option<Fuel> {
         match &self.policy {
             FuelPolicy::MinimumFuel => None,
-            FuelPolicy::MaximumFuel(ac) => match ac.usable_fuel() {
-                Some(usable_fuel) => Some(usable_fuel - self.min()),
-                None => None,
-            },
+            FuelPolicy::MaximumFuel(ac) => {
+                ac.usable_fuel().map(|usable_fuel| usable_fuel - self.min())
+            }
             FuelPolicy::Manual(fuel) => Some(*fuel - self.min()),
             FuelPolicy::Landing(fuel) => Some(*fuel), // TODO is this correct?
             FuelPolicy::Extra(fuel) => Some(*fuel),

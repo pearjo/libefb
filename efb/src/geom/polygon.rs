@@ -49,13 +49,19 @@ impl Polygon {
                     x: coord.longitude,
                     y: coord.latitude,
                 })
-                .collect(),
+                .collect::<Vec<algorithm::Point>>(),
         ) != 0
     }
 
     /// Consumes the Polygon, returning its inner vector of coordinates.
     pub fn into_inner(self) -> Vec<Coordinate> {
         self.coords
+    }
+}
+
+impl Default for Polygon {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

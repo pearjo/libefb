@@ -69,7 +69,7 @@ pub enum FieldError {
     NumberOutOfRange,
 }
 
-trait Field
+pub trait Field
 where
     Self: Sized + str::FromStr,
 {

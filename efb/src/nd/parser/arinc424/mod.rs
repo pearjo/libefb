@@ -40,14 +40,13 @@ impl FromStr for Arinc424Record {
                     waypoints.push(Rc::new(waypoint_record.into()));
                 }
             }
-            "P " => match &line[12..13] {
-                "A" => {
+            "P " => {
+                if &line[12..13] == "A" {
                     if let Ok(airport_record) = arinc424::Airport::from_str(line) {
                         airports.push(Rc::new(airport_record.into()));
                     }
                 }
-                _ => {}
-            },
+            }
             _ => {}
         });
 

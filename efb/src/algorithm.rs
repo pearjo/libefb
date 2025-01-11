@@ -33,7 +33,7 @@ type Line = (Point, Point);
 /// This algorithm is based on [Dan Sunday][sunday]'s improved winding number algorithm.
 ///
 /// [sunday]: https://web.archive.org/web/20130126163405/http://geomalgorithms.com/a03-_inclusion.html
-pub fn winding_number(p: &Point, v: &Vec<Point>) -> i32 {
+pub fn winding_number(p: &Point, v: &[Point]) -> i32 {
     let mut wn = 0;
 
     for i in 0..(v.len() - 1) {
@@ -44,12 +44,10 @@ pub fn winding_number(p: &Point, v: &Vec<Point>) -> i32 {
                     wn += 1;
                 }
             }
-        } else {
-            if v[i + 1].y <= p.y {
-                // a downward crossing
-                if is_left_of_line(p, &(v[i], v[i + 1])) < 0.0 {
-                    wn -= 1;
-                }
+        } else if v[i + 1].y <= p.y {
+            // a downward crossing
+            if is_left_of_line(p, &(v[i], v[i + 1])) < 0.0 {
+                wn -= 1;
             }
         }
     }

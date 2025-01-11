@@ -49,7 +49,7 @@ pub struct Fuel {
 impl Fuel {
     pub fn from_volume(v: Volume, fuel_type: &FuelType) -> Self {
         Self {
-            fuel_type: fuel_type.clone(),
+            fuel_type: *fuel_type,
             mass: v * fuel_type.density(),
         }
     }

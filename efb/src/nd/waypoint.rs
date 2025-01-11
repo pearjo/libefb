@@ -59,10 +59,7 @@ impl Fix for Waypoint {
         let region_prefix: String = match self.region {
             Region::Enroute => String::default(),
             Region::TerminalArea(airport_ident) => {
-                match String::from_utf8(vec![airport_ident[2], airport_ident[3]]) {
-                    Ok(airport_prefix) => airport_prefix,
-                    _ => String::default(),
-                }
+                String::from_utf8(vec![airport_ident[2], airport_ident[3]]).unwrap_or_default()
             }
         };
 

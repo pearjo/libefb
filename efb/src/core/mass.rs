@@ -26,7 +26,7 @@ pub enum Mass {
 impl Unit for Mass {
     fn si(&self) -> f32 {
         match self {
-            Self::Kilogram(value) => value.clone(),
+            Self::Kilogram(value) => *value,
         }
     }
 

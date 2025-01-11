@@ -164,10 +164,10 @@ impl Aircraft {
     /// tanks length, an error is returned.
     pub fn mb(
         &self,
-        mass_on_ramp: &Vec<Mass>,
-        mass_after_landing: &Vec<Mass>,
-        fuel_on_ramp: &Vec<Fuel>,
-        fuel_after_landing: &Vec<Fuel>,
+        mass_on_ramp: &[Mass],
+        mass_after_landing: &[Mass],
+        fuel_on_ramp: &[Fuel],
+        fuel_after_landing: &[Fuel],
     ) -> Result<MassAndBalance, Error> {
         let mut stations: Vec<Station> = Vec::new();
         stations.append(&mut self.stations_from_mass(mass_on_ramp, mass_after_landing)?);
@@ -177,8 +177,8 @@ impl Aircraft {
 
     pub fn mb_from_equally_distributed_fuel(
         &self,
-        mass_on_ramp: &Vec<Mass>,
-        mass_after_landing: &Vec<Mass>,
+        mass_on_ramp: &[Mass],
+        mass_after_landing: &[Mass],
         on_ramp: &Fuel,
         after_landing: &Fuel,
     ) -> Result<MassAndBalance, Error> {
@@ -194,7 +194,7 @@ impl Aircraft {
 
     pub fn mb_from_const_mass_and_equally_distributed_fuel(
         &self,
-        mass: &Vec<Mass>,
+        mass: &[Mass],
         on_ramp: &Fuel,
         after_landing: &Fuel,
     ) -> Result<MassAndBalance, Error> {
@@ -204,9 +204,9 @@ impl Aircraft {
     /// Returns a station representing the empty aircraft.
     fn empty(&self) -> Station {
         Station {
-            on_ramp: self.empty_mass.clone(),
-            after_landing: self.empty_mass.clone(),
-            arm: self.empty_balance.clone(),
+            on_ramp: self.empty_mass,
+            after_landing: self.empty_mass,
+            arm: self.empty_balance,
         }
     }
 
@@ -214,8 +214,8 @@ impl Aircraft {
     /// is mapped to the station arms at the same index.
     fn stations_from_mass(
         &self,
-        on_ramp: &Vec<Mass>,
-        after_landing: &Vec<Mass>,
+        on_ramp: &[Mass],
+        after_landing: &[Mass],
     ) -> Result<Vec<Station>, Error> {
         let n = self.station_arms.len();
 
@@ -241,8 +241,8 @@ impl Aircraft {
     /// is mapped to the tanks at the same index.
     fn stations_from_fuel(
         &self,
-        on_ramp: &Vec<Fuel>,
-        after_landing: &Vec<Fuel>,
+        on_ramp: &[Fuel],
+        after_landing: &[Fuel],
     ) -> Result<Vec<Station>, Error> {
         let n = self.tanks.len();
 

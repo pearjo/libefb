@@ -80,3 +80,9 @@ impl FMS {
         &mut self.flight_planner
     }
 }
+
+impl Default for FMS {
+    fn default() -> Self {
+        Self::new()
+    }
+}

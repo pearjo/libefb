@@ -45,9 +45,8 @@ impl MassAndBalance {
         for station in stations {
             on_ramp = on_ramp + station.on_ramp;
             after_landing = after_landing + station.after_landing;
-            moment_on_ramp = moment_on_ramp + station.on_ramp.si() * station.arm.si();
-            moment_after_landing =
-                moment_after_landing + station.after_landing.si() * station.arm.si();
+            moment_on_ramp += station.on_ramp.si() * station.arm.si();
+            moment_after_landing += station.after_landing.si() * station.arm.si();
         }
 
         Self {
