@@ -75,6 +75,31 @@ typedef struct {
   };
 } EfbAngle;
 
+/// A metrical or nautical distance.
+typedef enum {
+  Meter,
+  NauticalMiles,
+} EfbDistance_Tag;
+
+typedef struct {
+  EfbDistance_Tag tag;
+  union {
+    struct {
+      float meter;
+    };
+    struct {
+      float nautical_miles;
+    };
+  };
+} EfbDistance;
+
+/// A duration measured in hours, minutes and seconds.
+typedef struct {
+  uint8_t hours;
+  uint8_t minutes;
+  uint8_t seconds;
+} EfbDuration;
+
 /// The speed in either nautical or metrical units.
 typedef enum {
   Knots,
@@ -139,31 +164,6 @@ typedef struct {
   };
 } EfbVerticalDistance;
 
-/// A metrical or nautical distance.
-typedef enum {
-  Meter,
-  NauticalMiles,
-} EfbDistance_Tag;
-
-typedef struct {
-  EfbDistance_Tag tag;
-  union {
-    struct {
-      float meter;
-    };
-    struct {
-      float nautical_miles;
-    };
-  };
-} EfbDistance;
-
-/// A duration measured in hours, minutes and seconds.
-typedef struct {
-  uint8_t hours;
-  uint8_t minutes;
-  uint8_t seconds;
-} EfbDuration;
-
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -177,6 +177,46 @@ extern "C" {
 /// returned by a function of this library.
 void
 efb_string_free(char *s);
+
+/// Returns the angle formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_angle_to_string(const EfbAngle *angle);
+
+/// Returns the distance formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_distance_to_string(const EfbDistance *distance);
+
+/// Returns the duration formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_duration_to_string(const EfbDuration *duration);
+
+/// Returns the wind formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_wind_to_string(const EfbWind *wind);
+
+/// Returns the speed formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_speed_to_string(const EfbSpeed *speed);
 
 /// Creates and returns a new FMS.
 ///

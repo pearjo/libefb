@@ -22,7 +22,7 @@ pub use route::*;
 use std::ffi::{c_char, CString};
 use std::string::ToString;
 
-use efb::{Speed, Wind};
+use efb::{Angle, Duration, Distance, Speed, Wind};
 
 /// Returns the value as C string if [`ToString`] is implemented.
 fn to_string<T>(value: *const T) -> *mut c_char
@@ -51,4 +51,54 @@ pub unsafe extern "C" fn efb_string_free(s: *mut c_char) {
     if !s.is_null() {
         drop(unsafe { CString::from_raw(s) });
     }
+}
+
+/// Returns the angle formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+#[no_mangle]
+pub unsafe extern "C" fn efb_angle_to_string(angle: *const Angle) -> *mut c_char {
+    to_string(angle)
+}
+
+/// Returns the distance formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+#[no_mangle]
+pub unsafe extern "C" fn efb_distance_to_string(distance: *const Distance) -> *mut c_char {
+    to_string(distance)
+}
+
+/// Returns the duration formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+#[no_mangle]
+pub unsafe extern "C" fn efb_duration_to_string(duration: *const Duration) -> *mut c_char {
+    to_string(duration)
+}
+
+/// Returns the wind formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+#[no_mangle]
+pub unsafe extern "C" fn efb_wind_to_string(wind: *const Wind) -> *mut c_char {
+    to_string(wind)
+}
+
+/// Returns the speed formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+#[no_mangle]
+pub unsafe extern "C" fn efb_speed_to_string(speed: *const Speed) -> *mut c_char {
+    to_string(speed)
 }

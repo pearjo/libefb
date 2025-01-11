@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-CFLAGS = -I$(PWD)/../../include
+CFLAGS = -I$(PWD)/../include
 LDFLAGS = -L$(PWD)/../target/debug
-LIBS = -lefb
+LIBS = -lefb_c
 
-.PHONY: openair
+.PHONY: flightplanner
 
-openair:
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LIBS) -o openair openair.c
+flightplanner:
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LIBS) -g -o flightplanner flightplanner.c
