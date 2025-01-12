@@ -102,9 +102,15 @@ impl SubSystemBuilder for FlightPlanningBuilder {
     type SubSystem = FlightPlanning;
 
     fn build(&self, route: &Route) -> Result<FlightPlanning, Error> {
-        let fuel_planning = match (&self.policy, self.taxi, self.reserve, &self.perf) {
-            (Some(policy), Some(taxi), Some(reserve), Some(perf)) => {
-                FuelPlanning::new(policy.clone(), taxi, route, &reserve, perf)
+        let fuel_planning = match (
+            &self.aircraft,
+            &self.policy,
+            self.taxi,
+            self.reserve,
+            &self.perf,
+        ) {
+            (Some(aircraft), Some(policy), Some(taxi), Some(reserve), Some(perf)) => {
+                FuelPlanning::new(aircraft, policy.clone(), taxi, route, &reserve, perf)
             }
             _ => None,
         };

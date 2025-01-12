@@ -17,6 +17,7 @@ use super::{Aircraft, Performance};
 use crate::route::Route;
 use crate::{Duration, Fuel, VerticalDistance};
 
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub enum Reserve {
     Manual(Duration),
@@ -30,10 +31,11 @@ impl Reserve {
     }
 }
 
+#[repr(C)]
 #[derive(Clone)]
 pub enum FuelPolicy {
     MinimumFuel,
-    MaximumFuel(Aircraft), // TODO remove need to clone an aircraft here
+    MaximumFuel,
     Manual(Fuel),
     Landing(Fuel),
     Extra(Fuel),
@@ -41,16 +43,19 @@ pub enum FuelPolicy {
 
 #[derive(Clone)]
 pub struct FuelPlanning {
-    policy: FuelPolicy,
     pub taxi: Fuel,
     pub climb: Option<Fuel>,
     pub trip: Fuel,
     pub alternate: Option<Fuel>,
     pub reserve: Fuel,
+
+    policy: FuelPolicy,
+    usable_fuel: Option<Fuel>,
 }
 
 impl FuelPlanning {
     pub fn new(
+        aircraft: &Aircraft,
         policy: FuelPolicy,
         taxi: Fuel,
         route: &Route,
@@ -59,6 +64,7 @@ impl FuelPlanning {
     ) -> Option<Self> {
         Some(Self {
             policy,
+            usable_fuel: aircraft.usable_fuel(),
             taxi,
             climb: None, // TODO add climb fuel
             trip: route.fuel(perf)?,
@@ -96,9 +102,7 @@ impl FuelPlanning {
     pub fn extra(&self) -> Option<Fuel> {
         match &self.policy {
             FuelPolicy::MinimumFuel => None,
-            FuelPolicy::MaximumFuel(ac) => {
-                ac.usable_fuel().map(|usable_fuel| usable_fuel - self.min())
-            }
+            FuelPolicy::MaximumFuel => self.usable_fuel.map(|usable_fuel| usable_fuel - self.min()),
             FuelPolicy::Manual(fuel) => Some(*fuel - self.min()),
             FuelPolicy::Landing(fuel) => Some(*fuel), // TODO is this correct?
             FuelPolicy::Extra(fuel) => Some(*fuel),
