@@ -27,15 +27,14 @@ documentation_length = "full"
 style = "type"
 usize_is_size_t = true
 
+[export]
+prefix = "Efb"
+renaming_overrides_prefixing = true
+
 [export.rename]
-"Angle" = "EfbAngle"
-"Distance" = "EfbDistance"
-"Duration" = "EfbDuration"
-"InputFormat" = "EfbInputFormat"
-"Leg" = "EfbLeg"
-"Speed" = "EfbSpeed"
-"VerticalDistance" = "EfbVerticalDistance"
-"Wind" = "EfbWind"
+# avoid double prefixing of wrapped types
+"EfbFMS" = "EfbFMS"
+"EfbRoute" = "EfbRoute"
 
 [export.mangle]
 remove_underscores = true

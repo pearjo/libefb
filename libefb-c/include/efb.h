@@ -34,7 +34,7 @@ typedef enum {
 ///
 /// This type wraps the [FMS] which is the integral system of this library. The
 /// FMS holds all information like the navigation data or the route.
-typedef struct EfbFms EfbFms;
+typedef struct EfbFMS EfbFMS;
 
 /// The [Route] to fly.
 ///
@@ -375,12 +375,12 @@ efb_volume_l(float l);
 /// # Safety
 ///
 /// The caller is responsible to free the allocated FMS by calling efb_fms_free.
-EfbFms *
+EfbFMS *
 efb_fms_new(void);
 
 /// Frees the memory of the allocated FMS.
 void
-efb_fms_free(EfbFms *fms);
+efb_fms_free(EfbFMS *fms);
 
 /// Reads the string which is in the fmt into the navigation database.
 ///
@@ -388,7 +388,7 @@ efb_fms_free(EfbFms *fms);
 ///
 /// It is up to the caller to guarantee that `s` points to a valid string.
 void
-efb_fms_nd_read(EfbFms *fms, const char *s, EfbInputFormat fmt);
+efb_fms_nd_read(EfbFMS *fms, const char *s, EfbInputFormat fmt);
 
 /// Reads the file at the path which is in the fmt into the navigation database.
 ///
@@ -396,7 +396,7 @@ efb_fms_nd_read(EfbFms *fms, const char *s, EfbInputFormat fmt);
 ///
 /// It is up to the caller to guarantee that `path` points to a valid string.
 void
-efb_fms_nd_read_file(EfbFms *fms, const char *path, EfbInputFormat fmt);
+efb_fms_nd_read_file(EfbFMS *fms, const char *path, EfbInputFormat fmt);
 
 /// Decodes the route and enters it into the FMS.
 ///
@@ -404,7 +404,7 @@ efb_fms_nd_read_file(EfbFms *fms, const char *path, EfbInputFormat fmt);
 ///
 /// It is up to the caller to guarantee that `route` points to a valid string.
 void
-efb_fms_decode(EfbFms *fms, const char *route);
+efb_fms_decode(EfbFMS *fms, const char *route);
 
 /// Returns a reference to the FMS route.
 ///
@@ -412,7 +412,7 @@ efb_fms_decode(EfbFms *fms, const char *route);
 ///
 /// It's up to the caller to unref the returned pointer.
 EfbRoute *
-efb_fms_route_ref(EfbFms *fms);
+efb_fms_route_ref(EfbFMS *fms);
 
 /// Decreases the reference count of the route.
 void

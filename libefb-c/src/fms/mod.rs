@@ -25,7 +25,7 @@ use super::EfbRoute;
 ///
 /// This type wraps the [FMS] which is the integral system of this library. The
 /// FMS holds all information like the navigation data or the route.
-pub struct EfbFms {
+pub struct EfbFMS {
     inner: FMS,
 }
 
@@ -35,14 +35,14 @@ pub struct EfbFms {
 ///
 /// The caller is responsible to free the allocated FMS by calling efb_fms_free.
 #[no_mangle]
-pub unsafe extern "C" fn efb_fms_new() -> Box<EfbFms> {
-    let fms = EfbFms { inner: FMS::new() };
+pub unsafe extern "C" fn efb_fms_new() -> Box<EfbFMS> {
+    let fms = EfbFMS { inner: FMS::new() };
     Box::new(fms)
 }
 
 /// Frees the memory of the allocated FMS.
 #[no_mangle]
-pub extern "C" fn efb_fms_free(fms: Option<Box<EfbFms>>) {
+pub extern "C" fn efb_fms_free(fms: Option<Box<EfbFMS>>) {
     drop(fms);
 }
 
@@ -52,7 +52,7 @@ pub extern "C" fn efb_fms_free(fms: Option<Box<EfbFms>>) {
 ///
 /// It is up to the caller to guarantee that `s` points to a valid string.
 #[no_mangle]
-pub unsafe extern "C" fn efb_fms_nd_read(fms: &mut EfbFms, s: *const c_char, fmt: InputFormat) {
+pub unsafe extern "C" fn efb_fms_nd_read(fms: &mut EfbFMS, s: *const c_char, fmt: InputFormat) {
     if let Ok(s) = unsafe { CStr::from_ptr(s).to_str() } {
         let nd = fms.inner.nd();
         let _ = nd.read(s, fmt);
@@ -66,7 +66,7 @@ pub unsafe extern "C" fn efb_fms_nd_read(fms: &mut EfbFms, s: *const c_char, fmt
 /// It is up to the caller to guarantee that `path` points to a valid string.
 #[no_mangle]
 pub unsafe extern "C" fn efb_fms_nd_read_file(
-    fms: &mut EfbFms,
+    fms: &mut EfbFMS,
     path: *const c_char,
     fmt: InputFormat,
 ) {
@@ -82,7 +82,7 @@ pub unsafe extern "C" fn efb_fms_nd_read_file(
 ///
 /// It is up to the caller to guarantee that `route` points to a valid string.
 #[no_mangle]
-pub unsafe extern "C" fn efb_fms_decode(fms: &mut EfbFms, route: *const c_char) {
+pub unsafe extern "C" fn efb_fms_decode(fms: &mut EfbFMS, route: *const c_char) {
     if let Ok(route) = unsafe { CStr::from_ptr(route).to_str() } {
         let _ = fms.inner.decode(route);
     }
@@ -94,7 +94,7 @@ pub unsafe extern "C" fn efb_fms_decode(fms: &mut EfbFms, route: *const c_char) 
 ///
 /// It's up to the caller to unref the returned pointer.
 #[no_mangle]
-pub unsafe extern "C" fn efb_fms_route_ref(fms: &mut EfbFms) -> Box<EfbRoute<'_>> {
+pub unsafe extern "C" fn efb_fms_route_ref(fms: &mut EfbFMS) -> Box<EfbRoute<'_>> {
     Box::new(EfbRoute::from(fms.inner.route()))
 }
 
