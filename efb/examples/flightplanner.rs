@@ -107,9 +107,9 @@ fn main() {
         println!("\nETE: {}", ete);
     }
 
-    // Now we can enter some data into the flight planner to get a fuel planning
+    // Now we can enter some data into the flight planning to get a fuel planning
     // and mass & balance calculation.
-    fms.flight_planner_builder()
+    fms.flight_planning_builder()
         .aircraft(aircraft)
         .mass(vec![
             // we're in the front
@@ -124,8 +124,8 @@ fn main() {
         .reserve(Reserve::Manual(Duration::from(1800))) // 30 min
         .perf(perf);
 
-    if let Ok(flight_planner) = fms.flight_planner() {
-        if let Some(fuel_planning) = flight_planner.fuel_planning() {
+    if let Ok(flight_planning) = fms.flight_planning() {
+        if let Some(fuel_planning) = flight_planning.fuel_planning() {
             println!("\n   Fuel\n");
 
             println!(
@@ -141,7 +141,7 @@ fn main() {
             );
         }
 
-        if let Some(is_balanced) = flight_planner.is_balanced() {
+        if let Some(is_balanced) = flight_planning.is_balanced() {
             println!("\n   Mass & Balance\n");
 
             // With a proper configured aircraft and fuel planning, we get our mass &
@@ -149,7 +149,7 @@ fn main() {
             println!("balanced: {}", is_balanced);
         }
 
-        if let Some(mb) = flight_planner.mb() {
+        if let Some(mb) = flight_planning.mb() {
             println!(
                 "on ramp: {} - after landing: {}",
                 mb.mass_on_ramp(),

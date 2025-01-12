@@ -22,7 +22,7 @@ use crate::{Fuel, Mass};
 use super::{SubSystem, SubSystemBuilder};
 
 #[derive(Default)]
-pub struct FlightPlannerBuilder {
+pub struct FlightPlanningBuilder {
     aircraft: Option<Aircraft>,
     mass: Option<Vec<Mass>>,
     policy: Option<FuelPolicy>,
@@ -31,8 +31,8 @@ pub struct FlightPlannerBuilder {
     perf: Option<Performance>,
 }
 
-impl FlightPlannerBuilder {
-    pub fn new() -> FlightPlannerBuilder {
+impl FlightPlanningBuilder {
+    pub fn new() -> FlightPlanningBuilder {
         Self {
             aircraft: None,
             mass: None,
@@ -43,41 +43,41 @@ impl FlightPlannerBuilder {
         }
     }
 
-    pub fn aircraft(&mut self, aircraft: Aircraft) -> &mut FlightPlannerBuilder {
+    pub fn aircraft(&mut self, aircraft: Aircraft) -> &mut FlightPlanningBuilder {
         self.aircraft = Some(aircraft);
         self
     }
 
-    pub fn mass(&mut self, mass: Vec<Mass>) -> &mut FlightPlannerBuilder {
+    pub fn mass(&mut self, mass: Vec<Mass>) -> &mut FlightPlanningBuilder {
         self.mass = Some(mass);
         self
     }
 
-    pub fn policy(&mut self, policy: FuelPolicy) -> &mut FlightPlannerBuilder {
+    pub fn policy(&mut self, policy: FuelPolicy) -> &mut FlightPlanningBuilder {
         self.policy = Some(policy);
         self
     }
 
-    pub fn taxi(&mut self, taxi: Fuel) -> &mut FlightPlannerBuilder {
+    pub fn taxi(&mut self, taxi: Fuel) -> &mut FlightPlanningBuilder {
         self.taxi = Some(taxi);
         self
     }
 
-    pub fn reserve(&mut self, reserve: Reserve) -> &mut FlightPlannerBuilder {
+    pub fn reserve(&mut self, reserve: Reserve) -> &mut FlightPlanningBuilder {
         self.reserve = Some(reserve);
         self
     }
 
-    pub fn perf(&mut self, perf: Performance) -> &mut FlightPlannerBuilder {
+    pub fn perf(&mut self, perf: Performance) -> &mut FlightPlanningBuilder {
         self.perf = Some(perf);
         self
     }
 }
 
-impl SubSystemBuilder for FlightPlannerBuilder {
-    type SubSystem = FlightPlanner;
+impl SubSystemBuilder for FlightPlanningBuilder {
+    type SubSystem = FlightPlanning;
 
-    fn build(&self, route: &Route) -> Result<FlightPlanner, Error> {
+    fn build(&self, route: &Route) -> Result<FlightPlanning, Error> {
         let fuel_planning = match (&self.policy, self.taxi, self.reserve, &self.perf) {
             (Some(policy), Some(taxi), Some(reserve), Some(perf)) => {
                 FuelPlanning::new(policy.clone(), taxi, route, &reserve, perf)
@@ -96,7 +96,7 @@ impl SubSystemBuilder for FlightPlannerBuilder {
             _ => None,
         };
 
-        Ok(FlightPlanner {
+        Ok(FlightPlanning {
             aircraft: self.aircraft.clone(),
             fuel_planning,
             mb,
@@ -104,13 +104,13 @@ impl SubSystemBuilder for FlightPlannerBuilder {
     }
 }
 
-pub struct FlightPlanner {
+pub struct FlightPlanning {
     aircraft: Option<Aircraft>,
     fuel_planning: Option<FuelPlanning>,
     mb: Option<MassAndBalance>,
 }
 
-impl FlightPlanner {
+impl FlightPlanning {
     pub fn fuel_planning(&self) -> Option<&FuelPlanning> {
         self.fuel_planning.as_ref()
     }
@@ -127,6 +127,6 @@ impl FlightPlanner {
     }
 }
 
-impl SubSystem for FlightPlanner {
-    type Builder = FlightPlannerBuilder;
+impl SubSystem for FlightPlanning {
+    type Builder = FlightPlanningBuilder;
 }

@@ -16,14 +16,14 @@
 use crate::error::Error;
 use crate::route::Route;
 
-mod flight_planner;
+mod flight_planning;
 
-pub use flight_planner::*;
+pub use flight_planning::*;
 
 /// A trait to implement a type as FMS sub-system.
 ///
 /// A sub-system implements an encapsulated part of the FMS e.g. a flight
-/// planner. It is created by a builder that holds optional values that are
+/// planning. It is created by a builder that holds optional values that are
 /// needed to create the system and a reference to the Route during creation.
 pub trait SubSystem {
     /// The associated input that is entered into this type.
