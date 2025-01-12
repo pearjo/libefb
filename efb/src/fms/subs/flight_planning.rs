@@ -52,8 +52,8 @@ impl FlightPlanningBuilder {
         self
     }
 
-    pub fn mass(&self) -> Option<&Vec<Mass>> {
-        self.mass.as_ref()
+    pub fn mass(&mut self) -> Option<&mut Vec<Mass>> {
+        self.mass.as_mut()
     }
 
     pub fn set_mass(&mut self, mass: Vec<Mass>) -> &mut FlightPlanningBuilder {

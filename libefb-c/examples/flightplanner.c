@@ -28,6 +28,35 @@ const char *ARINC_424_RECORDS =
     "SEURP EDHFEDA        0        N N53593300E009343600E000000082             "
     "      P    MWGE    ITZEHOE/HUNGRIGER WOLF        320782409";
 
+// Performance setting with 65% load in cruise. This is the performance
+// profile of a Cessna C172 with an TAE125-02-114 Diesel engine.
+EfbPerformanceAtLevel
+c172_tae125_02_114_at_65_percent_load(const EfbVerticalDistance *level) {
+  EfbSpeed tas;
+
+  const EfbVerticalDistance alt_10000 = efb_vertical_distance_altitude(10000);
+  const EfbVerticalDistance alt_8000 = efb_vertical_distance_altitude(8000);
+  const EfbVerticalDistance alt_6000 = efb_vertical_distance_altitude(6000);
+  const EfbVerticalDistance alt_4000 = efb_vertical_distance_altitude(4000);
+
+  if (efb_vertical_distance_gte(level, &alt_10000)) {
+    tas = efb_speed_knots(114.0);
+  } else if (efb_vertical_distance_gte(level, &alt_8000)) {
+    tas = efb_speed_knots(112.0);
+  } else if (efb_vertical_distance_gte(level, &alt_6000)) {
+    tas = efb_speed_knots(110.0);
+  } else if (efb_vertical_distance_gte(level, &alt_4000)) {
+    tas = efb_speed_knots(109.0);
+  } else {
+    tas = efb_speed_knots(107.0);
+  };
+
+  EfbFuelFlow ff = {.tag = PerHour, .per_hour = efb_fuel_diesel_l(21.0)};
+  EfbPerformanceAtLevel at_level = {.tas = tas, .ff = ff};
+
+  return at_level;
+}
+
 int
 main(int argc, char *argv[]) {
   EfbFMS *fms = efb_fms_new();
@@ -108,6 +137,34 @@ main(int argc, char *argv[]) {
   efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(0.0),
                                         efb_distance_m(1.20));
 
+  // Now we can enter some data into the flight planning to get a fuel planning
+  // and mass & balance calculation.
+  EfbFlightPlanningBuilder *builder = efb_flight_planning_builder_new();
+
+  efb_flight_planning_builder_set_aircraft(builder, aircraft_builder);
+  // we're in the front
+  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(80.0));
+  // and no mass on the other stations
+  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(0.0));
+  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(0.0));
+  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(0.0));
+
+  EfbFuelPolicy policy = {.tag = ManualFuel,
+                          .manual_fuel = efb_fuel_diesel_l(80.0)};
+  efb_flight_planning_builder_set_policy(builder, policy);
+  efb_flight_planning_builder_set_taxi(builder, efb_fuel_diesel_l(10.0));
+
+  EfbReserve reserve = {.tag = Manual, .manual = efb_duration(1800)}; // 30 min
+  efb_flight_planning_builder_set_reserve(builder, reserve);
+
+  efb_flight_planning_builder_set_perf(builder,
+                                       c172_tae125_02_114_at_65_percent_load,
+                                       // The data end at 10000 ft so we don't
+                                       // need to create the Performance with
+                                       // more values.
+                                       efb_vertical_distance_altitude(10000));
+
+  efb_flight_planning_builder_free(builder);
   efb_aircraft_builder_free(aircraft_builder);
   efb_fms_route_unref(route);
   efb_fms_free(fms);

@@ -22,8 +22,10 @@ use efb::nd::InputFormat;
 use super::EfbRoute;
 
 mod aircraft_builder;
+mod flight_planning_builder;
 
 pub use aircraft_builder::*;
+pub use flight_planning_builder::*;
 
 /// The Flight Management System (FMS).
 ///

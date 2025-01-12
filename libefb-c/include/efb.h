@@ -55,6 +55,8 @@ typedef struct EfbRoute EfbRoute;
 
 typedef struct EfbFlightPlanning EfbFlightPlanning;
 
+typedef struct EfbFlightPlanningBuilder EfbFlightPlanningBuilder;
+
 /// A leg `from` one point `to` another.
 typedef struct EfbLeg EfbLeg;
 
@@ -253,6 +255,14 @@ typedef struct {
     };
   };
 } EfbFuelFlow;
+
+/// The aircraft performance at a specific level and configuration.
+typedef struct {
+  /// The true airspeed.
+  EfbSpeed tas;
+  /// The fuel flow at the level.
+  EfbFuelFlow ff;
+} EfbPerformanceAtLevel;
 
 #ifdef __cplusplus
 extern "C" {
@@ -485,6 +495,54 @@ efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t i);
 void
 efb_aircraft_builder_cg_envelope_edit(EfbAircraftBuilder *builder, EfbMass mass,
                                       EfbDistance distance, size_t i);
+
+/// Returns a new flight planning builder.
+///
+/// # Safety
+///
+/// The memory allocated for the builder needs to be freed by calling
+/// [`efb_flight_planning_builder_free`].
+EfbFlightPlanningBuilder *
+efb_flight_planning_builder_new(void);
+
+/// Frees the flight planning builder.
+void
+efb_flight_planning_builder_free(EfbFlightPlanningBuilder *builder);
+
+void
+efb_flight_planning_builder_set_aircraft(
+    EfbFlightPlanningBuilder *builder,
+    const EfbAircraftBuilder *aircraft_builder);
+
+void
+efb_flight_planning_builder_mass_push(EfbFlightPlanningBuilder *builder,
+                                      EfbMass mass);
+
+void
+efb_flight_planning_builder_mass_remove(EfbFlightPlanningBuilder *builder,
+                                        size_t i);
+
+void
+efb_flight_planning_builder_mass_edit(EfbFlightPlanningBuilder *builder,
+                                      EfbMass mass, size_t i);
+
+void
+efb_flight_planning_builder_set_policy(EfbFlightPlanningBuilder *builder,
+                                       EfbFuelPolicy policy);
+
+void
+efb_flight_planning_builder_set_taxi(EfbFlightPlanningBuilder *builder,
+                                     EfbFuel taxi);
+
+void
+efb_flight_planning_builder_set_reserve(EfbFlightPlanningBuilder *builder,
+                                        EfbReserve reserve);
+
+void
+efb_flight_planning_builder_set_perf(
+    EfbFlightPlanningBuilder *builder,
+    EfbPerformanceAtLevel (*perf)(const EfbVerticalDistance *),
+    EfbVerticalDistance ceiling);
 
 /// Returns the first leg in the route.
 const EfbLeg *
