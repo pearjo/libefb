@@ -106,11 +106,11 @@ impl SubSystemBuilder for FlightPlanningBuilder {
             &self.aircraft,
             &self.policy,
             self.taxi,
-            self.reserve,
+            &self.reserve,
             &self.perf,
         ) {
             (Some(aircraft), Some(policy), Some(taxi), Some(reserve), Some(perf)) => {
-                FuelPlanning::new(aircraft, policy.clone(), taxi, route, &reserve, perf)
+                FuelPlanning::new(aircraft, policy, taxi, route, reserve, perf)
             }
             _ => None,
         };

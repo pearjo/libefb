@@ -134,7 +134,9 @@ fn main() {
 
             println!(
                 "trip:    {:>4.0}, taxi:  {:>4.0}, reserve: {:>4.0}",
-                fuel_planning.trip, fuel_planning.taxi, fuel_planning.reserve
+                fuel_planning.trip(),
+                fuel_planning.taxi(),
+                fuel_planning.reserve()
             );
 
             println!(

@@ -43,77 +43,116 @@ pub enum FuelPolicy {
 
 #[derive(Clone, Debug)]
 pub struct FuelPlanning {
-    pub taxi: Fuel,
-    pub climb: Option<Fuel>,
-    pub trip: Fuel,
-    pub alternate: Option<Fuel>,
-    pub reserve: Fuel,
-
-    policy: FuelPolicy,
-    usable_fuel: Option<Fuel>,
+    taxi: Fuel,
+    climb: Option<Fuel>,
+    trip: Fuel,
+    alternate: Option<Fuel>,
+    reserve: Fuel,
+    total: Fuel,
+    min: Fuel,
+    extra: Option<Fuel>,
+    after_landing: Fuel,
 }
 
 impl FuelPlanning {
     pub fn new(
         aircraft: &Aircraft,
-        policy: FuelPolicy,
+        policy: &FuelPolicy,
         taxi: Fuel,
         route: &Route,
         reserve: &Reserve,
         perf: &Performance,
     ) -> Option<Self> {
-        Some(Self {
-            policy,
-            usable_fuel: aircraft.usable_fuel(),
-            taxi,
-            climb: None, // TODO add climb fuel
-            trip: route.fuel(perf)?,
-            alternate: {
-                match route.alternate() {
-                    Some(alternate) => alternate.fuel(perf),
-                    _ => None,
+        let climb = None; // TODO add climb fuel
+        let trip = route.fuel(perf)?;
+        let alternate = route.alternate().and_then(|alternate| alternate.fuel(perf));
+        let reserve = reserve.fuel(perf, &route.level()?);
+
+        let min = {
+            let mut min = taxi + trip + reserve;
+
+            if let Some(climb) = climb {
+                min = min + climb;
+            }
+
+            if let Some(alternate) = alternate {
+                min = min + alternate;
+            }
+
+            min
+        };
+
+        let extra = {
+            match policy {
+                FuelPolicy::MinimumFuel => None,
+                FuelPolicy::MaximumFuel => {
+                    aircraft.usable_fuel().map(|usable_fuel| usable_fuel - min)
                 }
-            },
-            reserve: reserve.fuel(perf, &route.level()?),
+                FuelPolicy::ManualFuel(fuel) => Some(*fuel - min),
+                FuelPolicy::FuelAtLanding(fuel) => Some(*fuel), // TODO is this correct?
+                FuelPolicy::ExtraFuel(fuel) => Some(*fuel),
+            }
+        };
+
+        let total = {
+            match extra {
+                Some(extra) => min + extra,
+                None => min,
+            }
+        };
+
+        let after_landing = total - taxi - trip;
+
+        Some(Self {
+            taxi,
+            climb,
+            trip,
+            alternate,
+            reserve,
+            total,
+            min,
+            extra,
+            after_landing,
         })
     }
 
-    pub fn total(&self) -> Fuel {
-        match self.extra() {
-            Some(extra) => self.min() + extra,
-            None => self.min(),
-        }
+    pub fn taxi(&self) -> &Fuel {
+        &self.taxi
     }
 
-    pub fn min(&self) -> Fuel {
-        let mut min = self.taxi + self.trip + self.reserve;
-
-        if let Some(climb) = self.climb {
-            min = min + climb;
-        }
-
-        if let Some(alternate) = self.alternate {
-            min = min + alternate;
-        }
-
-        min
+    pub fn climb(&self) -> Option<&Fuel> {
+        self.climb.as_ref()
     }
 
-    pub fn extra(&self) -> Option<Fuel> {
-        match &self.policy {
-            FuelPolicy::MinimumFuel => None,
-            FuelPolicy::MaximumFuel => self.usable_fuel.map(|usable_fuel| usable_fuel - self.min()),
-            FuelPolicy::ManualFuel(fuel) => Some(*fuel - self.min()),
-            FuelPolicy::FuelAtLanding(fuel) => Some(*fuel), // TODO is this correct?
-            FuelPolicy::ExtraFuel(fuel) => Some(*fuel),
-        }
+    pub fn trip(&self) -> &Fuel {
+        &self.trip
     }
 
-    pub fn on_ramp(&self) -> Fuel {
-        self.total()
+    pub fn alternate(&self) -> Option<&Fuel> {
+        self.alternate.as_ref()
     }
 
-    pub fn after_landing(&self) -> Fuel {
-        self.total() - self.taxi - self.trip
+    pub fn reserve(&self) -> &Fuel {
+        &self.reserve
+    }
+
+    pub fn total(&self) -> &Fuel {
+        &self.total
+    }
+
+    pub fn min(&self) -> &Fuel {
+        &self.min
+    }
+
+    pub fn extra(&self) -> Option<&Fuel> {
+        self.extra.as_ref()
+    }
+
+    pub fn on_ramp(&self) -> &Fuel {
+        &self.total
+    }
+
+    pub fn after_landing(&self) -> &Fuel {
+        &self.after_landing
     }
 }
