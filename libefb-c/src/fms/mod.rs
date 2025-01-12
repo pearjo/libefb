@@ -21,6 +21,10 @@ use efb::nd::InputFormat;
 
 use super::EfbRoute;
 
+mod aircraft_builder;
+
+pub use aircraft_builder::*;
+
 /// The Flight Management System (FMS).
 ///
 /// This type wraps the [FMS] which is the integral system of this library. The

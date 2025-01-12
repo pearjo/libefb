@@ -30,6 +30,8 @@ typedef enum {
   OpenAir,
 } EfbInputFormat;
 
+typedef struct EfbAircraftBuilder EfbAircraftBuilder;
+
 /// The Flight Management System (FMS).
 ///
 /// This type wraps the [FMS] which is the integral system of this library. The
@@ -426,6 +428,63 @@ efb_fms_route_unref(EfbRoute *route);
 /// [`efb_flight_planning_builder_new`].
 const EfbFlightPlanning *
 efb_fms_flight_planning(const EfbFMS *fms);
+
+/// Returns a new aircraft builder.
+///
+/// # Safety
+///
+/// The memory allocated for the builder needs to be freed by calling
+/// [`efb_aircraft_builder_free`].
+EfbAircraftBuilder *
+efb_aircraft_builder_new(void);
+
+/// Frees the aircraft builder.
+void
+efb_aircraft_builder_free(EfbAircraftBuilder *builder);
+
+void
+efb_aircraft_builder_station_arms_push(EfbAircraftBuilder *builder,
+                                       EfbDistance distance);
+
+void
+efb_aircraft_builder_station_arms_remove(EfbAircraftBuilder *builder, size_t i);
+
+void
+efb_aircraft_builder_station_arms_edit(EfbAircraftBuilder *builder,
+                                       EfbDistance distance, size_t i);
+
+void
+efb_aircraft_builder_empty_mass(EfbAircraftBuilder *builder, EfbMass mass);
+
+void
+efb_aircraft_builder_empty_balance(EfbAircraftBuilder *builder,
+                                   EfbDistance distance);
+
+void
+efb_aircraft_builder_fuel_type(EfbAircraftBuilder *builder,
+                               EfbFuelType fuel_type);
+
+void
+efb_aircraft_builder_tanks_push(EfbAircraftBuilder *builder, EfbVolume capacity,
+                                EfbDistance arm);
+
+void
+efb_aircraft_builder_tanks_remove(EfbAircraftBuilder *builder, size_t i);
+
+void
+efb_aircraft_builder_tanks_edit(EfbAircraftBuilder *builder, EfbVolume capacity,
+                                EfbDistance arm, size_t i);
+
+void
+efb_aircraft_builder_cg_envelope_push(EfbAircraftBuilder *builder, EfbMass mass,
+                                      EfbDistance distance);
+
+void
+efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t i);
+
+void
+efb_aircraft_builder_cg_envelope_edit(EfbAircraftBuilder *builder, EfbMass mass,
+                                      EfbDistance distance, size_t i);
 
 /// Returns the first leg in the route.
 const EfbLeg *

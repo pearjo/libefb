@@ -67,6 +67,48 @@ main(int argc, char *argv[]) {
     efb_string_free(ete);
   }
 
+  // Loading the database and decoding a route was simple so far. Now we get to
+  // the part of the flight planning. This needs some more definitions like an
+  // aircraft and performance data about how we want to plan the flight. Thus, a
+  // lot of verbose definitions follow.
+
+  // now we'll build a C172
+  EfbAircraftBuilder *aircraft_builder = efb_aircraft_builder_new();
+
+  // the front seats
+  efb_aircraft_builder_station_arms_push(aircraft_builder,
+                                         efb_distance_m(0.94));
+  // the back seats
+  efb_aircraft_builder_station_arms_push(aircraft_builder,
+                                         efb_distance_m(1.85));
+  // the first cargo compartment
+  efb_aircraft_builder_station_arms_push(aircraft_builder,
+                                         efb_distance_m(2.41));
+  // the second cargo compartment
+  efb_aircraft_builder_station_arms_push(aircraft_builder,
+                                         efb_distance_m(3.12));
+
+  efb_aircraft_builder_empty_mass(aircraft_builder, efb_mass_kg(807.0));
+
+  efb_aircraft_builder_empty_balance(aircraft_builder, efb_distance_m(1.0));
+
+  efb_aircraft_builder_fuel_type(aircraft_builder, Diesel);
+
+  efb_aircraft_builder_tanks_push(aircraft_builder, efb_volume_l(168.8),
+                                  efb_distance_m(1.22));
+
+  efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(0.0),
+                                        efb_distance_m(0.89));
+  efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(885.0),
+                                        efb_distance_m(0.89));
+  efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(1111.0),
+                                        efb_distance_m(1.02));
+  efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(1111.0),
+                                        efb_distance_m(1.20));
+  efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(0.0),
+                                        efb_distance_m(1.20));
+
+  efb_aircraft_builder_free(aircraft_builder);
   efb_fms_route_unref(route);
   efb_fms_free(fms);
 
