@@ -110,8 +110,8 @@ fn main() {
     // Now we can enter some data into the flight planning to get a fuel planning
     // and mass & balance calculation.
     fms.flight_planning_builder()
-        .aircraft(aircraft)
-        .mass(vec![
+        .set_aircraft(aircraft)
+        .set_mass(vec![
             // we're in the front
             Mass::Kilogram(80.0),
             // and no mass on the other stations
@@ -119,10 +119,10 @@ fn main() {
             Mass::Kilogram(0.0),
             Mass::Kilogram(0.0),
         ])
-        .policy(FuelPolicy::Manual(diesel!(Volume::Liter(80.0))))
-        .taxi(diesel!(Volume::Liter(10.0)))
-        .reserve(Reserve::Manual(Duration::from(1800))) // 30 min
-        .perf(perf);
+        .set_policy(FuelPolicy::Manual(diesel!(Volume::Liter(80.0))))
+        .set_taxi(diesel!(Volume::Liter(10.0)))
+        .set_reserve(Reserve::Manual(Duration::from(1800))) // 30 min
+        .set_perf(perf);
 
     if let Ok(flight_planning) = fms.flight_planning() {
         if let Some(fuel_planning) = flight_planning.fuel_planning() {

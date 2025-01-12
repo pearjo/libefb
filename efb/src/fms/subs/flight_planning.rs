@@ -43,32 +43,56 @@ impl FlightPlanningBuilder {
         }
     }
 
-    pub fn aircraft(&mut self, aircraft: Aircraft) -> &mut FlightPlanningBuilder {
+    pub fn aircraft(&self) -> Option<&Aircraft> {
+        self.aircraft.as_ref()
+    }
+
+    pub fn set_aircraft(&mut self, aircraft: Aircraft) -> &mut FlightPlanningBuilder {
         self.aircraft = Some(aircraft);
         self
     }
 
-    pub fn mass(&mut self, mass: Vec<Mass>) -> &mut FlightPlanningBuilder {
+    pub fn mass(&self) -> Option<&Vec<Mass>> {
+        self.mass.as_ref()
+    }
+
+    pub fn set_mass(&mut self, mass: Vec<Mass>) -> &mut FlightPlanningBuilder {
         self.mass = Some(mass);
         self
     }
 
-    pub fn policy(&mut self, policy: FuelPolicy) -> &mut FlightPlanningBuilder {
+    pub fn policy(&self) -> Option<&FuelPolicy> {
+        self.policy.as_ref()
+    }
+
+    pub fn set_policy(&mut self, policy: FuelPolicy) -> &mut FlightPlanningBuilder {
         self.policy = Some(policy);
         self
     }
 
-    pub fn taxi(&mut self, taxi: Fuel) -> &mut FlightPlanningBuilder {
+    pub fn taxi(&self) -> Option<&Fuel> {
+        self.taxi.as_ref()
+    }
+
+    pub fn set_taxi(&mut self, taxi: Fuel) -> &mut FlightPlanningBuilder {
         self.taxi = Some(taxi);
         self
     }
 
-    pub fn reserve(&mut self, reserve: Reserve) -> &mut FlightPlanningBuilder {
+    pub fn reserve(&self) -> Option<&Reserve> {
+        self.reserve.as_ref()
+    }
+
+    pub fn set_reserve(&mut self, reserve: Reserve) -> &mut FlightPlanningBuilder {
         self.reserve = Some(reserve);
         self
     }
 
-    pub fn perf(&mut self, perf: Performance) -> &mut FlightPlanningBuilder {
+    pub fn perf(&self) -> Option<&Performance> {
+        self.perf.as_ref()
+    }
+
+    pub fn set_perf(&mut self, perf: Performance) -> &mut FlightPlanningBuilder {
         self.perf = Some(perf);
         self
     }
