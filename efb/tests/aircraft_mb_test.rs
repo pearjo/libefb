@@ -84,7 +84,7 @@ fn mb_matches_mass_and_fuel() {
     // - 160 kg for pilot and PAX
     // - 33.52 kg of Diesel
     // This gives a total of 993.52 kg on ramp.
-    assert_eq!(mb.mass_on_ramp(), Mass::Kilogram(993.52));
+    assert_eq!(mb.mass_on_ramp(), &Mass::Kilogram(993.52));
 
     // We have the following masses after landing:
     // - 800 kg (empty mass)
@@ -92,7 +92,7 @@ fn mb_matches_mass_and_fuel() {
     // - 75.42 kg (Diesel)
     // This gives a total of 955.42 kg on ramp.
     // TODO check why we get 955.42004 and not 955.42
-    assert_eq!(mb.mass_after_landing(), Mass::Kilogram(955.42004));
+    assert_eq!(mb.mass_after_landing(), &Mass::Kilogram(955.42004));
 
     // We have the following moment on ramp:
     // - 800 kg * 1 m = 800 kg m (empty aircraft)
@@ -101,7 +101,7 @@ fn mb_matches_mass_and_fuel() {
     // - 33.52 kg * 1 m = 33.52 kg m (Diesel)
     // The sum of moment is 1073.52 kg m divided by the total mass returns
     // us a balance on ramp of 1.0805218 m.
-    assert_eq!(mb.balance_on_ramp(), Distance::Meter(1.0805218));
+    assert_eq!(mb.balance_on_ramp(), &Distance::Meter(1.0805218));
 
     // We have the following moment after landing:
     // - 800 kg * 1 m = 800 kg m (empty aircraft)
@@ -110,7 +110,7 @@ fn mb_matches_mass_and_fuel() {
     // - 8.38 kg * 1.5 m = 12.57 kg m (Diesel third tank)
     // The sum of moment is 959.61 kg m divided by the total mass returns
     // us a balance after landing of 1.0043855 m.
-    assert_eq!(mb.balance_after_landing(), Distance::Meter(1.0043855));
+    assert_eq!(mb.balance_after_landing(), &Distance::Meter(1.0043855));
 
     assert!(ac.is_balanced(&mb));
 }

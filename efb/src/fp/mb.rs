@@ -58,20 +58,20 @@ impl MassAndBalance {
         }
     }
 
-    pub fn mass_on_ramp(&self) -> Mass {
-        self.on_ramp
+    pub fn mass_on_ramp(&self) -> &Mass {
+        &self.on_ramp
     }
 
-    pub fn mass_after_landing(&self) -> Mass {
-        self.after_landing
+    pub fn mass_after_landing(&self) -> &Mass {
+        &self.after_landing
     }
 
-    pub fn balance_on_ramp(&self) -> Distance {
-        self.balance_on_ramp
+    pub fn balance_on_ramp(&self) -> &Distance {
+        &self.balance_on_ramp
     }
 
-    pub fn balance_after_landing(&self) -> Distance {
-        self.balance_after_landing
+    pub fn balance_after_landing(&self) -> &Distance {
+        &self.balance_after_landing
     }
 }
 
@@ -98,14 +98,14 @@ mod tests {
     #[test]
     fn mass_changes_during_flight() {
         let mb = MassAndBalance::new(&test_stations());
-        assert_eq!(mb.mass_on_ramp(), Mass::Kilogram(160.0));
-        assert_eq!(mb.mass_after_landing(), Mass::Kilogram(80.0));
+        assert_eq!(mb.mass_on_ramp(), &Mass::Kilogram(160.0));
+        assert_eq!(mb.mass_after_landing(), &Mass::Kilogram(80.0));
     }
 
     #[test]
     fn balance_changes_during_flight() {
         let mb = MassAndBalance::new(&test_stations());
-        assert_eq!(mb.balance_on_ramp(), Distance::Meter(1.50));
-        assert_eq!(mb.balance_after_landing(), Distance::Meter(1.0));
+        assert_eq!(mb.balance_on_ramp(), &Distance::Meter(1.50));
+        assert_eq!(mb.balance_after_landing(), &Distance::Meter(1.0));
     }
 }

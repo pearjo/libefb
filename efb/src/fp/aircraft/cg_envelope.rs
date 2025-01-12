@@ -93,7 +93,7 @@ impl CGEnvelope {
             })
             .collect();
 
-        let wn = |mass: Mass, balance: Distance| -> i32 {
+        let wn = |mass: &Mass, balance: &Distance| -> i32 {
             algorithm::winding_number(
                 &algorithm::Point {
                     x: balance.si(),
