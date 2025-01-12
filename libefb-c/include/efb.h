@@ -573,6 +573,36 @@ efb_flight_planning_builder_set_perf(
     EfbPerformanceAtLevel (*perf)(const EfbVerticalDistance *),
     EfbVerticalDistance ceiling);
 
+const EfbFuel *
+efb_fuel_planning_taxi(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_climb(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_trip(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_alternate(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_reserve(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_total(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_min(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_extra(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_on_ramp(const EfbFuelPlanning *planning);
+
+const EfbFuel *
+efb_fuel_planning_after_landing(const EfbFuelPlanning *planning);
+
 /// Returns the first leg in the route.
 const EfbLeg *
 efb_route_legs_first(EfbRoute *route);

@@ -14,9 +14,11 @@
 // limitations under the License.
 
 mod fms;
+mod fp;
 mod route;
 
 pub use fms::*;
+pub use fp::*;
 pub use route::*;
 
 use std::ffi::{c_char, CString};
