@@ -109,7 +109,9 @@ fn main() {
 
     // Now we can enter some data into the flight planning to get a fuel planning
     // and mass & balance calculation.
-    fms.flight_planning_builder()
+    let mut builder = FlightPlanning::builder();
+
+    builder
         .set_aircraft(aircraft)
         .set_mass(vec![
             // we're in the front
@@ -124,7 +126,9 @@ fn main() {
         .set_reserve(Reserve::Manual(Duration::from(1800))) // 30 min
         .set_perf(perf);
 
-    if let Ok(flight_planning) = fms.flight_planning() {
+    let _ = fms.build_flight_planning(&builder);
+
+    if let Some(flight_planning) = fms.flight_planning() {
         if let Some(fuel_planning) = flight_planning.fuel_planning() {
             println!("\n   Fuel\n");
 

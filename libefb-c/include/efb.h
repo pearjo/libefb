@@ -51,6 +51,8 @@ typedef struct EfbFMS EfbFMS;
 /// ```
 typedef struct EfbRoute EfbRoute;
 
+typedef struct EfbFlightPlanning EfbFlightPlanning;
+
 /// A leg `from` one point `to` another.
 typedef struct EfbLeg EfbLeg;
 
@@ -417,6 +419,13 @@ efb_fms_route_ref(EfbFMS *fms);
 /// Decreases the reference count of the route.
 void
 efb_fms_route_unref(EfbRoute *route);
+
+/// Returns the flight planning.
+///
+/// The planning is created by the builder returned by
+/// [`efb_flight_planning_builder_new`].
+const EfbFlightPlanning *
+efb_fms_flight_planning(const EfbFMS *fms);
 
 /// Returns the first leg in the route.
 const EfbLeg *

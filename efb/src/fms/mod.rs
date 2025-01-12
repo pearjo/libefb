@@ -25,19 +25,16 @@ pub use subs::*;
 pub struct FMS {
     nd: NavigationData,
     route: Route,
-    flight_planning_builder: FlightPlanningBuilder,
+    flight_planning: Option<FlightPlanning>,
 }
 
 impl FMS {
     /// Constructs a new, empty `FMS`.
     pub fn new() -> Self {
-        let route = Route::default();
-        let flight_planning_builder = FlightPlanningBuilder::default();
-
         Self {
-            nd: NavigationData::new(),
-            route,
-            flight_planning_builder,
+            nd: NavigationData::default(),
+            route: Route::default(),
+            flight_planning: None,
         }
     }
 
@@ -71,12 +68,14 @@ impl FMS {
         }
     }
 
-    pub fn flight_planning_builder(&mut self) -> &mut FlightPlanningBuilder {
-        &mut self.flight_planning_builder
+    pub fn build_flight_planning(&mut self, builder: &FlightPlanningBuilder) -> Result<(), Error> {
+        let flight_planning = builder.build(&self.route)?;
+        let _ = self.flight_planning.insert(flight_planning);
+        Ok(())
     }
 
-    pub fn flight_planning(&self) -> Result<FlightPlanning, Error> {
-        self.flight_planning_builder.build(&self.route)
+    pub fn flight_planning(&self) -> Option<&FlightPlanning> {
+        self.flight_planning.as_ref()
     }
 }
 
