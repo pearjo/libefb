@@ -24,7 +24,8 @@ pub use cg_envelope::CGEnvelope;
 pub use station::Station;
 
 /// An aircraft's fuel tank.
-#[derive(Copy, Clone)]
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
 pub struct FuelTank {
     /// The tank's capacity.
     pub capacity: Volume,
@@ -107,7 +108,7 @@ pub struct FuelTank {
 /// // finally we can check if the aircraft is balanced throughout the flight
 /// assert!(ac.is_balanced(&mb.unwrap()));
 /// ```
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Aircraft {
     /// The distances from a reference datum at which mass can be loaded
     /// e.g. the position of a seat.

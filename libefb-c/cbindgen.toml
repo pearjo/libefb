@@ -18,7 +18,7 @@ header = """
  */
 """
 include_guard = "EFB"
-sys_includes = ["stdlib.h"]
+sys_includes = ["stdbool.h", "stdlib.h"]
 no_includes = true
 cpp_compat = true
 documentation = true

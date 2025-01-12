@@ -20,7 +20,7 @@
 //! in-flight.
 
 #[macro_use]
-mod macros;
+pub mod macros;
 
 mod core;
 pub use core::*;

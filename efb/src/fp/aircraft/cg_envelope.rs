@@ -65,7 +65,7 @@ use crate::{Distance, Mass, Unit};
 /// // now we can check if our CG is within the envelope
 /// assert!(cg_envelope.contains(&mb));
 /// ```
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct CGEnvelope {
     points: Vec<(Mass, Distance)>,
 }

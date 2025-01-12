@@ -134,6 +134,7 @@ impl SubSystemBuilder for FlightPlanningBuilder {
     }
 }
 
+#[derive(Debug)]
 pub struct FlightPlanning {
     aircraft: Option<Aircraft>,
     fuel_planning: Option<FuelPlanning>,

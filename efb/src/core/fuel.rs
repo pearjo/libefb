@@ -25,6 +25,7 @@ mod constants {
     pub const JET_A_AT_ISA: Density = Density::KilogramPerLiter(0.8);
 }
 
+#[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum FuelType {
     Diesel,
@@ -40,6 +41,7 @@ impl FuelType {
     }
 }
 
+#[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Fuel {
     pub fuel_type: FuelType,
@@ -137,6 +139,7 @@ macro_rules! div_impl {
 
 div_impl! { usize f32 }
 
+#[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub enum FuelFlow {
     PerHour(Fuel),

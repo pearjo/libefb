@@ -18,7 +18,7 @@ use crate::route::Route;
 use crate::{Duration, Fuel, VerticalDistance};
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Reserve {
     Manual(Duration),
 }
@@ -32,16 +32,16 @@ impl Reserve {
 }
 
 #[repr(C)]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum FuelPolicy {
     MinimumFuel,
     MaximumFuel,
-    Manual(Fuel),
-    Landing(Fuel),
-    Extra(Fuel),
+    ManualFuel(Fuel),
+    FuelAtLanding(Fuel),
+    ExtraFuel(Fuel),
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct FuelPlanning {
     pub taxi: Fuel,
     pub climb: Option<Fuel>,
@@ -103,9 +103,9 @@ impl FuelPlanning {
         match &self.policy {
             FuelPolicy::MinimumFuel => None,
             FuelPolicy::MaximumFuel => self.usable_fuel.map(|usable_fuel| usable_fuel - self.min()),
-            FuelPolicy::Manual(fuel) => Some(*fuel - self.min()),
-            FuelPolicy::Landing(fuel) => Some(*fuel), // TODO is this correct?
-            FuelPolicy::Extra(fuel) => Some(*fuel),
+            FuelPolicy::ManualFuel(fuel) => Some(*fuel - self.min()),
+            FuelPolicy::FuelAtLanding(fuel) => Some(*fuel), // TODO is this correct?
+            FuelPolicy::ExtraFuel(fuel) => Some(*fuel),
         }
     }
 

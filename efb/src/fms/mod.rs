@@ -22,7 +22,6 @@ mod subs;
 
 pub use subs::*;
 
-#[repr(C)]
 pub struct FMS {
     nd: NavigationData,
     route: Route,

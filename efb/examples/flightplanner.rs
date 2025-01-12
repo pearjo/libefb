@@ -119,7 +119,7 @@ fn main() {
             Mass::Kilogram(0.0),
             Mass::Kilogram(0.0),
         ])
-        .set_policy(FuelPolicy::Manual(diesel!(Volume::Liter(80.0))))
+        .set_policy(FuelPolicy::ManualFuel(diesel!(Volume::Liter(80.0))))
         .set_taxi(diesel!(Volume::Liter(10.0)))
         .set_reserve(Reserve::Manual(Duration::from(1800))) // 30 min
         .set_perf(perf);

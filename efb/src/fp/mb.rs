@@ -24,6 +24,7 @@ use crate::{Distance, Mass, Unit};
 ///
 /// [`Aircraft`]: super::Aircraft
 /// [`Station`]: super::Station
+#[derive(Debug)]
 pub struct MassAndBalance {
     on_ramp: Mass,
     after_landing: Mass,

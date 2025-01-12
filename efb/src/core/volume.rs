@@ -18,6 +18,7 @@ use std::ops::{Add, Div, Mul, Sub};
 
 use super::{Density, Mass};
 
+#[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 pub enum Volume {
     Liter(f32),

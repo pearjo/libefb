@@ -22,7 +22,8 @@ pub use route::*;
 use std::ffi::{c_char, CString};
 use std::string::ToString;
 
-use efb::{Angle, Duration, Distance, Speed, Wind};
+use efb::diesel;
+use efb::{Angle, Distance, Duration, Fuel, FuelType, Mass, Speed, VerticalDistance, Volume, Wind};
 
 /// Returns the value as C string if [`ToString`] is implemented.
 fn to_string<T>(value: *const T) -> *mut c_char
@@ -101,4 +102,94 @@ pub unsafe extern "C" fn efb_wind_to_string(wind: *const Wind) -> *mut c_char {
 #[no_mangle]
 pub unsafe extern "C" fn efb_speed_to_string(speed: *const Speed) -> *mut c_char {
     to_string(speed)
+}
+
+/// Returns a distance in meter.
+#[no_mangle]
+pub extern "C" fn efb_distance_m(m: f32) -> Distance {
+    Distance::Meter(m)
+}
+
+/// Returns the seconds `s` as duration.
+#[no_mangle]
+pub extern "C" fn efb_duration(s: u32) -> Duration {
+    Duration::from(s)
+}
+
+/// Returns `l` liter of Diesel.
+#[no_mangle]
+pub extern "C" fn efb_fuel_diesel_l(l: f32) -> Fuel {
+    diesel!(Volume::Liter(l))
+}
+
+/// Returns a mass in kilogram.
+#[no_mangle]
+pub extern "C" fn efb_mass_kg(kg: f32) -> Mass {
+    Mass::Kilogram(kg)
+}
+
+/// Returns a speed in knots.
+#[no_mangle]
+pub extern "C" fn efb_speed_knots(kt: f32) -> Speed {
+    Speed::Knots(kt)
+}
+
+/// Returns a speed in m/s.
+#[no_mangle]
+pub extern "C" fn efb_speed_mps(mps: f32) -> Speed {
+    Speed::MeterPerSecond(mps)
+}
+
+/// Returns a speed in mach.
+#[no_mangle]
+pub extern "C" fn efb_speed_mach(mach: f32) -> Speed {
+    Speed::Mach(mach)
+}
+
+/// Returns true if `a == b`.
+#[no_mangle]
+pub extern "C" fn efb_vertical_distance_eq(a: &VerticalDistance, b: &VerticalDistance) -> bool {
+    a == b
+}
+
+/// Returns true if `a != b`.
+#[no_mangle]
+pub extern "C" fn efb_vertical_distance_neq(a: &VerticalDistance, b: &VerticalDistance) -> bool {
+    a != b
+}
+
+/// Returns true if `a < b`.
+#[no_mangle]
+pub extern "C" fn efb_vertical_distance_(a: &VerticalDistance, b: &VerticalDistance) -> bool {
+    a < b
+}
+
+/// Returns true if `a <= b`.
+#[no_mangle]
+pub extern "C" fn efb_vertical_distance_lte(a: &VerticalDistance, b: &VerticalDistance) -> bool {
+    a <= b
+}
+
+/// Returns true if `a > b`.
+#[no_mangle]
+pub extern "C" fn efb_vertical_distance_gt(a: &VerticalDistance, b: &VerticalDistance) -> bool {
+    a > b
+}
+
+/// Returns true if `a >= b`.
+#[no_mangle]
+pub extern "C" fn efb_vertical_distance_gte(a: &VerticalDistance, b: &VerticalDistance) -> bool {
+    a >= b
+}
+
+/// Returns a vertical distance in feet.
+#[no_mangle]
+pub extern "C" fn efb_vertical_distance_altitude(ft: u16) -> VerticalDistance {
+    VerticalDistance::Altitude(ft)
+}
+
+/// Returns a volume in liter.
+#[no_mangle]
+pub extern "C" fn efb_volume_l(l: f32) -> Volume {
+    Volume::Liter(l)
 }

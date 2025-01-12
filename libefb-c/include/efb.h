@@ -17,7 +17,13 @@
 #ifndef EFB
 #define EFB
 
+#include <stdbool.h>
 #include <stdlib.h>
+
+typedef enum {
+  Diesel,
+  JetA,
+} EfbFuelType;
 
 typedef enum {
   Arinc424,
@@ -130,6 +136,24 @@ typedef struct {
   EfbSpeed speed;
 } EfbWind;
 
+typedef enum {
+  Kilogram,
+} EfbMass_Tag;
+
+typedef struct {
+  EfbMass_Tag tag;
+  union {
+    struct {
+      float kilogram;
+    };
+  };
+} EfbMass;
+
+typedef struct {
+  EfbFuelType fuel_type;
+  EfbMass mass;
+} EfbFuel;
+
 /// A vertical distance.
 typedef enum {
   /// Absolute Altitude as distance above ground level in feet.
@@ -163,6 +187,68 @@ typedef struct {
     };
   };
 } EfbVerticalDistance;
+
+typedef enum {
+  Liter,
+} EfbVolume_Tag;
+
+typedef struct {
+  EfbVolume_Tag tag;
+  union {
+    struct {
+      float liter;
+    };
+  };
+} EfbVolume;
+
+typedef enum {
+  MinimumFuel,
+  MaximumFuel,
+  ManualFuel,
+  FuelAtLanding,
+  ExtraFuel,
+} EfbFuelPolicy_Tag;
+
+typedef struct {
+  EfbFuelPolicy_Tag tag;
+  union {
+    struct {
+      EfbFuel manual_fuel;
+    };
+    struct {
+      EfbFuel fuel_at_landing;
+    };
+    struct {
+      EfbFuel extra_fuel;
+    };
+  };
+} EfbFuelPolicy;
+
+typedef enum {
+  Manual,
+} EfbReserve_Tag;
+
+typedef struct {
+  EfbReserve_Tag tag;
+  union {
+    struct {
+      EfbDuration manual;
+    };
+  };
+} EfbReserve;
+
+typedef enum {
+  PerHour,
+} EfbFuelFlow_Tag;
+
+typedef struct {
+  EfbFuelFlow_Tag tag;
+  union {
+    struct {
+      EfbFuel per_hour;
+    };
+  };
+} EfbFuelFlow;
 
 #ifdef __cplusplus
 extern "C" {
@@ -217,6 +303,72 @@ efb_wind_to_string(const EfbWind *wind);
 /// The returned string needs to be freed by [`efb_string_free`].
 char *
 efb_speed_to_string(const EfbSpeed *speed);
+
+/// Returns a distance in meter.
+EfbDistance
+efb_distance_m(float m);
+
+/// Returns the seconds `s` as duration.
+EfbDuration
+efb_duration(uint32_t s);
+
+/// Returns `l` liter of Diesel.
+EfbFuel
+efb_fuel_diesel_l(float l);
+
+/// Returns a mass in kilogram.
+EfbMass
+efb_mass_kg(float kg);
+
+/// Returns a speed in knots.
+EfbSpeed
+efb_speed_knots(float kt);
+
+/// Returns a speed in m/s.
+EfbSpeed
+efb_speed_mps(float mps);
+
+/// Returns a speed in mach.
+EfbSpeed
+efb_speed_mach(float mach);
+
+/// Returns true if `a == b`.
+bool
+efb_vertical_distance_eq(const EfbVerticalDistance *a,
+                         const EfbVerticalDistance *b);
+
+/// Returns true if `a != b`.
+bool
+efb_vertical_distance_neq(const EfbVerticalDistance *a,
+                          const EfbVerticalDistance *b);
+
+/// Returns true if `a < b`.
+bool
+efb_vertical_distance_(const EfbVerticalDistance *a,
+                       const EfbVerticalDistance *b);
+
+/// Returns true if `a <= b`.
+bool
+efb_vertical_distance_lte(const EfbVerticalDistance *a,
+                          const EfbVerticalDistance *b);
+
+/// Returns true if `a > b`.
+bool
+efb_vertical_distance_gt(const EfbVerticalDistance *a,
+                         const EfbVerticalDistance *b);
+
+/// Returns true if `a >= b`.
+bool
+efb_vertical_distance_gte(const EfbVerticalDistance *a,
+                          const EfbVerticalDistance *b);
+
+/// Returns a vertical distance in feet.
+EfbVerticalDistance
+efb_vertical_distance_altitude(uint16_t ft);
+
+/// Returns a volume in liter.
+EfbVolume
+efb_volume_l(float l);
 
 /// Creates and returns a new FMS.
 ///
