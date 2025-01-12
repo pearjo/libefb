@@ -13,8 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod fuel_planning;
-mod mb;
+use efb::fp::MassAndBalance;
+use efb::{Distance, Mass};
 
-pub use fuel_planning::*;
-pub use mb::*;
+#[no_mangle]
+pub extern "C" fn efb_mass_and_balance_mass_on_ramp(mb: &MassAndBalance) -> &Mass {
+    mb.mass_on_ramp()
+}
+
+#[no_mangle]
+pub extern "C" fn efb_mass_and_balance_mass_after_landing(mb: &MassAndBalance) -> &Mass {
+    mb.mass_after_landing()
+}
+
+#[no_mangle]
+pub extern "C" fn efb_mass_and_balance_balance_on_ramp(mb: &MassAndBalance) -> &Distance {
+    mb.balance_on_ramp()
+}
+
+#[no_mangle]
+pub extern "C" fn efb_mass_and_balance_balance_after_landing(mb: &MassAndBalance) -> &Distance {
+    mb.balance_after_landing()
+}

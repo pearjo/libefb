@@ -603,6 +603,18 @@ efb_fuel_planning_on_ramp(const EfbFuelPlanning *planning);
 const EfbFuel *
 efb_fuel_planning_after_landing(const EfbFuelPlanning *planning);
 
+const EfbMass *
+efb_mass_and_balance_mass_on_ramp(const EfbMassAndBalance *mb);
+
+const EfbMass *
+efb_mass_and_balance_mass_after_landing(const EfbMassAndBalance *mb);
+
+const EfbDistance *
+efb_mass_and_balance_balance_on_ramp(const EfbMassAndBalance *mb);
+
+const EfbDistance *
+efb_mass_and_balance_balance_after_landing(const EfbMassAndBalance *mb);
+
 /// Returns the first leg in the route.
 const EfbLeg *
 efb_route_legs_first(EfbRoute *route);
