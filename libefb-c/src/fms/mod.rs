@@ -16,15 +16,17 @@
 use std::ffi::{c_char, CStr};
 use std::path::Path;
 
-use efb::fms::{FlightPlanning, FMS};
+use efb::fms::{FlightPlanning, FlightPlanningBuilder, FMS};
 use efb::nd::InputFormat;
 
 use super::EfbRoute;
 
 mod aircraft_builder;
+mod flight_planning;
 mod flight_planning_builder;
 
 pub use aircraft_builder::*;
+pub use flight_planning::*;
 pub use flight_planning_builder::*;
 
 /// The Flight Management System (FMS).
@@ -117,4 +119,13 @@ pub extern "C" fn efb_fms_route_unref(route: Option<Box<EfbRoute>>) {
 #[no_mangle]
 pub extern "C" fn efb_fms_flight_planning(fms: &EfbFMS) -> Option<&FlightPlanning> {
     fms.inner.flight_planning()
+}
+
+/// Builds the flight planning.
+///
+/// The planning is created by the builder returned by
+/// [`efb_flight_planning_builder_new`].
+#[no_mangle]
+pub extern "C" fn efb_fms_flight_planning_build(fms: &mut EfbFMS, builder: &FlightPlanningBuilder) {
+    let _ = fms.inner.build_flight_planning(builder);
 }

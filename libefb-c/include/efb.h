@@ -57,8 +57,20 @@ typedef struct EfbFlightPlanning EfbFlightPlanning;
 
 typedef struct EfbFlightPlanningBuilder EfbFlightPlanningBuilder;
 
+typedef struct EfbFuelPlanning EfbFuelPlanning;
+
 /// A leg `from` one point `to` another.
 typedef struct EfbLeg EfbLeg;
+
+/// The mass & balance on ramp and after landing.
+///
+/// The mass and balance of the [`Aircraft`] is computed from [`Station`]s
+/// loaded on the aircraft. The mass is computed as sum of all station's mass
+/// and the balance is the sum of all moment divided by the total mass.
+///
+/// [`Aircraft`]: super::Aircraft
+/// [`Station`]: super::Station
+typedef struct EfbMassAndBalance EfbMassAndBalance;
 
 /// An angle in the range from 0° to 360°.
 ///
@@ -439,6 +451,14 @@ efb_fms_route_unref(EfbRoute *route);
 const EfbFlightPlanning *
 efb_fms_flight_planning(const EfbFMS *fms);
 
+/// Builds the flight planning.
+///
+/// The planning is created by the builder returned by
+/// [`efb_flight_planning_builder_new`].
+void
+efb_fms_flight_planning_build(EfbFMS *fms,
+                              const EfbFlightPlanningBuilder *builder);
+
 /// Returns a new aircraft builder.
 ///
 /// # Safety
@@ -495,6 +515,15 @@ efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t i);
 void
 efb_aircraft_builder_cg_envelope_edit(EfbAircraftBuilder *builder, EfbMass mass,
                                       EfbDistance distance, size_t i);
+
+const EfbFuelPlanning *
+efb_flight_planning_fuel_planning(const EfbFlightPlanning *planning);
+
+const EfbMassAndBalance *
+efb_flight_planning_mb(const EfbFlightPlanning *planning);
+
+bool
+efb_flight_planning_is_balanced(const EfbFlightPlanning *planning);
 
 /// Returns a new flight planning builder.
 ///
