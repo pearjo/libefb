@@ -26,7 +26,7 @@ fn main() {
         .write_to_file("include/efb.h");
 
     Command::new("clang-format")
-        .args(["-i", "include/efb.h"])
+        .args(["-i", "examples/**/*.c", "include/efb.h"])
         .output()
         .expect("Failed to run clang-format");
 }
