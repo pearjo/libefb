@@ -615,6 +615,10 @@ efb_mass_and_balance_balance_on_ramp(const EfbMassAndBalance *mb);
 const EfbDistance *
 efb_mass_and_balance_balance_after_landing(const EfbMassAndBalance *mb);
 
+/// Returns the estimated time enroute.
+const EfbDuration *
+efb_route_ete(EfbRoute *route);
+
 /// Returns the first leg in the route.
 const EfbLeg *
 efb_route_legs_first(EfbRoute *route);

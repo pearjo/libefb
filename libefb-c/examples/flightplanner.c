@@ -96,6 +96,10 @@ main(int argc, char *argv[]) {
     efb_string_free(ete);
   }
 
+  char *ete = efb_duration_to_string(efb_route_ete(route));
+  printf("\nETE %s\n", ete);
+  efb_string_free(ete);
+
   // Loading the database and decoding a route was simple so far. Now we get to
   // the part of the flight planning. This needs some more definitions like an
   // aircraft and performance data about how we want to plan the flight. Thus, a
@@ -163,6 +167,9 @@ main(int argc, char *argv[]) {
                                        // need to create the Performance with
                                        // more values.
                                        efb_vertical_distance_altitude(10000));
+
+  // now that all data are entered, we can build our planning
+  efb_fms_flight_planning_build(fms, builder);
 
   efb_flight_planning_builder_free(builder);
   efb_aircraft_builder_free(aircraft_builder);

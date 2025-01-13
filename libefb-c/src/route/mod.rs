@@ -14,6 +14,7 @@
 // limitations under the License.
 
 use efb::route::{Leg, Route};
+use efb::Duration;
 
 mod leg;
 
@@ -35,6 +36,7 @@ pub use leg::*;
 pub struct EfbRoute<'a> {
     inner: &'a mut Route,
     legs: Option<Legs<'a>>,
+    ete: Option<Duration>, // TODO: Rework the Route to avoid this additional wrapping.
 }
 
 impl<'a> From<&'a mut Route> for EfbRoute<'a> {
@@ -42,6 +44,7 @@ impl<'a> From<&'a mut Route> for EfbRoute<'a> {
         Self {
             inner: route,
             legs: None,
+            ete: None,
         }
     }
 }
@@ -69,6 +72,16 @@ impl<'a> Iterator for Legs<'a> {
             None => None,
         }
     }
+}
+
+/// Returns the estimated time enroute.
+#[no_mangle]
+pub extern "C" fn efb_route_ete<'a>(route: &'a mut EfbRoute) -> Option<&'a Duration> {
+    if let Some(ete) = route.inner.ete() {
+        let _ = route.ete.insert(ete);
+    }
+
+    route.ete.as_ref()
 }
 
 /// Returns the first leg in the route.
