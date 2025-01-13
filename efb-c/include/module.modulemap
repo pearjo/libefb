@@ -1,4 +1,4 @@
-module EFB {
+module efb {
     header "efb.h"
     export *
 }

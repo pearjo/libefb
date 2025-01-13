@@ -61,6 +61,7 @@ pub extern "C" fn efb_fms_free(fms: Option<Box<EfbFMS>>) {
 /// It is up to the caller to guarantee that `s` points to a valid string.
 #[no_mangle]
 pub unsafe extern "C" fn efb_fms_nd_read(fms: &mut EfbFMS, s: *const c_char, fmt: InputFormat) {
+    // TODO: Shouldn't crash when passing the wrong format!
     if let Ok(s) = unsafe { CStr::from_ptr(s).to_str() } {
         let nd = fms.inner.nd();
         let _ = nd.read(s, fmt);
