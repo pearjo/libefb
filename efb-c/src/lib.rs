@@ -162,7 +162,7 @@ pub extern "C" fn efb_vertical_distance_neq(a: &VerticalDistance, b: &VerticalDi
 
 /// Returns true if `a < b`.
 #[no_mangle]
-pub extern "C" fn efb_vertical_distance_(a: &VerticalDistance, b: &VerticalDistance) -> bool {
+pub extern "C" fn efb_vertical_distance_lt(a: &VerticalDistance, b: &VerticalDistance) -> bool {
     a < b
 }
 

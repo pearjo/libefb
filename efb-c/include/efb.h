@@ -370,8 +370,8 @@ efb_vertical_distance_neq(const EfbVerticalDistance *a,
 
 /// Returns true if `a < b`.
 bool
-efb_vertical_distance_(const EfbVerticalDistance *a,
-                       const EfbVerticalDistance *b);
+efb_vertical_distance_lt(const EfbVerticalDistance *a,
+                         const EfbVerticalDistance *b);
 
 /// Returns true if `a <= b`.
 bool
