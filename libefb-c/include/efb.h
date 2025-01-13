@@ -83,18 +83,18 @@ typedef struct EfbMassAndBalance EfbMassAndBalance;
 /// assert_eq!(west.as_degrees(), 270);
 /// ```
 typedef enum {
-  True,
-  Magnetic,
+  TrueNorth,
+  MagneticNorth,
 } EfbAngle_Tag;
 
 typedef struct {
   EfbAngle_Tag tag;
   union {
     struct {
-      float true_;
+      float true_north;
     };
     struct {
-      float magnetic;
+      float magnetic_north;
     };
   };
 } EfbAngle;

@@ -35,14 +35,14 @@ mod constants {
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Angle {
-    True(f32),
-    Magnetic(f32),
+    TrueNorth(f32),
+    MagneticNorth(f32),
 }
 
 impl From<i16> for Angle {
     /// Converts the angle in degree into an Angle.
     fn from(value: i16) -> Self {
-        Self::True(if value.is_negative() {
+        Self::TrueNorth(if value.is_negative() {
             ((360 + (value % 360)) as f32).to_radians()
         } else {
             ((value % 360) as f32).to_radians()
@@ -53,7 +53,7 @@ impl From<i16> for Angle {
 impl From<f32> for Angle {
     /// Converts the angle in radians into an Angle.
     fn from(value: f32) -> Self {
-        Self::True(if value.is_sign_negative() {
+        Self::TrueNorth(if value.is_sign_negative() {
             constants::PI2 + (value % (constants::PI2))
         } else {
             value % constants::PI2
@@ -74,8 +74,8 @@ impl Angle {
 
     pub fn into_inner(self) -> f32 {
         match self {
-            Self::True(value) => value,
-            Self::Magnetic(value) => value,
+            Self::TrueNorth(value) => value,
+            Self::MagneticNorth(value) => value,
         }
     }
 }
@@ -100,7 +100,7 @@ impl Sub for Angle {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self::True(self.into_inner() - other.into_inner())
+        Self::TrueNorth(self.into_inner() - other.into_inner())
     }
 }
 
@@ -124,7 +124,7 @@ impl Add<MagneticVariation> for Angle {
             MagneticVariation::OrientedToTrueNorth => 0.0,
         };
 
-        Self::Magnetic(self.into_inner() + other_deg.to_radians())
+        Self::MagneticNorth(self.into_inner() + other_deg.to_radians())
     }
 }
 
