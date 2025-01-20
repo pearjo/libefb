@@ -18,7 +18,7 @@ the documentation.
 
 ## Example
 
-```C
+```c
 #include <stdio.h>
 #include "efb.h"
 
