@@ -75,6 +75,8 @@ impl<'a> Iterator for Legs<'a> {
 }
 
 /// Returns the estimated time enroute.
+///
+/// If the ETE can't be calculated, a NULL pointer is returned.
 #[no_mangle]
 pub extern "C" fn efb_route_ete<'a>(route: &'a mut EfbRoute) -> Option<&'a Duration> {
     if let Some(ete) = route.inner.ete() {

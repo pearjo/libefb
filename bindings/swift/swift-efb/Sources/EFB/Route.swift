@@ -22,6 +22,17 @@ public class Route {
         self.route = route
     }
 
+    /// The estimated time enroute (ETE).
+    ///
+    /// The ETE can only be calculated if a wind, speed and level enroute are known for the leg.
+    ///
+    /// - Returns: The optional estimated time enroute.
+    public func ete() -> Duration? {
+        efb_route_ete(self.route).map { (ete) -> Duration in
+            Duration(ete.pointee)
+        }
+    }
+
     public func legs() -> [Leg] {
         var legs: [Leg] = []
 
@@ -53,7 +64,7 @@ public struct Leg {
     public let magneticCourse: Angle
     public let distance: Distance
     public let groundSpeed: Speed?
-    public let estimatedTimeEnroute: Duration?
+    public let ete: Duration?
 
     public init(leg: OpaquePointer!) {
         let cFrom = efb_leg_get_from(leg)
@@ -91,7 +102,7 @@ public struct Leg {
             try! Speed(gs.pointee)
         }
 
-        estimatedTimeEnroute = efb_leg_get_ete(leg).map { (ete) -> Duration in
+        ete = efb_leg_get_ete(leg).map { (ete) -> Duration in
             Duration(ete.pointee)
         }
 

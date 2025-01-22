@@ -616,6 +616,8 @@ const EfbDistance *
 efb_mass_and_balance_balance_after_landing(const EfbMassAndBalance *mb);
 
 /// Returns the estimated time enroute.
+///
+/// If the ETE can't be calculated, a NULL pointer is returned.
 const EfbDuration *
 efb_route_ete(EfbRoute *route);
 
