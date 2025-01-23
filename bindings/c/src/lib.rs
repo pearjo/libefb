@@ -106,10 +106,28 @@ pub unsafe extern "C" fn efb_speed_to_string(speed: *const Speed) -> *mut c_char
     to_string(speed)
 }
 
+/// Returns an angle with reference to true north.
+#[no_mangle]
+pub extern "C" fn efb_angle_true_north(radians: f32) -> Angle {
+    Angle::TrueNorth(radians)
+}
+
+/// Returns an angle with reference to magnetic north.
+#[no_mangle]
+pub extern "C" fn efb_angle_magnetic_north(radians: f32) -> Angle {
+    Angle::MagneticNorth(radians)
+}
+
 /// Returns a distance in meter.
 #[no_mangle]
 pub extern "C" fn efb_distance_m(m: f32) -> Distance {
     Distance::Meter(m)
+}
+
+/// Returns a distance in nautical miles.
+#[no_mangle]
+pub extern "C" fn efb_distance_nm(nm: f32) -> Distance {
+    Distance::NauticalMiles(nm)
 }
 
 /// Returns the seconds `s` as duration.

@@ -330,9 +330,21 @@ efb_wind_to_string(const EfbWind *wind);
 char *
 efb_speed_to_string(const EfbSpeed *speed);
 
+/// Returns an angle with reference to true north.
+EfbAngle
+efb_angle_true_north(float radians);
+
+/// Returns an angle with reference to magnetic north.
+EfbAngle
+efb_angle_magnetic_north(float radians);
+
 /// Returns a distance in meter.
 EfbDistance
 efb_distance_m(float m);
+
+/// Returns a distance in nautical miles.
+EfbDistance
+efb_distance_nm(float nm);
 
 /// Returns the seconds `s` as duration.
 EfbDuration
