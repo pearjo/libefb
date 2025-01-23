@@ -35,6 +35,31 @@ public enum Angle {
     }
 }
 
+extension Angle: CustomStringConvertible {
+    public var description: String {
+        withUnsafePointer(to: EfbAngle(self)) {
+            let cString = efb_angle_to_string($0)
+
+            defer {
+                efb_string_free(cString)
+            }
+
+            return String(cString: cString!)
+        }
+    }
+}
+
+extension EfbAngle {
+    init(_ angle: Angle) {
+        switch angle {
+        case .trueNorth(let radians):
+            self = efb_angle_true_north(radians)
+        case .magneticNorth(let radians):
+            self = efb_angle_magnetic_north(radians)
+        }
+    }
+}
+
 public enum Distance {
     case meter(Float)
     case nauticalMiles(Float)
@@ -51,15 +76,101 @@ public enum Distance {
     }
 }
 
-public struct Duration {
+extension Distance: CustomStringConvertible {
+    public var description: String {
+        withUnsafePointer(to: EfbDistance(self)) {
+            let cString = efb_distance_to_string($0)
+
+            defer {
+                efb_string_free(cString)
+            }
+
+            return String(cString: cString!)
+        }
+    }
+}
+
+extension EfbDistance {
+    init(_ distance: Distance) {
+        switch distance {
+        case .meter(let m):
+            self = efb_distance_m(m)
+        case .nauticalMiles(let nm):
+            self = efb_distance_nm(nm)
+        }
+    }
+}
+
+public struct Duration: CustomStringConvertible {
     let hours: UInt8
     let minuts: UInt8
     let seconds: UInt8
+    public let description: String
 
     init(_ efbDuration: EfbDuration) {
         self.hours = efbDuration.hours
         self.minuts = efbDuration.minutes
         self.seconds = efbDuration.seconds
+
+        self.description = withUnsafePointer(to: efbDuration) {
+            let cString = efb_duration_to_string($0)
+
+            defer {
+                efb_string_free(cString)
+            }
+
+            return String(cString: cString!)
+        }
+    }
+}
+
+public enum FuelType {
+    case diesel
+    case jetA
+
+    init(_ efbFuelType: EfbFuelType) throws {
+        switch efbFuelType {
+        case Diesel:
+            self = .diesel
+        case JetA:
+            self = .jetA
+        default:
+            throw EFBError.unknownValue
+        }
+    }
+}
+
+extension EfbFuelType {
+    init(_ fuelType: FuelType) {
+        switch fuelType {
+        case .diesel:
+            self = Diesel
+        case .jetA:
+            self = JetA
+        }
+    }
+}
+
+public enum Mass {
+    case kilogram(Float)
+
+    init(_ efbMass: EfbMass) throws {
+        switch efbMass.tag {
+        case Kilogram:
+            self = .kilogram(efbMass.kilogram)
+        default:
+            throw EFBError.unknownValue
+        }
+    }
+
+}
+
+extension EfbMass {
+    init(_ mass: Mass) {
+        switch mass {
+        case .kilogram(let kg):
+            self = efb_mass_kg(kg)
+        }
     }
 }
 
@@ -110,12 +221,23 @@ public enum VerticalDistance {
     }
 }
 
-public class Wind {
+public class Wind: CustomStringConvertible {
     let direction: Angle
     let speed: Speed
+    public let description: String
 
     init(_ efbWind: EfbWind) throws {
         self.direction = try Angle(efbWind.direction)
         self.speed = try Speed(efbWind.speed)
+
+        self.description = withUnsafePointer(to: efbWind) {
+            let cString = efb_wind_to_string($0)
+
+            defer {
+                efb_string_free(cString)
+            }
+
+            return String(cString: cString!)
+        }
     }
 }
