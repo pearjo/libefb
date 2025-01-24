@@ -45,7 +45,7 @@ impl Leg {
     ) -> Leg {
         let bearing = from.coordinate().bearing(&to.coordinate());
         let mc = bearing + from.mag_var();
-        let dist = from.coordinate().dist(&to.coordinate());
+        let dist = from.coordinate().dist(&to.coordinate()).to_nm();
 
         let (gs, wca) = {
             match (tas, wind) {
