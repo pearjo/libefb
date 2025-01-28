@@ -1,3 +1,4 @@
+// swift-tools-version: 5.9
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024 Joe Pearson
 //
@@ -16,18 +17,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "LibEFB",
+    name: "EFB",
     products: [
         .library(
-            name: "LibEFB",
-            targets: ["LibEFB"])
+            name: "EFB",
+            targets: ["EFB"])
     ],
     targets: [
         .target(
-            name: "LibEFB",
-            dependencies: ["EFB"]),
-        .binaryTarget(
             name: "EFB",
-            path: "Frameworks/EFB.xcframework"),
+            dependencies: ["efb"]),
+        .binaryTarget(
+            name: "efb",
+            path: "Frameworks/efb.xcframework"),
+        .testTarget(
+            name: "EFBTest",
+            dependencies: ["EFB"]),
     ]
 )

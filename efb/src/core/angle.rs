@@ -130,7 +130,12 @@ impl Add<MagneticVariation> for Angle {
 
 impl Display for Angle {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{0:03}°", self.as_degrees())
+        let indicator = match self {
+            Self::TrueNorth(_) => "T",
+            Self::MagneticNorth(_) => "M",
+        };
+
+        write!(f, "{0:03}°{indicator}", self.as_degrees())
     }
 }
 

@@ -25,8 +25,15 @@ fn main() {
         .expect("Unable to generate bindings")
         .write_to_file("include/efb.h");
 
-    Command::new("clang-format")
-        .args(["-i", "examples/**/*.c", "include/efb.h"])
-        .output()
-        .expect("Failed to run clang-format");
+    if cfg!(target_os = "macos") {
+        Command::new("xcrun")
+            .args(["clang-format", "-i", "examples/**/*.c", "include/efb.h"])
+            .output()
+            .expect("Failed to run clang-format");
+    } else {
+        Command::new("clang-format")
+            .args(["-i", "examples/**/*.c", "include/efb.h"])
+            .output()
+            .expect("Failed to run clang-format");
+    }
 }
