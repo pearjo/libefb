@@ -81,43 +81,44 @@ public struct Leg {
         let cFrom = efb_leg_get_from(leg)
         let cTo = efb_leg_get_to(leg)
 
+        defer {
+            efb_string_free(cFrom)
+            efb_string_free(cTo)
+        }
+
         from = String(cString: cFrom!)
         to = String(cString: cTo!)
 
         level = efb_leg_get_level(leg).map { (level) -> VerticalDistance in
-            // TODO: Is there a better way?
-            try! VerticalDistance(level.pointee)
+            VerticalDistance(level.pointee)
         }
 
         wind = efb_leg_get_wind(leg).map { (wind) -> Wind in
-            try! Wind(wind.pointee)
+             Wind(wind.pointee)
         }
 
         tas = efb_leg_get_tas(leg).map { (tas) -> Speed in
-            try! Speed(tas.pointee)
+            Speed(tas.pointee)
         }
 
         heading = efb_leg_get_heading(leg).map { (heading) -> Angle in
-            try! Angle(heading.pointee)
+            Angle(heading.pointee)
         }
 
         magneticHeading = efb_leg_get_mh(leg).map { (mh) -> Angle in
-            try! Angle(mh.pointee)
+            Angle(mh.pointee)
         }
 
-        bearing = try! Angle(efb_leg_get_bearing(leg).pointee)
-        magneticCourse = try! Angle(efb_leg_get_mc(leg).pointee)
-        distance = try! Distance(efb_leg_get_dist(leg).pointee)
+        bearing = Angle(efb_leg_get_bearing(leg).pointee)
+        magneticCourse = Angle(efb_leg_get_mc(leg).pointee)
+        distance = Distance(efb_leg_get_dist(leg).pointee)
 
         groundSpeed = efb_leg_get_gs(leg).map { (gs) -> Speed in
-            try! Speed(gs.pointee)
+            Speed(gs.pointee)
         }
 
         ete = efb_leg_get_ete(leg).map { (ete) -> Duration in
             Duration(ete.pointee)
         }
-
-        efb_string_free(cFrom)
-        efb_string_free(cTo)
     }
 }

@@ -15,22 +15,18 @@
 
 import efb
 
-public enum EFBError: Error {
-    case unknownValue
-}
-
 public enum Angle {
     case trueNorth(Float)
     case magneticNorth(Float)
 
-    init(_ efbAngle: EfbAngle) throws {
+    init(_ efbAngle: EfbAngle) {
         switch efbAngle.tag {
         case TrueNorth:
             self = .trueNorth(efbAngle.true_north)
         case MagneticNorth:
             self = .magneticNorth(efbAngle.magnetic_north)
         default:
-            throw EFBError.unknownValue
+            fatalError("Unimplemented EfbAngle \(efbAngle.tag)!")
         }
     }
 }
@@ -64,14 +60,14 @@ public enum Distance {
     case meter(Float)
     case nauticalMiles(Float)
 
-    init(_ efbDistance: EfbDistance) throws {
+    init(_ efbDistance: EfbDistance) {
         switch efbDistance.tag {
         case Meter:
             self = .meter(efbDistance.meter)
         case NauticalMiles:
             self = .nauticalMiles(efbDistance.nautical_miles)
         default:
-            throw EFBError.unknownValue
+            fatalError("Unimplemented EfbDistance \(efbDistance.tag)!")
         }
     }
 }
@@ -128,14 +124,14 @@ public enum FuelType {
     case diesel
     case jetA
 
-    init(_ efbFuelType: EfbFuelType) throws {
+    init(_ efbFuelType: EfbFuelType) {
         switch efbFuelType {
         case Diesel:
             self = .diesel
         case JetA:
             self = .jetA
         default:
-            throw EFBError.unknownValue
+            fatalError("Unimplemented EfbFuelType \(efbFuelType)!")
         }
     }
 }
@@ -154,12 +150,12 @@ extension EfbFuelType {
 public enum Mass {
     case kilogram(Float)
 
-    init(_ efbMass: EfbMass) throws {
+    init(_ efbMass: EfbMass) {
         switch efbMass.tag {
         case Kilogram:
             self = .kilogram(efbMass.kilogram)
         default:
-            throw EFBError.unknownValue
+            fatalError("Unimplemented EfbMass \(efbMass.tag)!")
         }
     }
 
@@ -179,7 +175,7 @@ public enum Speed {
     case meterPerSecond(Float)
     case mach(Float)
 
-    init(_ efbSpeed: EfbSpeed) throws {
+    init(_ efbSpeed: EfbSpeed) {
         switch efbSpeed.tag {
         case Knots:
             self = .knots(efbSpeed.knots)
@@ -188,7 +184,7 @@ public enum Speed {
         case Mach:
             self = .mach(efbSpeed.mach)
         default:
-            throw EFBError.unknownValue
+            fatalError("Unimplemented EfbSpeed \(efbSpeed.tag)!")
         }
     }
 }
@@ -201,7 +197,7 @@ public enum VerticalDistance {
     case msl(UInt16)
     case unlimited
 
-    init(_ efbVerticalDistance: EfbVerticalDistance) throws {
+    init(_ efbVerticalDistance: EfbVerticalDistance) {
         switch efbVerticalDistance.tag {
         case Agl:
             self = .agl(efbVerticalDistance.agl)
@@ -216,7 +212,7 @@ public enum VerticalDistance {
         case Unlimited:
             self = .unlimited
         default:
-            throw EFBError.unknownValue
+            fatalError("Unimplemented EfbVerticalDistance \(efbVerticalDistance.tag)!")
         }
     }
 }
@@ -226,9 +222,9 @@ public class Wind: CustomStringConvertible {
     let speed: Speed
     public let description: String
 
-    init(_ efbWind: EfbWind) throws {
-        self.direction = try Angle(efbWind.direction)
-        self.speed = try Speed(efbWind.speed)
+    init(_ efbWind: EfbWind) {
+        self.direction = Angle(efbWind.direction)
+        self.speed = Speed(efbWind.speed)
 
         self.description = withUnsafePointer(to: efbWind) {
             let cString = efb_wind_to_string($0)
