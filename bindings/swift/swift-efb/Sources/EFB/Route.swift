@@ -22,6 +22,17 @@ public class Route {
         self.route = route
     }
 
+    /// The route's total distance.
+    ///
+    /// The distance is none if the route has no legs.
+    ///
+    /// - Returns: The optional distance of the route.
+    public func dist() -> Distance? {
+        efb_route_dist(self.route).map { (dist) -> Distance in
+            try! Distance(dist.pointee)
+        }
+    }
+
     /// The estimated time enroute (ETE).
     ///
     /// The ETE can only be calculated if a wind, speed and level enroute are known for the leg.

@@ -17,7 +17,7 @@ use super::{Duration, Speed, Unit};
 use crate::error::Error;
 use std::cmp::{Ord, Ordering, PartialOrd};
 use std::fmt;
-use std::ops::Div;
+use std::ops::{Add, Div};
 use std::str::FromStr;
 
 mod constants {
@@ -185,6 +185,14 @@ impl Unit for Distance {
 
     fn si(&self) -> f32 {
         self.to_m().into_inner()
+    }
+}
+
+impl Add for Distance {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Distance::from_si(self.si() + rhs.si())
     }
 }
 

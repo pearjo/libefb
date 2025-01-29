@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use efb::route::{Leg, Route};
-use efb::Duration;
+use efb::{Distance, Duration};
 
 mod leg;
 
@@ -36,7 +36,9 @@ pub use leg::*;
 pub struct EfbRoute<'a> {
     inner: &'a mut Route,
     legs: Option<Legs<'a>>,
-    ete: Option<Duration>, // TODO: Rework the Route to avoid this additional wrapping.
+    // TODO: Rework the Route to avoid this additional wrapping.
+    dist: Option<Distance>,
+    ete: Option<Duration>,
 }
 
 impl<'a> From<&'a mut Route> for EfbRoute<'a> {
@@ -44,6 +46,7 @@ impl<'a> From<&'a mut Route> for EfbRoute<'a> {
         Self {
             inner: route,
             legs: None,
+            dist: None,
             ete: None,
         }
     }
@@ -74,11 +77,27 @@ impl<'a> Iterator for Legs<'a> {
     }
 }
 
+/// Returns the routes total distance.
+///
+/// If the route has no legs, a NULL pointer is returned.
+#[no_mangle]
+pub extern "C" fn efb_route_dist<'a>(route: &'a mut EfbRoute) -> Option<&'a Distance> {
+    let _ = route.dist.take();
+
+    if let Some(dist) = route.inner.dist() {
+        let _ = route.dist.insert(dist);
+    }
+
+    route.dist.as_ref()
+}
+
 /// Returns the estimated time enroute.
 ///
 /// If the ETE can't be calculated, a NULL pointer is returned.
 #[no_mangle]
 pub extern "C" fn efb_route_ete<'a>(route: &'a mut EfbRoute) -> Option<&'a Duration> {
+    let _ = route.ete.take();
+
     if let Some(ete) = route.inner.ete() {
         let _ = route.ete.insert(ete);
     }
