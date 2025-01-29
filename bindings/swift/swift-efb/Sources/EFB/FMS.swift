@@ -31,9 +31,11 @@ public enum InputFormat {
 
 public class FMS {
     let fms: OpaquePointer!
+    public let route: Route
 
     public init() {
         fms = efb_fms_new()
+        route = Route(route: efb_fms_route_ref(fms))
     }
 
     public func read(data: String, format: InputFormat) {
@@ -46,10 +48,6 @@ public class FMS {
 
     public func decode(route: String) {
         efb_fms_decode(fms, route)
-    }
-
-    public func route() -> Route {
-        Route(route: efb_fms_route_ref(fms))
     }
 
     deinit {
