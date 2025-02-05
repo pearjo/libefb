@@ -217,6 +217,28 @@ public enum VerticalDistance {
     }
 }
 
+public enum Volume {
+    case liter(Float)
+
+    init(_ efbVolume: EfbVolume) {
+        switch efbVolume.tag {
+        case Liter:
+            self = .liter(efbVolume.liter)
+        default:
+            fatalError("Unimplemented EfbVolume \(efbVolume.tag)!")
+        }
+    }
+}
+
+extension EfbVolume {
+    init(_ volume: Volume) {
+        switch volume {
+        case .liter(let l):
+            self = efb_volume_l(l)
+        }
+    }
+}
+
 public class Wind: CustomStringConvertible {
     let direction: Angle
     let speed: Speed
