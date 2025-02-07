@@ -124,6 +124,19 @@ typedef struct {
   uint8_t seconds;
 } EfbDuration;
 
+typedef enum {
+  Kilogram,
+} EfbMass_Tag;
+
+typedef struct {
+  EfbMass_Tag tag;
+  union {
+    struct {
+      float kilogram;
+    };
+  };
+} EfbMass;
+
 /// The speed in either nautical or metrical units.
 typedef enum {
   Knots,
@@ -153,19 +166,6 @@ typedef struct {
   /// The wind speed.
   EfbSpeed speed;
 } EfbWind;
-
-typedef enum {
-  Kilogram,
-} EfbMass_Tag;
-
-typedef struct {
-  EfbMass_Tag tag;
-  union {
-    struct {
-      float kilogram;
-    };
-  };
-} EfbMass;
 
 typedef struct {
   EfbFuelType fuel_type;
@@ -313,6 +313,14 @@ efb_distance_to_string(const EfbDistance *distance);
 /// The returned string needs to be freed by [`efb_string_free`].
 char *
 efb_duration_to_string(const EfbDuration *duration);
+
+/// Returns the mass formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_mass_to_string(const EfbMass *mass);
 
 /// Returns the wind formatted as string.
 ///

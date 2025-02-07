@@ -161,6 +161,20 @@ public enum Mass {
 
 }
 
+extension Mass: CustomStringConvertible {
+    public var description: String {
+        withUnsafePointer(to: EfbMass(self)) {
+            let cString = efb_mass_to_string($0)
+
+            defer {
+                efb_string_free(cString)
+            }
+
+            return String(cString: cString!)
+        }
+    }
+}
+
 extension EfbMass {
     init(_ mass: Mass) {
         switch mass {
