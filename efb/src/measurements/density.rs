@@ -13,26 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! # The Electronic Flight Bag (EFB) Library
-//!
-//! The EFB Library is the foundation for flight planning applications,
-//! providing functionality to plan a flight and get navigational aids
-//! in-flight.
+use super::{Measurement, UnitOfMeasure};
 
-#[macro_use]
-pub mod macros;
-
-mod core;
-mod measurements;
-
-pub use core::*;
-pub use measurements::*;
-
-pub mod algorithm;
-pub mod error;
-pub mod fc;
-pub mod fms;
-pub mod fp;
-pub mod geom;
-pub mod nd;
-pub mod route;
+pub enum DensityUnit {
+    KilogramPerLiter,
+}

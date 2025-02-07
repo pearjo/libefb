@@ -13,26 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! # The Electronic Flight Bag (EFB) Library
-//!
-//! The EFB Library is the foundation for flight planning applications,
-//! providing functionality to plan a flight and get navigational aids
-//! in-flight.
+use super::{Measurement, UnitOfMeasure};
 
-#[macro_use]
-pub mod macros;
+pub enum TimeUnit {
+    Seconds,
+}
 
-mod core;
-mod measurements;
+impl UnitOfMeasure for TimeUnit {
+    fn symbol(&self) -> &str {
+        "s"
+    }
 
-pub use core::*;
-pub use measurements::*;
+    fn from_si(value: f64, _: &Self) -> f64 {
+        value
+    }
 
-pub mod algorithm;
-pub mod error;
-pub mod fc;
-pub mod fms;
-pub mod fp;
-pub mod geom;
-pub mod nd;
-pub mod route;
+    fn to_si(&self, value: f64) -> f64 {
+        value
+    }
+}
+
+pub type Time = Measurement<TimeUnit>;
