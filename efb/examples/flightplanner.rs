@@ -51,15 +51,23 @@ fn main() {
     );
 
     let aircraft = Aircraft {
-        station_arms: vec![
-            // the front seats
-            Distance::Meter(0.94),
-            // the back seats
-            Distance::Meter(1.85),
-            // the first cargo compartment
-            Distance::Meter(2.41),
-            // the second cargo compartment
-            Distance::Meter(3.12),
+        stations: vec![
+            Station {
+                arm: Distance::Meter(0.94),
+                description: Some(String::from("front seats")),
+            },
+            Station {
+                arm: Distance::Meter(1.85),
+                description: Some(String::from("back seats")),
+            },
+            Station {
+                arm: Distance::Meter(2.41),
+                description: Some(String::from("first cargo compartment")),
+            },
+            Station {
+                arm: Distance::Meter(3.12),
+                description: Some(String::from("second cargo compartment")),
+            },
         ],
         empty_mass: Mass::Kilogram(807.0),
         empty_balance: Distance::Meter(1.0),

@@ -21,7 +21,7 @@ use crate::error::Error;
 use crate::{Distance, Fuel, FuelType, Mass, Volume};
 
 pub use cg_envelope::CGEnvelope;
-pub use station::Station;
+pub use station::{LoadedStation, Station};
 
 /// An aircraft's fuel tank.
 #[repr(C)]
@@ -59,15 +59,23 @@ pub struct FuelTank {
 ///
 /// // this is how a C172 of our flying club with a Diesel engine would look like:
 /// let ac = Aircraft {
-///     station_arms: vec![
-///         // the front seats
-///         Distance::Meter(0.94),
-///         // the back seats
-///         Distance::Meter(1.85),
-///         // the first cargo compartment
-///         Distance::Meter(2.41),
-///         // the second cargo compartment
-///         Distance::Meter(3.12),
+///     stations: vec![
+///         Station {
+///             arm: Distance::Meter(0.94),
+///             description: Some(String::from("front seats")),
+///         },
+///         Station {
+///             arm: Distance::Meter(1.85),
+///             description: Some(String::from("back seats")),
+///         },
+///         Station {
+///             arm: Distance::Meter(2.41),
+///             description: Some(String::from("first cargo compartment")),
+///         },
+///         Station {
+///             arm: Distance::Meter(3.12),
+///             description: Some(String::from("second cargo compartment")),
+///         },
 ///     ],
 ///     empty_mass: Mass::Kilogram(807.0),
 ///     empty_balance: Distance::Meter(1.0),
@@ -112,7 +120,7 @@ pub struct FuelTank {
 pub struct Aircraft {
     /// The distances from a reference datum at which mass can be loaded
     /// e.g. the position of a seat.
-    pub station_arms: Vec<Distance>,
+    pub stations: Vec<Station>,
 
     /// The mass of the empty aircraft taken from the last mass and balance
     /// report.
@@ -170,10 +178,10 @@ impl Aircraft {
         fuel_on_ramp: &[Fuel],
         fuel_after_landing: &[Fuel],
     ) -> Result<MassAndBalance, Error> {
-        let mut stations: Vec<Station> = Vec::new();
-        stations.append(&mut self.stations_from_mass(mass_on_ramp, mass_after_landing)?);
-        stations.append(&mut self.stations_from_fuel(fuel_on_ramp, fuel_after_landing)?);
-        Ok(MassAndBalance::new(&stations))
+        let mut loaded_stations: Vec<LoadedStation> = Vec::new();
+        loaded_stations.append(&mut self.stations_from_mass(mass_on_ramp, mass_after_landing)?);
+        loaded_stations.append(&mut self.stations_from_fuel(fuel_on_ramp, fuel_after_landing)?);
+        Ok(MassAndBalance::new(&loaded_stations))
     }
 
     pub fn mb_from_equally_distributed_fuel(
@@ -203,11 +211,14 @@ impl Aircraft {
     }
 
     /// Returns a station representing the empty aircraft.
-    fn empty(&self) -> Station {
-        Station {
+    fn empty(&self) -> LoadedStation {
+        LoadedStation {
+            station: Station {
+                arm: self.empty_balance,
+                description: Some(String::from("Empty Aircraft")),
+            },
             on_ramp: self.empty_mass,
             after_landing: self.empty_mass,
-            arm: self.empty_balance,
         }
     }
 
@@ -217,22 +228,22 @@ impl Aircraft {
         &self,
         on_ramp: &[Mass],
         after_landing: &[Mass],
-    ) -> Result<Vec<Station>, Error> {
-        let n = self.station_arms.len();
+    ) -> Result<Vec<LoadedStation>, Error> {
+        let n = self.stations.len();
 
         // The mass must match our station arms!
         if on_ramp.len() == n && after_landing.len() == n {
-            let mut stations = vec![self.empty()];
+            let mut loaded_stations = vec![self.empty()];
 
             for i in 0..n {
-                stations.push(Station {
+                loaded_stations.push(LoadedStation {
+                    station: self.stations[i].clone(),
                     on_ramp: on_ramp[i],
                     after_landing: after_landing[i],
-                    arm: self.station_arms[i],
                 });
             }
 
-            Ok(stations)
+            Ok(loaded_stations)
         } else {
             Err(Error::UnexpectedMassesForStations)
         }
@@ -244,12 +255,12 @@ impl Aircraft {
         &self,
         on_ramp: &[Fuel],
         after_landing: &[Fuel],
-    ) -> Result<Vec<Station>, Error> {
+    ) -> Result<Vec<LoadedStation>, Error> {
         let n = self.tanks.len();
 
         // We can't load more fuel than we have tanks!
         if on_ramp.len() == n && after_landing.len() == n {
-            let mut stations: Vec<Station> = Vec::new();
+            let mut loaded_stations: Vec<LoadedStation> = Vec::new();
 
             for i in 0..n {
                 let fuel_on_ramp = on_ramp[i];
@@ -267,14 +278,17 @@ impl Aircraft {
                     return Err(Error::ExceededFuelCapacityAfterLanding);
                 }
 
-                stations.push(Station {
+                loaded_stations.push(LoadedStation {
+                    station: Station {
+                        arm: tank.arm,
+                        description: None,
+                    },
                     on_ramp: fuel_on_ramp.mass,
                     after_landing: fuel_after_landing.mass,
-                    arm: tank.arm,
                 });
             }
 
-            Ok(stations)
+            Ok(loaded_stations)
         } else {
             Err(Error::UnexpectedNumberOfFuelStations)
         }
@@ -289,7 +303,7 @@ mod tests {
     fn usable_fuel_matches_tank_capacity() {
         // we have two fuel tanks with 40 Liter each
         let ac = Aircraft {
-            station_arms: vec![],
+            stations: vec![],
             empty_mass: Mass::Kilogram(0.0),
             empty_balance: Distance::Meter(0.0),
             fuel_type: FuelType::Diesel,
@@ -314,7 +328,16 @@ mod tests {
     #[should_panic(expected = "UnexpectedMassesForStations")]
     fn create_stations_with_missing_mass() {
         let ac = Aircraft {
-            station_arms: vec![Distance::Meter(1.0), Distance::Meter(2.0)],
+            stations: vec![
+                Station {
+                    arm: Distance::Meter(1.0),
+                    description: None,
+                },
+                Station {
+                    arm: Distance::Meter(2.0),
+                    description: None,
+                },
+            ],
             empty_mass: Mass::Kilogram(0.0),
             empty_balance: Distance::Meter(0.0),
             fuel_type: FuelType::Diesel,
@@ -330,7 +353,7 @@ mod tests {
     fn stations_include_empty_mass() {
         // we configure no station and only an empty mass of 800 kg at 1.0 m
         let ac = Aircraft {
-            station_arms: vec![],
+            stations: vec![],
             empty_mass: Mass::Kilogram(800.0),
             empty_balance: Distance::Meter(1.0),
             fuel_type: FuelType::Diesel,

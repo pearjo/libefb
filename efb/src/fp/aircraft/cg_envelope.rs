@@ -27,7 +27,7 @@ use crate::{Distance, Mass, Unit};
 ///
 /// ```
 /// use efb::{Mass, Distance};
-/// use efb::fp::{CGEnvelope, Station, MassAndBalance};
+/// use efb::fp::{CGEnvelope, LoadedStation, Station, MassAndBalance};
 ///
 /// // This is how an envelope of a C172 might look like:
 /// //
@@ -52,13 +52,16 @@ use crate::{Distance, Mass, Unit};
 /// // now we calculate the mass & balance which we want to check against our envelope
 /// let mb = MassAndBalance::new(&vec![
 ///     // just for this example we simplify our aircraft as one station
-///     Station {
+///     LoadedStation {
+///         // we and the fuel have an arm of 1.1 m from the reference datum
+///         station: Station {
+///             arm: Distance::Meter(1.1),
+///             description: None,
+///         },
 ///         // we start our journey with the pilot and some fuel on board
 ///         on_ramp: Mass::Kilogram(897.0),
-///         // we burned 10 kg on our little sight seeing trip
+///         // and we burned 10 kg on our little sight seeing trip
 ///         after_landing: Mass::Kilogram(887.0),
-///         // and assumed that we and the fuel had an arm of 1.1 m from the reference datum
-///         arm: Distance::Meter(1.1),
 ///     },
 /// ]);
 ///
@@ -115,7 +118,7 @@ impl CGEnvelope {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fp::Station;
+    use crate::fp::{LoadedStation, Station};
 
     #[test]
     fn contains_point() {
@@ -138,16 +141,22 @@ mod tests {
             (Mass::Kilogram(0.0), Distance::Meter(1.0)),
         ]);
 
-        let balanced = MassAndBalance::new(&vec![Station {
+        let balanced = MassAndBalance::new(&vec![LoadedStation {
+            station: Station {
+                arm: Distance::Meter(0.5),
+                description: None,
+            },
             on_ramp: Mass::Kilogram(0.5),
             after_landing: Mass::Kilogram(0.5),
-            arm: Distance::Meter(0.5),
         }]);
 
-        let unbalanced = MassAndBalance::new(&vec![Station {
+        let unbalanced = MassAndBalance::new(&vec![LoadedStation {
+            station: Station {
+                arm: Distance::Meter(0.0),
+                description: None,
+            },
             on_ramp: Mass::Kilogram(1.0),
             after_landing: Mass::Kilogram(1.0),
-            arm: Distance::Meter(0.0),
         }]);
 
         assert!(

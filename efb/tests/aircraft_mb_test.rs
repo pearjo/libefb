@@ -13,13 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fp::{Aircraft, CGEnvelope, FuelTank};
+use efb::fp::{Aircraft, CGEnvelope, FuelTank, Station};
 use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
 
 /// Returns the an aircraft we use for the tests.
 fn aircraft() -> Aircraft {
     Aircraft {
-        station_arms: vec![Distance::Meter(1.0), Distance::Meter(2.0)],
+        stations: vec![
+            Station {
+                arm: Distance::Meter(1.0),
+                description: None,
+            },
+            Station {
+                arm: Distance::Meter(2.0),
+                description: None,
+            },
+        ],
         empty_mass: Mass::Kilogram(800.0),
         empty_balance: Distance::Meter(1.0),
         fuel_type: FuelType::Diesel,
