@@ -72,6 +72,16 @@ typedef struct EfbLeg EfbLeg;
 /// [`Station`]: super::Station
 typedef struct EfbMassAndBalance EfbMassAndBalance;
 
+/// A position within the aircraft that can be loaded with a payload.
+///
+/// The payload if an aircraft is loaded to defined _stations_ e.g. a
+/// seat. Thus, the station defines where in reference to the aircraft's datum a
+/// payload can be placed. The [`LoadedStation`] provides a station with it's
+/// actual payload.
+///
+/// [`Aircraft`]: crate::fp::Aircraft
+typedef struct EfbStation EfbStation;
+
 /// An angle in the range from 0° to 360°.
 ///
 /// An angle in degree as [`i16`] or in radians as [`f32`] can be converted into
@@ -481,6 +491,9 @@ efb_fms_flight_planning_build(EfbFMS *fms,
 
 /// Returns a new aircraft builder.
 ///
+/// Use the builder to gradually provide all the different inputs required to
+/// define an aircraft.
+///
 /// # Safety
 ///
 /// The memory allocated for the builder needs to be freed by calling
@@ -493,15 +506,32 @@ void
 efb_aircraft_builder_free(EfbAircraftBuilder *builder);
 
 void
-efb_aircraft_builder_station_arms_push(EfbAircraftBuilder *builder,
-                                       EfbDistance distance);
+efb_aircraft_builder_stations_push(EfbAircraftBuilder *builder, EfbDistance arm,
+                                   const char *description);
 
 void
-efb_aircraft_builder_station_arms_remove(EfbAircraftBuilder *builder, size_t i);
+efb_aircraft_builder_stations_remove(EfbAircraftBuilder *builder, size_t at);
 
-void
-efb_aircraft_builder_station_arms_edit(EfbAircraftBuilder *builder,
-                                       EfbDistance distance, size_t i);
+/// Returns the first station.
+///
+/// To iterate over all stations, call [`efb_aircraft_builder_stations_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbStation *station =
+/// efb_aircraft_builder_stations_first(builder);
+///      station != NULL;
+///      station = efb_aircraft_builder_stations_next(builder))
+/// ```
+const EfbStation *
+efb_aircraft_builder_stations_first(EfbAircraftBuilder *builder);
+
+/// Returns the next station.
+///
+/// When the end of the stations is reached, this function returns a null
+/// pointer.
+const EfbStation *
+efb_aircraft_builder_stations_next(EfbAircraftBuilder *builder);
 
 void
 efb_aircraft_builder_empty_mass(EfbAircraftBuilder *builder, EfbMass mass);
@@ -634,6 +664,24 @@ efb_mass_and_balance_balance_on_ramp(const EfbMassAndBalance *mb);
 
 const EfbDistance *
 efb_mass_and_balance_balance_after_landing(const EfbMassAndBalance *mb);
+
+/// Returns the stations arm in reference to the aircraft's datum.
+const EfbDistance *
+efb_station_arm(const EfbStation *station);
+
+void
+efb_station_set_arm(EfbStation *station, EfbDistance arm);
+
+/// Returns the stations description or null if undefined.
+///
+/// # Safety
+///
+/// The returned value, if not null, needs to be freed by [`efb_string_free`].
+char *
+efb_station_description(const EfbStation *station);
+
+void
+efb_station_set_description(EfbStation *station, const char *description);
 
 /// Returns the routes total distance.
 ///

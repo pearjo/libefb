@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::ffi::{c_char, CString};
+use std::ffi::{c_char, CStr, CString};
 use std::ptr::null_mut;
 
 use efb::fp::Station;
@@ -25,6 +25,11 @@ pub extern "C" fn efb_station_arm(station: &Station) -> &Distance {
     &station.arm
 }
 
+#[no_mangle]
+pub extern "C" fn efb_station_set_arm(station: &mut Station, arm: Distance) {
+    station.arm = arm
+}
+
 /// Returns the stations description or null if undefined.
 ///
 /// # Safety
@@ -33,7 +38,16 @@ pub extern "C" fn efb_station_arm(station: &Station) -> &Distance {
 #[no_mangle]
 pub extern "C" fn efb_station_description(station: &Station) -> *mut c_char {
     match &station.description {
-        Some(description) => CString::new(description.clone()).unwrap().into_raw(),
+        Some(description) => CString::new(description.clone())
+            .expect("Invalid station description!")
+            .into_raw(),
         None => null_mut::<c_char>(),
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn efb_station_set_description(station: &mut Station, description: *const c_char) {
+    if let Ok(description) = unsafe { CStr::from_ptr(description).to_str() } {
+        let _ = station.description.insert(String::from(description));
     }
 }

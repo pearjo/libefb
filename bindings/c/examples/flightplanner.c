@@ -108,18 +108,18 @@ main(int argc, char *argv[]) {
   // now we'll build a C172
   EfbAircraftBuilder *aircraft_builder = efb_aircraft_builder_new();
 
-  // the front seats
-  efb_aircraft_builder_station_arms_push(aircraft_builder,
-                                         efb_distance_m(0.94));
-  // the back seats
-  efb_aircraft_builder_station_arms_push(aircraft_builder,
-                                         efb_distance_m(1.85));
-  // the first cargo compartment
-  efb_aircraft_builder_station_arms_push(aircraft_builder,
-                                         efb_distance_m(2.41));
-  // the second cargo compartment
-  efb_aircraft_builder_station_arms_push(aircraft_builder,
-                                         efb_distance_m(3.12));
+  efb_aircraft_builder_stations_push(aircraft_builder,
+                                     efb_distance_m(0.94),
+                                     "front seats");
+  efb_aircraft_builder_stations_push(aircraft_builder,
+                                     efb_distance_m(1.85),
+                                     "back seats");
+  efb_aircraft_builder_stations_push(aircraft_builder,
+                                     efb_distance_m(2.41),
+                                     "first cargo compartment");
+  efb_aircraft_builder_stations_push(aircraft_builder,
+                                     efb_distance_m(3.12),
+                                     "second cargo compartment");
 
   efb_aircraft_builder_empty_mass(aircraft_builder, efb_mass_kg(807.0));
 

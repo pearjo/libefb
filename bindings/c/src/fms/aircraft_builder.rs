@@ -13,12 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fp::{Aircraft, CGEnvelope, FuelTank};
+use std::ffi::{c_char, CStr};
+use std::slice::Iter;
+
+use efb::fp::{Aircraft, CGEnvelope, FuelTank, Station};
 use efb::{Distance, FuelType, Mass, Volume};
 
 #[derive(Default)]
-pub struct AircraftBuilder {
-    station_arms: Vec<Distance>,
+pub struct AircraftBuilder<'a> {
+    stations: Vec<Station>,
+    stations_iter: Option<Iter<'a, Station>>,
     empty_mass: Option<Mass>,
     empty_balance: Option<Distance>,
     fuel_type: Option<FuelType>,
@@ -26,10 +30,10 @@ pub struct AircraftBuilder {
     cg_envelope: Vec<(Mass, Distance)>,
 }
 
-impl AircraftBuilder {
+impl<'a> AircraftBuilder<'a> {
     pub(super) fn build(&self) -> Option<Aircraft> {
         Some(Aircraft {
-            station_arms: self.station_arms.clone(),
+            stations: self.stations.clone(),
             empty_mass: self.empty_mass?,
             empty_balance: self.empty_balance?,
             fuel_type: self.fuel_type?,
@@ -41,12 +45,15 @@ impl AircraftBuilder {
 
 /// Returns a new aircraft builder.
 ///
+/// Use the builder to gradually provide all the different inputs required to
+/// define an aircraft.
+///
 /// # Safety
 ///
 /// The memory allocated for the builder needs to be freed by calling
 /// [`efb_aircraft_builder_free`].
 #[no_mangle]
-pub unsafe extern "C" fn efb_aircraft_builder_new() -> Box<AircraftBuilder> {
+pub unsafe extern "C" fn efb_aircraft_builder_new<'a>() -> Box<AircraftBuilder<'a>> {
     Box::new(AircraftBuilder::default())
 }
 
@@ -57,29 +64,49 @@ pub extern "C" fn efb_aircraft_builder_free(builder: Box<AircraftBuilder>) {
 }
 
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_station_arms_push(
+pub extern "C" fn efb_aircraft_builder_stations_push(
     builder: &mut AircraftBuilder,
-    distance: Distance,
+    arm: Distance,
+    description: *const c_char,
 ) {
-    builder.station_arms.push(distance);
+    let description = unsafe { CStr::from_ptr(description).to_str() };
+
+    builder.stations.push(Station {
+        arm,
+        description: description.ok().map(String::from),
+    });
 }
 
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_station_arms_remove(
-    builder: &mut AircraftBuilder,
-    i: usize,
-) {
-    builder.station_arms.remove(i);
+pub extern "C" fn efb_aircraft_builder_stations_remove(builder: &mut AircraftBuilder, at: usize) {
+    builder.stations.remove(at);
 }
 
+/// Returns the first station.
+///
+/// To iterate over all stations, call [`efb_aircraft_builder_stations_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbStation *station = efb_aircraft_builder_stations_first(builder);
+///      station != NULL;
+///      station = efb_aircraft_builder_stations_next(builder))
+/// ```
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_station_arms_edit(
-    builder: &mut AircraftBuilder,
-    distance: Distance,
-    i: usize,
-) {
-    builder.station_arms.remove(i);
-    builder.station_arms.insert(i, distance);
+pub extern "C" fn efb_aircraft_builder_stations_first<'a>(
+    builder: &'a mut AircraftBuilder<'a>,
+) -> Option<&'a Station> {
+    builder.stations_iter.insert(builder.stations.iter()).next()
+}
+
+/// Returns the next station.
+///
+/// When the end of the stations is reached, this function returns a null pointer.
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_stations_next<'a>(
+    builder: &'a mut AircraftBuilder<'a>,
+) -> Option<&'a Station> {
+    builder.stations_iter.as_mut().and_then(|iter| iter.next())
 }
 
 #[no_mangle]
