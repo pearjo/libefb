@@ -14,17 +14,41 @@
 // limitations under the License.
 
 import Foundation
-import Observation
 import efb
 
 public struct Station: Identifiable {
-    public var id: UUID = UUID()
-    public var description: String
-    public var arm: Measurement<UnitLength>
+    let station: OpaquePointer!
 
-    public init(description: String, arm: Measurement<UnitLength>) {
-        self.description = description
-        self.arm = arm
+    public let id: UUID = UUID()
+
+    public var arm: Measurement<UnitLength> {
+        get {
+            Measurement<UnitLength>(
+              efb_station_arm(station).pointee
+            )
+        }
+        set(newArm) {
+            efb_station_set_arm(station, EfbDistance(length: newArm))
+        }
+    }
+
+    public var description: String {
+        get {
+            efb_station_description(station).map { description in
+                defer {
+                    efb_string_free(description)
+                }
+
+                return String(cString: description)
+            } ?? ""
+        }
+        set(newDescription) {
+            efb_station_set_description(station, newDescription)
+        }
+    }
+
+    init(_ station: OpaquePointer!) {
+        self.station = station
     }
 }
 
@@ -33,8 +57,6 @@ public struct Tank {
     let capacity: Measurement<UnitVolume>
 }
 
-@available(iOS 17.0, macOS 14.0, *)
-@Observable
 public class AircraftBuilder {
     private let builder: OpaquePointer!
 
@@ -66,21 +88,30 @@ public class AircraftBuilder {
 
     // MARK: - Stations
 
-    public private(set) var stations: [Station] = []
+    public func stations() -> [Station] {
+        var stations: [Station] = []
 
-    public func appendStation(station: Station) {
-        efb_aircraft_builder_station_arms_push(builder, EfbDistance(length: station.arm))
-        stations.append(station)
+        if let station = efb_aircraft_builder_stations_first(self.builder) {
+            stations.append(Station(station))
+
+            while let station = efb_aircraft_builder_stations_next(self.builder) {
+                stations.append(Station(station))
+            }
+        }
+
+        return stations
+    }
+
+    public func appendStation(arm: Measurement<UnitLength>, description: String?) {
+        efb_aircraft_builder_stations_push(
+          builder,
+          EfbDistance(length: arm),
+          description
+        )
     }
 
     public func removeStation(at: Int) {
-        efb_aircraft_builder_station_arms_remove(builder, at)
-        stations.remove(at: at)
-    }
-
-    public func replaceStation(with: Station, at: Int) {
-        efb_aircraft_builder_station_arms_edit(builder, EfbDistance(length: with.arm), at)
-        stations[at] = with
+        efb_aircraft_builder_stations_remove(builder, at)
     }
 
     // MARK: - Fuel and Tanks
@@ -114,44 +145,17 @@ public class AircraftBuilder {
 
     // MARK: - Center of Gravity
 
-    public private(set) var cgEnvelope: [(mass: Measurement<UnitMass>, distance: Distance)] = []
-
     public func appendCGEnvelope(mass: Measurement<UnitMass>, distance: Distance) {
         efb_aircraft_builder_cg_envelope_push(builder, EfbMass(mass: mass), EfbDistance(distance))
-        cgEnvelope.append((mass, distance))
     }
 
     public func removeCGEnvelope(at: Int) {
         efb_aircraft_builder_cg_envelope_remove(builder, at)
-        cgEnvelope.remove(at: at)
     }
 
     public func replaceCGEnvelope(withMass: Measurement<UnitMass>, withDistance: Distance, at: Int)
     {
         efb_aircraft_builder_cg_envelope_edit(
             builder, EfbMass(mass: withMass), EfbDistance(withDistance), at)
-        cgEnvelope[at] = (withMass, withDistance)
     }
 }
-
-#if DEBUG
-    @available(iOS 17.0, macOS 14.0, *)
-    extension AircraftBuilder {
-        static public let testAircraftBuilder = {
-            let builder = AircraftBuilder()
-
-            builder.appendStation(
-                station: Station(
-                    description: "Front seats", arm: Measurement(value: 94, unit: .centimeters)))
-            builder.appendStation(
-                station: Station(
-                    description: "Back seats", arm: Measurement(value: 185, unit: .centimeters)))
-            builder.appendStation(
-                station: Station(
-                    description: "Baggage compartment",
-                    arm: Measurement(value: 241, unit: .centimeters)))
-
-            return builder
-        }()
-    }
-#endif
