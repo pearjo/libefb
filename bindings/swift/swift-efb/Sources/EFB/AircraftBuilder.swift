@@ -57,6 +57,18 @@ public struct Tank {
     let capacity: Measurement<UnitVolume>
 }
 
+// TODO: Enable editing of limit.
+public struct CGLimit: Identifiable {
+    public let id: UUID = UUID()
+    public var mass: Measurement<UnitMass>
+    public var distance: Measurement<UnitLength>
+
+    public init(mass: Measurement<UnitMass>, distance: Measurement<UnitLength>) {
+        self.mass = mass
+        self.distance = distance
+    }
+}
+
 public class AircraftBuilder {
     private let builder: OpaquePointer!
 
@@ -145,17 +157,11 @@ public class AircraftBuilder {
 
     // MARK: - Center of Gravity
 
-    public func appendCGEnvelope(mass: Measurement<UnitMass>, distance: Distance) {
-        efb_aircraft_builder_cg_envelope_push(builder, EfbMass(mass: mass), EfbDistance(distance))
+    public func appendCGLimit(mass: Measurement<UnitMass>, distance: Measurement<UnitLength>) {
+        efb_aircraft_builder_cg_envelope_push(builder, EfbMass(mass: mass), EfbDistance(length: distance))
     }
 
-    public func removeCGEnvelope(at: Int) {
+    public func removeCGLimit(at: Int) {
         efb_aircraft_builder_cg_envelope_remove(builder, at)
-    }
-
-    public func replaceCGEnvelope(withMass: Measurement<UnitMass>, withDistance: Distance, at: Int)
-    {
-        efb_aircraft_builder_cg_envelope_edit(
-            builder, EfbMass(mass: withMass), EfbDistance(withDistance), at)
     }
 }
