@@ -27,6 +27,7 @@ pub struct AircraftBuilder<'a> {
     empty_balance: Option<Distance>,
     fuel_type: Option<FuelType>,
     tanks: Vec<FuelTank>,
+    tanks_iter: Option<Iter<'a, FuelTank>>,
     cg_envelope: Vec<CGLimit>,
     cg_envelope_iter: Option<Iter<'a, CGLimit>>,
 }
@@ -141,22 +142,37 @@ pub extern "C" fn efb_aircraft_builder_tanks_push(
 }
 
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_tanks_remove(builder: &mut AircraftBuilder, i: usize) {
-    builder.tanks.remove(i);
+pub extern "C" fn efb_aircraft_builder_tanks_remove(builder: &mut AircraftBuilder, at: usize) {
+    builder.tanks.remove(at);
 }
 
+/// Returns the first tank.
+///
+/// To iterate over all tanks, call [`efb_aircraft_builder_tanks_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbTank *tank = efb_aircraft_builder_tanks_first(builder);
+///      tank != NULL;
+///      tank = efb_aircraft_builder_tanks_next(builder))
+/// ```
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_tanks_edit(
-    builder: &mut AircraftBuilder,
-    capacity: Volume,
-    arm: Distance,
-    i: usize,
-) {
-    builder.tanks.remove(i);
-    builder.tanks.insert(i, FuelTank { capacity, arm });
+pub extern "C" fn efb_aircraft_builder_tanks_first<'a>(
+    builder: &'a mut AircraftBuilder<'a>,
+) -> Option<&'a FuelTank> {
+    builder.tanks_iter.insert(builder.tanks.iter()).next()
 }
 
+/// Returns the next tank.
+///
+/// When the end of the tanks is reached, this function returns a null pointer.
 #[no_mangle]
+pub extern "C" fn efb_aircraft_builder_tanks_next<'a>(
+    builder: &'a mut AircraftBuilder<'a>,
+) -> Option<&'a FuelTank> {
+    builder.tanks_iter.as_mut().and_then(|iter| iter.next())
+}
+
 /// Pushes a new CG limit into the envelope and returns a pointer to the new
 /// limit.
 #[no_mangle]

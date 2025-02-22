@@ -61,6 +61,9 @@ typedef struct EfbFlightPlanningBuilder EfbFlightPlanningBuilder;
 
 typedef struct EfbFuelPlanning EfbFuelPlanning;
 
+/// An aircraft's fuel tank.
+typedef struct EfbFuelTank EfbFuelTank;
+
 /// A leg `from` one point `to` another.
 typedef struct EfbLeg EfbLeg;
 
@@ -551,11 +554,26 @@ efb_aircraft_builder_tanks_push(EfbAircraftBuilder *builder, EfbVolume capacity,
                                 EfbDistance arm);
 
 void
-efb_aircraft_builder_tanks_remove(EfbAircraftBuilder *builder, size_t i);
+efb_aircraft_builder_tanks_remove(EfbAircraftBuilder *builder, size_t at);
 
-void
-efb_aircraft_builder_tanks_edit(EfbAircraftBuilder *builder, EfbVolume capacity,
-                                EfbDistance arm, size_t i);
+/// Returns the first tank.
+///
+/// To iterate over all tanks, call [`efb_aircraft_builder_tanks_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbTank *tank = efb_aircraft_builder_tanks_first(builder);
+///      tank != NULL;
+///      tank = efb_aircraft_builder_tanks_next(builder))
+/// ```
+const EfbFuelTank *
+efb_aircraft_builder_tanks_first(EfbAircraftBuilder *builder);
+
+/// Returns the next tank.
+///
+/// When the end of the tanks is reached, this function returns a null pointer.
+const EfbFuelTank *
+efb_aircraft_builder_tanks_next(EfbAircraftBuilder *builder);
 
 /// Pushes a new CG limit into the envelope and returns a pointer to the new
 /// limit.

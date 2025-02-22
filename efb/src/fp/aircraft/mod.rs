@@ -24,7 +24,6 @@ pub use cg_envelope::{CGEnvelope, CGLimit};
 pub use station::{LoadedStation, Station};
 
 /// An aircraft's fuel tank.
-#[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct FuelTank {
     /// The tank's capacity.
