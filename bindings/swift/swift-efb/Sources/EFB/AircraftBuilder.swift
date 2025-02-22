@@ -52,9 +52,16 @@ public struct Station: Identifiable {
     }
 }
 
-public struct Tank {
-    let arm: Measurement<UnitLength>
-    let capacity: Measurement<UnitVolume>
+// TODO: Enable editing of tank.
+public struct Tank: Identifiable {
+    public let id: UUID = UUID()
+    public var arm: Measurement<UnitLength>
+    public var capacity: Measurement<UnitVolume>
+
+    public init(arm: Measurement<UnitLength>, capacity: Measurement<UnitVolume>) {
+        self.arm = arm
+        self.capacity = capacity
+    }
 }
 
 // TODO: Enable editing of limit.
@@ -136,23 +143,13 @@ public class AircraftBuilder {
         }
     }
 
-    public private(set) var tanks: [Tank] = []
-
-    public func appendTank(tank: Tank) {
+    public func appendTank(arm: Measurement<UnitLength>, capacity: Measurement<UnitVolume>) {
         efb_aircraft_builder_tanks_push(
-            builder, EfbVolume(volume: tank.capacity), EfbDistance(length: tank.arm))
-        tanks.append(tank)
+            builder, EfbVolume(volume: capacity), EfbDistance(length: arm))
     }
 
     public func removeTank(at: Int) {
         efb_aircraft_builder_tanks_remove(builder, at)
-        tanks.remove(at: at)
-    }
-
-    public func replaceTank(with: Tank, at: Int) {
-        efb_aircraft_builder_tanks_edit(
-            builder, EfbVolume(volume: with.capacity), EfbDistance(length: with.arm), at)
-        tanks[at] = with
     }
 
     // MARK: - Center of Gravity
