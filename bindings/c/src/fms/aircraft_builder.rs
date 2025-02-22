@@ -16,7 +16,7 @@
 use std::ffi::{c_char, CStr};
 use std::slice::Iter;
 
-use efb::fp::{Aircraft, CGEnvelope, FuelTank, Station};
+use efb::fp::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
 use efb::{Distance, FuelType, Mass, Volume};
 
 #[derive(Default)]
@@ -27,7 +27,8 @@ pub struct AircraftBuilder<'a> {
     empty_balance: Option<Distance>,
     fuel_type: Option<FuelType>,
     tanks: Vec<FuelTank>,
-    cg_envelope: Vec<(Mass, Distance)>,
+    cg_envelope: Vec<CGLimit>,
+    cg_envelope_iter: Option<Iter<'a, CGLimit>>,
 }
 
 impl<'a> AircraftBuilder<'a> {
@@ -156,26 +157,55 @@ pub extern "C" fn efb_aircraft_builder_tanks_edit(
 }
 
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_cg_envelope_push(
-    builder: &mut AircraftBuilder,
+/// Pushes a new CG limit into the envelope and returns a pointer to the new
+/// limit.
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_cg_envelope_push<'a>(
+    builder: &'a mut AircraftBuilder,
     mass: Mass,
     distance: Distance,
-) {
-    builder.cg_envelope.push((mass, distance));
+) -> Option<&'a CGLimit> {
+    builder.cg_envelope.push(CGLimit { mass, distance });
+    builder.cg_envelope.last()
 }
 
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_cg_envelope_remove(builder: &mut AircraftBuilder, i: usize) {
-    builder.cg_envelope.remove(i);
+pub extern "C" fn efb_aircraft_builder_cg_envelope_remove(
+    builder: &mut AircraftBuilder,
+    at: usize,
+) {
+    builder.cg_envelope.remove(at);
 }
 
+/// Returns the first CG limit.
+///
+/// To iterate over all CG limits, call [`efb_aircraft_builder_cg_envelope_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbCGLimit *limit = efb_aircraft_builder_cg_envelope_first(builder);
+///      limit != NULL;
+///      limit = efb_aircraft_builder_cg_envelope_next(builder))
+/// ```
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_cg_envelope_edit(
-    builder: &mut AircraftBuilder,
-    mass: Mass,
-    distance: Distance,
-    i: usize,
-) {
-    builder.cg_envelope.remove(i);
-    builder.cg_envelope.insert(i, (mass, distance));
+pub extern "C" fn efb_aircraft_builder_cg_envelope_first<'a>(
+    builder: &'a mut AircraftBuilder<'a>,
+) -> Option<&'a CGLimit> {
+    builder
+        .cg_envelope_iter
+        .insert(builder.cg_envelope.iter())
+        .next()
+}
+
+/// Returns the next CG limit.
+///
+/// When the end of the CG limits is reached, this function returns a null pointer.
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_cg_envelope_next<'a>(
+    builder: &'a mut AircraftBuilder<'a>,
+) -> Option<&'a CGLimit> {
+    builder
+        .cg_envelope_iter
+        .as_mut()
+        .and_then(|iter| iter.next())
 }

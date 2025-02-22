@@ -32,6 +32,8 @@ typedef enum {
 
 typedef struct EfbAircraftBuilder EfbAircraftBuilder;
 
+typedef struct EfbCGLimit EfbCGLimit;
+
 /// The Flight Management System (FMS).
 ///
 /// This type wraps the [FMS] which is the integral system of this library. The
@@ -555,16 +557,35 @@ void
 efb_aircraft_builder_tanks_edit(EfbAircraftBuilder *builder, EfbVolume capacity,
                                 EfbDistance arm, size_t i);
 
-void
+/// Pushes a new CG limit into the envelope and returns a pointer to the new
+/// limit.
+const EfbCGLimit *
 efb_aircraft_builder_cg_envelope_push(EfbAircraftBuilder *builder, EfbMass mass,
                                       EfbDistance distance);
 
 void
-efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t i);
+efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t at);
 
-void
-efb_aircraft_builder_cg_envelope_edit(EfbAircraftBuilder *builder, EfbMass mass,
-                                      EfbDistance distance, size_t i);
+/// Returns the first CG limit.
+///
+/// To iterate over all CG limits, call
+/// [`efb_aircraft_builder_cg_envelope_next`] until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbCGLimit *limit =
+/// efb_aircraft_builder_cg_envelope_first(builder);
+///      limit != NULL;
+///      limit = efb_aircraft_builder_cg_envelope_next(builder))
+/// ```
+const EfbCGLimit *
+efb_aircraft_builder_cg_envelope_first(EfbAircraftBuilder *builder);
+
+/// Returns the next CG limit.
+///
+/// When the end of the CG limits is reached, this function returns a null
+/// pointer.
+const EfbCGLimit *
+efb_aircraft_builder_cg_envelope_next(EfbAircraftBuilder *builder);
 
 const EfbFuelPlanning *
 efb_flight_planning_fuel_planning(const EfbFlightPlanning *planning);
