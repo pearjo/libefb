@@ -77,11 +77,26 @@ fn main() {
             arm: Distance::Meter(1.22),
         }],
         cg_envelope: CGEnvelope::new(vec![
-            (Mass::Kilogram(0.0), Distance::Meter(0.89)),
-            (Mass::Kilogram(885.0), Distance::Meter(0.89)),
-            (Mass::Kilogram(1111.0), Distance::Meter(1.02)),
-            (Mass::Kilogram(1111.0), Distance::Meter(1.20)),
-            (Mass::Kilogram(0.0), Distance::Meter(1.20)),
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(0.89),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(885.0),
+                distance: Distance::Meter(0.89),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1111.0),
+                distance: Distance::Meter(1.02),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1111.0),
+                distance: Distance::Meter(1.20),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(1.20),
+            },
         ]),
     };
 

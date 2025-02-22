@@ -20,7 +20,7 @@ use super::MassAndBalance;
 use crate::error::Error;
 use crate::{Distance, Fuel, FuelType, Mass, Volume};
 
-pub use cg_envelope::CGEnvelope;
+pub use cg_envelope::{CGEnvelope, CGLimit};
 pub use station::{LoadedStation, Station};
 
 /// An aircraft's fuel tank.
@@ -55,7 +55,7 @@ pub struct FuelTank {
 ///
 /// ```
 /// use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
-/// use efb::fp::{Aircraft, CGEnvelope, FuelTank, MassAndBalance, Station};
+/// use efb::fp::{Aircraft, CGEnvelope, CGLimit, FuelTank, MassAndBalance, Station};
 ///
 /// // this is how a C172 of our flying club with a Diesel engine would look like:
 /// let ac = Aircraft {
@@ -87,11 +87,11 @@ pub struct FuelTank {
 ///         },
 ///     ],
 ///     cg_envelope: CGEnvelope::new(vec![
-///         (Mass::Kilogram(0.0), Distance::Meter(0.89)),
-///         (Mass::Kilogram(885.0), Distance::Meter(0.89)),
-///         (Mass::Kilogram(1111.0), Distance::Meter(1.02)),
-///         (Mass::Kilogram(1111.0), Distance::Meter(1.20)),
-///         (Mass::Kilogram(0.0), Distance::Meter(1.20)),
+///         CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(0.89) },
+///         CGLimit { mass: Mass::Kilogram(885.0), distance: Distance::Meter(0.89) },
+///         CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.02) },
+///         CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.20) },
+///         CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(1.20) },
 ///     ]),
 /// };
 ///
