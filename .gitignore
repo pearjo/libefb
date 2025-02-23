@@ -8,3 +8,6 @@ target
 # Python
 __pycache__
 *.ipynb*
+
+# emacs
+.projectile-cache.eld
