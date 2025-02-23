@@ -694,6 +694,20 @@ efb_fuel_planning_on_ramp(const EfbFuelPlanning *planning);
 const EfbFuel *
 efb_fuel_planning_after_landing(const EfbFuelPlanning *planning);
 
+/// Returns the tanks arm in reference to the aircraft's datum.
+const EfbDistance *
+efb_fuel_tank_arm(const EfbFuelTank *tank);
+
+void
+efb_fuel_tank_set_arm(EfbFuelTank *tank, EfbDistance arm);
+
+/// Returns the tanks capacity.
+const EfbVolume *
+efb_fuel_tank_capacity(const EfbFuelTank *tank);
+
+void
+efb_fuel_tank_set_capacity(EfbFuelTank *tank, EfbVolume capacity);
+
 const EfbMass *
 efb_mass_and_balance_mass_on_ramp(const EfbMassAndBalance *mb);
 
