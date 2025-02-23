@@ -16,8 +16,8 @@
 pub mod cg_envelope;
 pub mod station;
 
-use super::MassAndBalance;
 use crate::error::Error;
+use crate::fp::MassAndBalance;
 use crate::{Distance, Fuel, FuelType, Mass, Volume};
 
 pub use cg_envelope::{CGEnvelope, CGLimit};
@@ -54,7 +54,8 @@ pub struct FuelTank {
 ///
 /// ```
 /// use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
-/// use efb::fp::{Aircraft, CGEnvelope, CGLimit, FuelTank, MassAndBalance, Station};
+/// use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
+/// use efb::fp::MassAndBalance;
 ///
 /// // this is how a C172 of our flying club with a Diesel engine would look like:
 /// let ac = Aircraft {

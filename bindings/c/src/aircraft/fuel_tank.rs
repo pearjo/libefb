@@ -13,24 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! # The Electronic Flight Bag (EFB) Library
-//!
-//! The EFB Library is the foundation for flight planning applications,
-//! providing functionality to plan a flight and get navigational aids
-//! in-flight.
+use efb::aircraft::FuelTank;
+use efb::{Distance, Volume};
 
-#[macro_use]
-pub mod macros;
+/// Returns the tanks arm in reference to the aircraft's datum.
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_arm(tank: &FuelTank) -> &Distance {
+    &tank.arm
+}
 
-mod core;
-pub use core::*;
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_set_arm(tank: &mut FuelTank, arm: Distance) {
+    tank.arm = arm
+}
 
-pub mod aircraft;
-pub mod algorithm;
-pub mod error;
-pub mod fc;
-pub mod fms;
-pub mod fp;
-pub mod geom;
-pub mod nd;
-pub mod route;
+/// Returns the tanks capacity.
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_capacity(tank: &FuelTank) -> &Volume {
+    &tank.capacity
+}
+
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_set_capacity(tank: &mut FuelTank, capacity: Volume) {
+    tank.capacity = capacity
+}

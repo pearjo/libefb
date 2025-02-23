@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fp::CGLimit;
+use efb::aircraft::CGLimit;
 use efb::{Distance, Mass};
 
 /// Returns the limit's mass.

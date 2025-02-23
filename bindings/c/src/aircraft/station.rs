@@ -16,7 +16,7 @@
 use std::ffi::{c_char, CStr, CString};
 use std::ptr::null_mut;
 
-use efb::fp::Station;
+use efb::aircraft::Station;
 use efb::Distance;
 
 /// Returns the stations arm in reference to the aircraft's datum.

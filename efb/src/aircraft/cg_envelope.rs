@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::MassAndBalance;
 use crate::algorithm;
+use crate::fp::MassAndBalance;
 use crate::{Distance, Mass, Unit};
 
 #[derive(Clone, Debug)]
@@ -33,7 +33,8 @@ pub struct CGLimit {
 ///
 /// ```
 /// use efb::{Mass, Distance};
-/// use efb::fp::{CGEnvelope, CGLimit, LoadedStation, Station, MassAndBalance};
+/// use efb::aircraft::{CGEnvelope, CGLimit, LoadedStation, Station};
+/// use efb::fp::MassAndBalance;
 ///
 /// // This is how an envelope of a C172 might look like:
 /// //
@@ -124,7 +125,7 @@ impl CGEnvelope {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fp::{LoadedStation, Station};
+    use crate::aircraft::{LoadedStation, Station};
 
     #[test]
     fn contains_point() {

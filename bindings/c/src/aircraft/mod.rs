@@ -13,27 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fp::FuelTank;
-use efb::{Distance, Volume};
+mod cg_limit;
+mod fuel_tank;
+mod station;
 
-/// Returns the tanks arm in reference to the aircraft's datum.
-#[no_mangle]
-pub extern "C" fn efb_fuel_tank_arm(tank: &FuelTank) -> &Distance {
-    &tank.arm
-}
-
-#[no_mangle]
-pub extern "C" fn efb_fuel_tank_set_arm(tank: &mut FuelTank, arm: Distance) {
-    tank.arm = arm
-}
-
-/// Returns the tanks capacity.
-#[no_mangle]
-pub extern "C" fn efb_fuel_tank_capacity(tank: &FuelTank) -> &Volume {
-    &tank.capacity
-}
-
-#[no_mangle]
-pub extern "C" fn efb_fuel_tank_set_capacity(tank: &mut FuelTank, capacity: Volume) {
-    tank.capacity = capacity
-}
+pub use cg_limit::*;
+pub use fuel_tank::*;
+pub use station::*;

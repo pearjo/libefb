@@ -15,12 +15,10 @@
 
 //! Flight Planning.
 
-mod aircraft;
 mod fuel_planning;
 mod mb;
 mod perf;
 
-pub use aircraft::*;
 pub use fuel_planning::*;
 pub use mb::MassAndBalance;
 pub use perf::Performance;

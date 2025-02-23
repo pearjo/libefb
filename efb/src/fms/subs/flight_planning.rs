@@ -14,6 +14,7 @@
 // limitations under the License.
 
 //! Flight Planning.
+use crate::aircraft::Aircraft;
 use crate::error::Error;
 use crate::fp::*;
 use crate::route::Route;

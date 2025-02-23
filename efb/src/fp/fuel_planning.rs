@@ -13,7 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Aircraft, Performance};
+use super::Performance;
+use crate::aircraft::Aircraft;
 use crate::route::Route;
 use crate::{Duration, Fuel, VerticalDistance};
 

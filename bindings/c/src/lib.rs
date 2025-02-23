@@ -13,10 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod aircraft;
 mod fms;
 mod fp;
 mod route;
 
+pub use aircraft::*;
 pub use fms::*;
 pub use fp::*;
 pub use route::*;

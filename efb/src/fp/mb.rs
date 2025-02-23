@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::LoadedStation;
+use crate::aircraft::LoadedStation;
 use crate::{Distance, Mass, Unit};
 
 /// The mass & balance on ramp and after landing.
@@ -79,7 +79,7 @@ impl MassAndBalance {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fp::Station;
+    use crate::aircraft::Station;
 
     fn test_stations() -> Vec<LoadedStation> {
         vec![

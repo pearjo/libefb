@@ -16,7 +16,7 @@
 use std::ffi::{c_char, CStr};
 use std::slice::Iter;
 
-use efb::fp::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
+use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
 use efb::{Distance, FuelType, Mass, Volume};
 
 #[derive(Default)]

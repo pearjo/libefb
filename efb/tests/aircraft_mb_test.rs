@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fp::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
+use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
 use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
 
 /// Returns the an aircraft we use for the tests.
