@@ -117,6 +117,12 @@ public class AircraftBuilder {
         efb_aircraft_builder_free(builder)
     }
 
+    public var registration: String = "" {
+        didSet {
+            efb_aircraft_builder_registration(builder, registration)
+        }
+    }
+
     // MARK: - Empty Weight & Balance
 
     public var emptyMass: Measurement<UnitMass>? {
@@ -236,5 +242,13 @@ public class AircraftBuilder {
 
     public func removeCGLimit(at: Int) {
         efb_aircraft_builder_cg_envelope_remove(builder, at)
+    }
+
+    // MARK: - Notes
+
+    public var notes: String = "" {
+        didSet {
+            efb_aircraft_builder_notes(builder, notes)
+        }
     }
 }
