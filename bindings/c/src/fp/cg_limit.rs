@@ -13,14 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cg_limit;
-mod fuel_planning;
-mod fuel_tank;
-mod mb;
-mod station;
+use efb::fp::CGLimit;
+use efb::{Distance, Mass};
 
-pub use cg_limit::*;
-pub use fuel_planning::*;
-pub use fuel_tank::*;
-pub use mb::*;
-pub use station::*;
+/// Returns the limit's mass.
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_mass(limit: &CGLimit) -> &Mass {
+    &limit.mass
+}
+
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_set_mass(limit: &mut CGLimit, mass: Mass) {
+    limit.mass = mass
+}
+
+/// Returns the limit's distance in reference to the aircraft's datum.
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_distance(limit: &CGLimit) -> &Distance {
+    &limit.distance
+}
+
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_set_distance(limit: &mut CGLimit, distance: Distance) {
+    limit.distance = distance
+}

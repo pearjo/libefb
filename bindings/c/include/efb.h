@@ -664,6 +664,20 @@ efb_flight_planning_builder_set_perf(
     EfbPerformanceAtLevel (*perf)(const EfbVerticalDistance *),
     EfbVerticalDistance ceiling);
 
+/// Returns the limit's mass.
+const EfbMass *
+efb_cg_limit_mass(const EfbCGLimit *limit);
+
+void
+efb_cg_limit_set_mass(EfbCGLimit *limit, EfbMass mass);
+
+/// Returns the limit's distance in reference to the aircraft's datum.
+const EfbDistance *
+efb_cg_limit_distance(const EfbCGLimit *limit);
+
+void
+efb_cg_limit_set_distance(EfbCGLimit *limit, EfbDistance distance);
+
 const EfbFuel *
 efb_fuel_planning_taxi(const EfbFuelPlanning *planning);
 
