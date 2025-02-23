@@ -21,6 +21,7 @@ use efb::{Distance, FuelType, Mass, Volume};
 
 #[derive(Default)]
 pub struct AircraftBuilder<'a> {
+    registration: Option<String>,
     stations: Vec<Station>,
     stations_iter: Option<Iter<'a, Station>>,
     empty_mass: Option<Mass>,
@@ -30,17 +31,20 @@ pub struct AircraftBuilder<'a> {
     tanks_iter: Option<Iter<'a, FuelTank>>,
     cg_envelope: Vec<CGLimit>,
     cg_envelope_iter: Option<Iter<'a, CGLimit>>,
+    notes: Option<String>,
 }
 
 impl<'a> AircraftBuilder<'a> {
     pub(super) fn build(&self) -> Option<Aircraft> {
         Some(Aircraft {
+            registration: self.registration.clone()?,
             stations: self.stations.clone(),
             empty_mass: self.empty_mass?,
             empty_balance: self.empty_balance?,
             fuel_type: self.fuel_type?,
             tanks: self.tanks.clone(),
             cg_envelope: CGEnvelope::new(self.cg_envelope.clone()),
+            notes: self.notes.clone(),
         })
     }
 }
@@ -63,6 +67,17 @@ pub unsafe extern "C" fn efb_aircraft_builder_new<'a>() -> Box<AircraftBuilder<'
 #[no_mangle]
 pub extern "C" fn efb_aircraft_builder_free(builder: Box<AircraftBuilder>) {
     drop(builder);
+}
+
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_registration(
+    builder: &mut AircraftBuilder,
+    registration: *const c_char,
+) {
+    let registration = unsafe { CStr::from_ptr(registration).to_str() };
+    let _ = builder
+        .registration
+        .insert(registration.ok().map(String::from).unwrap());
 }
 
 /// Pushes a new station to the stations and returns it.
@@ -228,4 +243,10 @@ pub extern "C" fn efb_aircraft_builder_cg_envelope_next<'a>(
         .cg_envelope_iter
         .as_mut()
         .and_then(|iter| iter.next())
+}
+
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_notes(builder: &mut AircraftBuilder, notes: *const c_char) {
+    let notes = unsafe { CStr::from_ptr(notes).to_str() };
+    let _ = builder.notes.insert(notes.ok().map(String::from).unwrap());
 }

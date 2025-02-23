@@ -19,6 +19,7 @@ use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
 /// Returns the an aircraft we use for the tests.
 fn aircraft() -> Aircraft {
     Aircraft {
+        registration: String::from("N12345"),
         stations: vec![
             Station {
                 arm: Distance::Meter(1.0),
@@ -71,6 +72,7 @@ fn aircraft() -> Aircraft {
                 distance: Distance::Meter(1.5),
             },
         ]),
+        notes: None,
     }
 }
 

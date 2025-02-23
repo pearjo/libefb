@@ -58,6 +58,7 @@ pub struct FuelTank {
 ///
 /// // this is how a C172 of our flying club with a Diesel engine would look like:
 /// let ac = Aircraft {
+///     registration: String::from("N12345"),
 ///     stations: vec![
 ///         Station {
 ///             arm: Distance::Meter(0.94),
@@ -92,6 +93,7 @@ pub struct FuelTank {
 ///         CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.20) },
 ///         CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(1.20) },
 ///     ]),
+///     notes: None,
 /// };
 ///
 /// // now we can calculate the mass & balance for a flight with one pilot on
@@ -117,6 +119,9 @@ pub struct FuelTank {
 /// ```
 #[derive(Clone, Debug)]
 pub struct Aircraft {
+    /// The unique registration code of the aircraft aka tail number.
+    pub registration: String, // TODO: Add a Registration type with country and validation.
+
     /// The distances from a reference datum at which mass can be loaded
     /// e.g. the position of a seat.
     pub stations: Vec<Station>,
@@ -138,6 +143,10 @@ pub struct Aircraft {
     /// The center of gravity envelope which must contains the CG at a mass for
     /// the aircraft to be balanced.
     pub cg_envelope: CGEnvelope,
+
+    /// Notes regarding the aircraft e.g. when the empty mass and balance were
+    /// determined.
+    pub notes: Option<String>,
 }
 
 impl Aircraft {
@@ -302,6 +311,7 @@ mod tests {
     fn usable_fuel_matches_tank_capacity() {
         // we have two fuel tanks with 40 Liter each
         let ac = Aircraft {
+            registration: String::from("N12345"),
             stations: vec![],
             empty_mass: Mass::Kilogram(0.0),
             empty_balance: Distance::Meter(0.0),
@@ -317,6 +327,7 @@ mod tests {
                 },
             ],
             cg_envelope: CGEnvelope::new(vec![]),
+            notes: None,
         };
 
         // thus our total usable fuel is 80 Liter
@@ -327,6 +338,7 @@ mod tests {
     #[should_panic(expected = "UnexpectedMassesForStations")]
     fn create_stations_with_missing_mass() {
         let ac = Aircraft {
+            registration: String::from("N12345"),
             stations: vec![
                 Station {
                     arm: Distance::Meter(1.0),
@@ -342,6 +354,7 @@ mod tests {
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),
+            notes: None,
         };
 
         // the aircraft has two stations but we provide no mass for any
@@ -352,12 +365,14 @@ mod tests {
     fn stations_include_empty_mass() {
         // we configure no station and only an empty mass of 800 kg at 1.0 m
         let ac = Aircraft {
+            registration: String::from("N12345"),
             stations: vec![],
             empty_mass: Mass::Kilogram(800.0),
             empty_balance: Distance::Meter(1.0),
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),
+            notes: None,
         };
 
         let stations = ac.stations_from_mass(&vec![], &vec![]).unwrap();

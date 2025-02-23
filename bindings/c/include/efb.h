@@ -510,6 +510,10 @@ efb_aircraft_builder_new(void);
 void
 efb_aircraft_builder_free(EfbAircraftBuilder *builder);
 
+void
+efb_aircraft_builder_registration(EfbAircraftBuilder *builder,
+                                  const char *registration);
+
 /// Pushes a new station to the stations and returns it.
 const EfbStation *
 efb_aircraft_builder_stations_push(EfbAircraftBuilder *builder, EfbDistance arm,
@@ -606,6 +610,9 @@ efb_aircraft_builder_cg_envelope_first(EfbAircraftBuilder *builder);
 /// pointer.
 const EfbCGLimit *
 efb_aircraft_builder_cg_envelope_next(EfbAircraftBuilder *builder);
+
+void
+efb_aircraft_builder_notes(EfbAircraftBuilder *builder, const char *notes);
 
 const EfbFuelPlanning *
 efb_flight_planning_fuel_planning(const EfbFlightPlanning *planning);

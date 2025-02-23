@@ -51,6 +51,7 @@ fn main() {
     );
 
     let aircraft = Aircraft {
+        registration: String::from("N12345"),
         stations: vec![
             Station {
                 arm: Distance::Meter(0.94),
@@ -98,6 +99,7 @@ fn main() {
                 distance: Distance::Meter(1.20),
             },
         ]),
+        notes: None,
     };
 
     let mut fms = FMS::new();

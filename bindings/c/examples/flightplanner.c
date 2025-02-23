@@ -108,6 +108,8 @@ main(int argc, char *argv[]) {
   // now we'll build a C172
   EfbAircraftBuilder *aircraft_builder = efb_aircraft_builder_new();
 
+  efb_aircraft_builder_registration(aircraft_builder, "N12345");
+
   efb_aircraft_builder_stations_push(aircraft_builder,
                                      efb_distance_m(0.94),
                                      "front seats");
