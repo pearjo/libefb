@@ -1,4 +1,3 @@
-// swift-tools-version: 5.9
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024 Joe Pearson
 //
@@ -14,28 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import PackageDescription
+use efb::fp::FuelTank;
+use efb::{Distance, Volume};
 
-let package = Package(
-    name: "EFB",
-    platforms: [
-        .iOS(.v17),
-        .macOS(.v14),
-    ],
-    products: [
-        .library(
-            name: "EFB",
-            targets: ["EFB"])
-    ],
-    targets: [
-        .target(
-            name: "EFB",
-            dependencies: ["efb"]),
-        .binaryTarget(
-            name: "efb",
-            path: "Frameworks/efb.xcframework"),
-        .testTarget(
-            name: "EFBTest",
-            dependencies: ["EFB"]),
-    ]
-)
+/// Returns the tanks arm in reference to the aircraft's datum.
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_arm(tank: &FuelTank) -> &Distance {
+    &tank.arm
+}
+
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_set_arm(tank: &mut FuelTank, arm: Distance) {
+    tank.arm = arm
+}
+
+/// Returns the tanks capacity.
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_capacity(tank: &FuelTank) -> &Volume {
+    &tank.capacity
+}
+
+#[no_mangle]
+pub extern "C" fn efb_fuel_tank_set_capacity(tank: &mut FuelTank, capacity: Volume) {
+    tank.capacity = capacity
+}

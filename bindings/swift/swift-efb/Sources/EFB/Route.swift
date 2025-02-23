@@ -94,7 +94,7 @@ public struct Leg {
         }
 
         wind = efb_leg_get_wind(leg).map { (wind) -> Wind in
-             Wind(wind.pointee)
+            Wind(wind.pointee)
         }
 
         tas = efb_leg_get_tas(leg).map { (tas) -> Speed in

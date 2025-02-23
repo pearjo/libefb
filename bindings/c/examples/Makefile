@@ -14,7 +14,7 @@
 # limitations under the License.
 
 CFLAGS = -I$(PWD)/../include
-LDFLAGS = -L$(PWD)/../target/debug
+LDFLAGS = -L$(PWD)/../../../target/debug
 LIBS = -lefb_c
 
 .PHONY: flightplanner

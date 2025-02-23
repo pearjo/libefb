@@ -15,6 +15,8 @@
 
 import efb
 
+// TODO: Migrate custom Efb* types to Measurement where possible.
+
 public enum Angle {
     case trueNorth(Float)
     case magneticNorth(Float)
@@ -131,7 +133,7 @@ public enum FuelType {
         case JetA:
             self = .jetA
         default:
-            fatalError("Unimplemented EfbFuelType \(efbFuelType)!")
+            fatalError("init(_:) for \(efbFuelType) has not been implemented")
         }
     }
 }
@@ -143,29 +145,6 @@ extension EfbFuelType {
             self = Diesel
         case .jetA:
             self = JetA
-        }
-    }
-}
-
-public enum Mass {
-    case kilogram(Float)
-
-    init(_ efbMass: EfbMass) {
-        switch efbMass.tag {
-        case Kilogram:
-            self = .kilogram(efbMass.kilogram)
-        default:
-            fatalError("Unimplemented EfbMass \(efbMass.tag)!")
-        }
-    }
-
-}
-
-extension EfbMass {
-    init(_ mass: Mass) {
-        switch mass {
-        case .kilogram(let kg):
-            self = efb_mass_kg(kg)
         }
     }
 }

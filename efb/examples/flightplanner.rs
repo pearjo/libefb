@@ -51,15 +51,24 @@ fn main() {
     );
 
     let aircraft = Aircraft {
-        station_arms: vec![
-            // the front seats
-            Distance::Meter(0.94),
-            // the back seats
-            Distance::Meter(1.85),
-            // the first cargo compartment
-            Distance::Meter(2.41),
-            // the second cargo compartment
-            Distance::Meter(3.12),
+        registration: String::from("N12345"),
+        stations: vec![
+            Station {
+                arm: Distance::Meter(0.94),
+                description: Some(String::from("front seats")),
+            },
+            Station {
+                arm: Distance::Meter(1.85),
+                description: Some(String::from("back seats")),
+            },
+            Station {
+                arm: Distance::Meter(2.41),
+                description: Some(String::from("first cargo compartment")),
+            },
+            Station {
+                arm: Distance::Meter(3.12),
+                description: Some(String::from("second cargo compartment")),
+            },
         ],
         empty_mass: Mass::Kilogram(807.0),
         empty_balance: Distance::Meter(1.0),
@@ -69,12 +78,28 @@ fn main() {
             arm: Distance::Meter(1.22),
         }],
         cg_envelope: CGEnvelope::new(vec![
-            (Mass::Kilogram(0.0), Distance::Meter(0.89)),
-            (Mass::Kilogram(885.0), Distance::Meter(0.89)),
-            (Mass::Kilogram(1111.0), Distance::Meter(1.02)),
-            (Mass::Kilogram(1111.0), Distance::Meter(1.20)),
-            (Mass::Kilogram(0.0), Distance::Meter(1.20)),
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(0.89),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(885.0),
+                distance: Distance::Meter(0.89),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1111.0),
+                distance: Distance::Meter(1.02),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1111.0),
+                distance: Distance::Meter(1.20),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(1.20),
+            },
         ]),
+        notes: None,
     };
 
     let mut fms = FMS::new();

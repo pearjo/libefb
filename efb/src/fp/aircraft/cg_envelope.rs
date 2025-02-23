@@ -17,6 +17,12 @@ use super::MassAndBalance;
 use crate::algorithm;
 use crate::{Distance, Mass, Unit};
 
+#[derive(Clone, Debug)]
+pub struct CGLimit {
+    pub mass: Mass,
+    pub distance: Distance,
+}
+
 /// An aircraft's center of gravity (CG) envelope.
 ///
 /// The envelope draws a polygon in a coordinate system with the mass and
@@ -27,7 +33,7 @@ use crate::{Distance, Mass, Unit};
 ///
 /// ```
 /// use efb::{Mass, Distance};
-/// use efb::fp::{CGEnvelope, Station, MassAndBalance};
+/// use efb::fp::{CGEnvelope, CGLimit, LoadedStation, Station, MassAndBalance};
 ///
 /// // This is how an envelope of a C172 might look like:
 /// //
@@ -42,23 +48,26 @@ use crate::{Distance, Mass, Unit};
 /// //               Distance
 /// //
 /// let cg_envelope = CGEnvelope::new(vec![
-///     (Mass::Kilogram(0.0), Distance::Meter(0.89)),    // 0
-///     (Mass::Kilogram(885.0), Distance::Meter(0.89)),  // 1
-///     (Mass::Kilogram(1111.0), Distance::Meter(1.02)), // 2
-///     (Mass::Kilogram(1111.0), Distance::Meter(1.20)), // 3
-///     (Mass::Kilogram(0.0), Distance::Meter(1.20)),    // 4
+///     CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(0.89) },    // 0
+///     CGLimit { mass: Mass::Kilogram(885.0), distance: Distance::Meter(0.89) },  // 1
+///     CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.02) }, // 2
+///     CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.20) }, // 3
+///     CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(1.20) },    // 4
 /// ]);
 ///
 /// // now we calculate the mass & balance which we want to check against our envelope
 /// let mb = MassAndBalance::new(&vec![
 ///     // just for this example we simplify our aircraft as one station
-///     Station {
+///     LoadedStation {
+///         // we and the fuel have an arm of 1.1 m from the reference datum
+///         station: Station {
+///             arm: Distance::Meter(1.1),
+///             description: None,
+///         },
 ///         // we start our journey with the pilot and some fuel on board
 ///         on_ramp: Mass::Kilogram(897.0),
-///         // we burned 10 kg on our little sight seeing trip
+///         // and we burned 10 kg on our little sight seeing trip
 ///         after_landing: Mass::Kilogram(887.0),
-///         // and assumed that we and the fuel had an arm of 1.1 m from the reference datum
-///         arm: Distance::Meter(1.1),
 ///     },
 /// ]);
 ///
@@ -67,29 +76,29 @@ use crate::{Distance, Mass, Unit};
 /// ```
 #[derive(Clone, Debug)]
 pub struct CGEnvelope {
-    points: Vec<(Mass, Distance)>,
+    limits: Vec<CGLimit>,
 }
 
 impl CGEnvelope {
-    /// Creates a new envelope from the points.
-    pub fn new(points: Vec<(Mass, Distance)>) -> Self {
-        Self { points }
+    /// Creates a new envelope from the limits.
+    pub fn new(limits: Vec<CGLimit>) -> Self {
+        Self { limits }
     }
 
     /// Tests if the mass & balance is within this envelope.
     ///
-    /// Returns `false` if one of the points on ramp or after landing is outside
+    /// Returns `false` if one of the limits on ramp or after landing is outside
     /// of the envelope.
     pub fn contains(&self, mb: &MassAndBalance) -> bool {
         // We see the envelope as a polygon where the mass describes the y-axis
         // and the balance the x-axis. The M&B on ramp and after landing is
         // considered to be a point within this envelope (polygon).
         let envelope: Vec<algorithm::Point> = self
-            .points
+            .limits
             .iter()
             .map(|mb| algorithm::Point {
-                x: mb.1.si(),
-                y: mb.0.si(),
+                x: mb.distance.si(),
+                y: mb.mass.si(),
             })
             .collect();
 
@@ -115,11 +124,11 @@ impl CGEnvelope {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fp::Station;
+    use crate::fp::{LoadedStation, Station};
 
     #[test]
     fn contains_point() {
-        // Lets test an envelope with the points 1 which is within the envelope
+        // Lets test an envelope with the limits 1 which is within the envelope
         // and balanced and point 2 which is without the envelope and
         // unbalanced:
         //
@@ -131,23 +140,44 @@ mod tests {
         //   +-----------+
         //
         let envelope = CGEnvelope::new(vec![
-            (Mass::Kilogram(0.0), Distance::Meter(0.0)),
-            (Mass::Kilogram(0.5), Distance::Meter(0.0)),
-            (Mass::Kilogram(1.0), Distance::Meter(0.25)),
-            (Mass::Kilogram(1.0), Distance::Meter(1.0)),
-            (Mass::Kilogram(0.0), Distance::Meter(1.0)),
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(0.0),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(0.5),
+                distance: Distance::Meter(0.0),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1.0),
+                distance: Distance::Meter(0.25),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1.0),
+                distance: Distance::Meter(1.0),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(1.0),
+            },
         ]);
 
-        let balanced = MassAndBalance::new(&vec![Station {
+        let balanced = MassAndBalance::new(&vec![LoadedStation {
+            station: Station {
+                arm: Distance::Meter(0.5),
+                description: None,
+            },
             on_ramp: Mass::Kilogram(0.5),
             after_landing: Mass::Kilogram(0.5),
-            arm: Distance::Meter(0.5),
         }]);
 
-        let unbalanced = MassAndBalance::new(&vec![Station {
+        let unbalanced = MassAndBalance::new(&vec![LoadedStation {
+            station: Station {
+                arm: Distance::Meter(0.0),
+                description: None,
+            },
             on_ramp: Mass::Kilogram(1.0),
             after_landing: Mass::Kilogram(1.0),
-            arm: Distance::Meter(0.0),
         }]);
 
         assert!(

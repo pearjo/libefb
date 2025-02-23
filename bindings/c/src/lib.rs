@@ -86,6 +86,16 @@ pub unsafe extern "C" fn efb_duration_to_string(duration: *const Duration) -> *m
     to_string(duration)
 }
 
+/// Returns the mass formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+#[no_mangle]
+pub unsafe extern "C" fn efb_mass_to_string(mass: *const Mass) -> *mut c_char {
+    to_string(mass)
+}
+
 /// Returns the wind formatted as string.
 ///
 /// # Safety

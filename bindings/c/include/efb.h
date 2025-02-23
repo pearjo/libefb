@@ -32,6 +32,8 @@ typedef enum {
 
 typedef struct EfbAircraftBuilder EfbAircraftBuilder;
 
+typedef struct EfbCGLimit EfbCGLimit;
+
 /// The Flight Management System (FMS).
 ///
 /// This type wraps the [FMS] which is the integral system of this library. The
@@ -59,6 +61,9 @@ typedef struct EfbFlightPlanningBuilder EfbFlightPlanningBuilder;
 
 typedef struct EfbFuelPlanning EfbFuelPlanning;
 
+/// An aircraft's fuel tank.
+typedef struct EfbFuelTank EfbFuelTank;
+
 /// A leg `from` one point `to` another.
 typedef struct EfbLeg EfbLeg;
 
@@ -71,6 +76,16 @@ typedef struct EfbLeg EfbLeg;
 /// [`Aircraft`]: super::Aircraft
 /// [`Station`]: super::Station
 typedef struct EfbMassAndBalance EfbMassAndBalance;
+
+/// A position within the aircraft that can be loaded with a payload.
+///
+/// The payload if an aircraft is loaded to defined _stations_ e.g. a
+/// seat. Thus, the station defines where in reference to the aircraft's datum a
+/// payload can be placed. The [`LoadedStation`] provides a station with it's
+/// actual payload.
+///
+/// [`Aircraft`]: crate::fp::Aircraft
+typedef struct EfbStation EfbStation;
 
 /// An angle in the range from 0° to 360°.
 ///
@@ -124,6 +139,19 @@ typedef struct {
   uint8_t seconds;
 } EfbDuration;
 
+typedef enum {
+  Kilogram,
+} EfbMass_Tag;
+
+typedef struct {
+  EfbMass_Tag tag;
+  union {
+    struct {
+      float kilogram;
+    };
+  };
+} EfbMass;
+
 /// The speed in either nautical or metrical units.
 typedef enum {
   Knots,
@@ -153,19 +181,6 @@ typedef struct {
   /// The wind speed.
   EfbSpeed speed;
 } EfbWind;
-
-typedef enum {
-  Kilogram,
-} EfbMass_Tag;
-
-typedef struct {
-  EfbMass_Tag tag;
-  union {
-    struct {
-      float kilogram;
-    };
-  };
-} EfbMass;
 
 typedef struct {
   EfbFuelType fuel_type;
@@ -313,6 +328,14 @@ efb_distance_to_string(const EfbDistance *distance);
 /// The returned string needs to be freed by [`efb_string_free`].
 char *
 efb_duration_to_string(const EfbDuration *duration);
+
+/// Returns the mass formatted as string.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_mass_to_string(const EfbMass *mass);
 
 /// Returns the wind formatted as string.
 ///
@@ -473,6 +496,9 @@ efb_fms_flight_planning_build(EfbFMS *fms,
 
 /// Returns a new aircraft builder.
 ///
+/// Use the builder to gradually provide all the different inputs required to
+/// define an aircraft.
+///
 /// # Safety
 ///
 /// The memory allocated for the builder needs to be freed by calling
@@ -485,15 +511,37 @@ void
 efb_aircraft_builder_free(EfbAircraftBuilder *builder);
 
 void
-efb_aircraft_builder_station_arms_push(EfbAircraftBuilder *builder,
-                                       EfbDistance distance);
+efb_aircraft_builder_registration(EfbAircraftBuilder *builder,
+                                  const char *registration);
+
+/// Pushes a new station to the stations and returns it.
+const EfbStation *
+efb_aircraft_builder_stations_push(EfbAircraftBuilder *builder, EfbDistance arm,
+                                   const char *description);
 
 void
-efb_aircraft_builder_station_arms_remove(EfbAircraftBuilder *builder, size_t i);
+efb_aircraft_builder_stations_remove(EfbAircraftBuilder *builder, size_t at);
 
-void
-efb_aircraft_builder_station_arms_edit(EfbAircraftBuilder *builder,
-                                       EfbDistance distance, size_t i);
+/// Returns the first station.
+///
+/// To iterate over all stations, call [`efb_aircraft_builder_stations_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbStation *station =
+/// efb_aircraft_builder_stations_first(builder);
+///      station != NULL;
+///      station = efb_aircraft_builder_stations_next(builder))
+/// ```
+const EfbStation *
+efb_aircraft_builder_stations_first(EfbAircraftBuilder *builder);
+
+/// Returns the next station.
+///
+/// When the end of the stations is reached, this function returns a null
+/// pointer.
+const EfbStation *
+efb_aircraft_builder_stations_next(EfbAircraftBuilder *builder);
 
 void
 efb_aircraft_builder_empty_mass(EfbAircraftBuilder *builder, EfbMass mass);
@@ -506,27 +554,65 @@ void
 efb_aircraft_builder_fuel_type(EfbAircraftBuilder *builder,
                                EfbFuelType fuel_type);
 
-void
+/// Pushes a new tank to the tanks and returns it.
+const EfbFuelTank *
 efb_aircraft_builder_tanks_push(EfbAircraftBuilder *builder, EfbVolume capacity,
                                 EfbDistance arm);
 
 void
-efb_aircraft_builder_tanks_remove(EfbAircraftBuilder *builder, size_t i);
+efb_aircraft_builder_tanks_remove(EfbAircraftBuilder *builder, size_t at);
 
-void
-efb_aircraft_builder_tanks_edit(EfbAircraftBuilder *builder, EfbVolume capacity,
-                                EfbDistance arm, size_t i);
+/// Returns the first tank.
+///
+/// To iterate over all tanks, call [`efb_aircraft_builder_tanks_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbTank *tank = efb_aircraft_builder_tanks_first(builder);
+///      tank != NULL;
+///      tank = efb_aircraft_builder_tanks_next(builder))
+/// ```
+const EfbFuelTank *
+efb_aircraft_builder_tanks_first(EfbAircraftBuilder *builder);
 
-void
+/// Returns the next tank.
+///
+/// When the end of the tanks is reached, this function returns a null pointer.
+const EfbFuelTank *
+efb_aircraft_builder_tanks_next(EfbAircraftBuilder *builder);
+
+/// Pushes a new CG limit into the envelope and returns a pointer to the new
+/// limit.
+const EfbCGLimit *
 efb_aircraft_builder_cg_envelope_push(EfbAircraftBuilder *builder, EfbMass mass,
                                       EfbDistance distance);
 
 void
-efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t i);
+efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t at);
+
+/// Returns the first CG limit.
+///
+/// To iterate over all CG limits, call
+/// [`efb_aircraft_builder_cg_envelope_next`] until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbCGLimit *limit =
+/// efb_aircraft_builder_cg_envelope_first(builder);
+///      limit != NULL;
+///      limit = efb_aircraft_builder_cg_envelope_next(builder))
+/// ```
+const EfbCGLimit *
+efb_aircraft_builder_cg_envelope_first(EfbAircraftBuilder *builder);
+
+/// Returns the next CG limit.
+///
+/// When the end of the CG limits is reached, this function returns a null
+/// pointer.
+const EfbCGLimit *
+efb_aircraft_builder_cg_envelope_next(EfbAircraftBuilder *builder);
 
 void
-efb_aircraft_builder_cg_envelope_edit(EfbAircraftBuilder *builder, EfbMass mass,
-                                      EfbDistance distance, size_t i);
+efb_aircraft_builder_notes(EfbAircraftBuilder *builder, const char *notes);
 
 const EfbFuelPlanning *
 efb_flight_planning_fuel_planning(const EfbFlightPlanning *planning);
@@ -585,6 +671,20 @@ efb_flight_planning_builder_set_perf(
     EfbPerformanceAtLevel (*perf)(const EfbVerticalDistance *),
     EfbVerticalDistance ceiling);
 
+/// Returns the limit's mass.
+const EfbMass *
+efb_cg_limit_mass(const EfbCGLimit *limit);
+
+void
+efb_cg_limit_set_mass(EfbCGLimit *limit, EfbMass mass);
+
+/// Returns the limit's distance in reference to the aircraft's datum.
+const EfbDistance *
+efb_cg_limit_distance(const EfbCGLimit *limit);
+
+void
+efb_cg_limit_set_distance(EfbCGLimit *limit, EfbDistance distance);
+
 const EfbFuel *
 efb_fuel_planning_taxi(const EfbFuelPlanning *planning);
 
@@ -615,6 +715,20 @@ efb_fuel_planning_on_ramp(const EfbFuelPlanning *planning);
 const EfbFuel *
 efb_fuel_planning_after_landing(const EfbFuelPlanning *planning);
 
+/// Returns the tanks arm in reference to the aircraft's datum.
+const EfbDistance *
+efb_fuel_tank_arm(const EfbFuelTank *tank);
+
+void
+efb_fuel_tank_set_arm(EfbFuelTank *tank, EfbDistance arm);
+
+/// Returns the tanks capacity.
+const EfbVolume *
+efb_fuel_tank_capacity(const EfbFuelTank *tank);
+
+void
+efb_fuel_tank_set_capacity(EfbFuelTank *tank, EfbVolume capacity);
+
 const EfbMass *
 efb_mass_and_balance_mass_on_ramp(const EfbMassAndBalance *mb);
 
@@ -626,6 +740,24 @@ efb_mass_and_balance_balance_on_ramp(const EfbMassAndBalance *mb);
 
 const EfbDistance *
 efb_mass_and_balance_balance_after_landing(const EfbMassAndBalance *mb);
+
+/// Returns the stations arm in reference to the aircraft's datum.
+const EfbDistance *
+efb_station_arm(const EfbStation *station);
+
+void
+efb_station_set_arm(EfbStation *station, EfbDistance arm);
+
+/// Returns the stations description or null if undefined.
+///
+/// # Safety
+///
+/// The returned value, if not null, needs to be freed by [`efb_string_free`].
+char *
+efb_station_description(const EfbStation *station);
+
+void
+efb_station_set_description(EfbStation *station, const char *description);
 
 /// Returns the routes total distance.
 ///

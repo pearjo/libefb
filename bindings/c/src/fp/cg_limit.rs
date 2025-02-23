@@ -1,4 +1,3 @@
-// swift-tools-version: 5.9
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024 Joe Pearson
 //
@@ -14,28 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import PackageDescription
+use efb::fp::CGLimit;
+use efb::{Distance, Mass};
 
-let package = Package(
-    name: "EFB",
-    platforms: [
-        .iOS(.v17),
-        .macOS(.v14),
-    ],
-    products: [
-        .library(
-            name: "EFB",
-            targets: ["EFB"])
-    ],
-    targets: [
-        .target(
-            name: "EFB",
-            dependencies: ["efb"]),
-        .binaryTarget(
-            name: "efb",
-            path: "Frameworks/efb.xcframework"),
-        .testTarget(
-            name: "EFBTest",
-            dependencies: ["EFB"]),
-    ]
-)
+/// Returns the limit's mass.
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_mass(limit: &CGLimit) -> &Mass {
+    &limit.mass
+}
+
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_set_mass(limit: &mut CGLimit, mass: Mass) {
+    limit.mass = mass
+}
+
+/// Returns the limit's distance in reference to the aircraft's datum.
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_distance(limit: &CGLimit) -> &Distance {
+    &limit.distance
+}
+
+#[no_mangle]
+pub extern "C" fn efb_cg_limit_set_distance(limit: &mut CGLimit, distance: Distance) {
+    limit.distance = distance
+}

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::Station;
+use super::LoadedStation;
 use crate::{Distance, Mass, Unit};
 
 /// The mass & balance on ramp and after landing.
@@ -33,21 +33,22 @@ pub struct MassAndBalance {
 }
 
 impl MassAndBalance {
-    /// Computes the mass & balance from stations.
+    /// Computes the mass & balance from loaded stations.
     ///
     /// **Note: The stations must define all mass of the aircraft.** This
     /// includes the empty mass, fuel tanks and removable mass.
-    pub fn new(stations: &Vec<Station>) -> Self {
+    pub fn new(loaded_stations: &Vec<LoadedStation>) -> Self {
         let mut on_ramp = Mass::Kilogram(0.0);
         let mut after_landing = Mass::Kilogram(0.0);
         let mut moment_on_ramp: f32 = 0.0;
         let mut moment_after_landing: f32 = 0.0;
 
-        for station in stations {
-            on_ramp = on_ramp + station.on_ramp;
-            after_landing = after_landing + station.after_landing;
-            moment_on_ramp += station.on_ramp.si() * station.arm.si();
-            moment_after_landing += station.after_landing.si() * station.arm.si();
+        for loaded_station in loaded_stations {
+            on_ramp = on_ramp + loaded_station.on_ramp;
+            after_landing = after_landing + loaded_station.after_landing;
+            moment_on_ramp += loaded_station.on_ramp.si() * loaded_station.station.arm.si();
+            moment_after_landing +=
+                loaded_station.after_landing.si() * loaded_station.station.arm.si();
         }
 
         Self {
@@ -78,19 +79,26 @@ impl MassAndBalance {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::fp::Station;
 
-    fn test_stations() -> Vec<Station> {
+    fn test_stations() -> Vec<LoadedStation> {
         vec![
-            Station {
+            LoadedStation {
+                station: Station {
+                    arm: Distance::Meter(1.0),
+                    description: None,
+                },
                 on_ramp: Mass::Kilogram(80.0),
                 after_landing: Mass::Kilogram(80.0),
-                arm: Distance::Meter(1.0),
             },
             // we have a skydiver in the back that jumps out during the flight
-            Station {
+            LoadedStation {
+                station: Station {
+                    arm: Distance::Meter(2.0),
+                    description: None,
+                },
                 on_ramp: Mass::Kilogram(80.0),
                 after_landing: Mass::Kilogram(0.0),
-                arm: Distance::Meter(2.0),
             },
         ]
     }

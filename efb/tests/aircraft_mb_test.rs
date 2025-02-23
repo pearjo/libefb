@@ -13,13 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fp::{Aircraft, CGEnvelope, FuelTank};
+use efb::fp::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
 use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
 
 /// Returns the an aircraft we use for the tests.
 fn aircraft() -> Aircraft {
     Aircraft {
-        station_arms: vec![Distance::Meter(1.0), Distance::Meter(2.0)],
+        registration: String::from("N12345"),
+        stations: vec![
+            Station {
+                arm: Distance::Meter(1.0),
+                description: None,
+            },
+            Station {
+                arm: Distance::Meter(2.0),
+                description: None,
+            },
+        ],
         empty_mass: Mass::Kilogram(800.0),
         empty_balance: Distance::Meter(1.0),
         fuel_type: FuelType::Diesel,
@@ -41,12 +51,28 @@ fn aircraft() -> Aircraft {
             },
         ],
         cg_envelope: CGEnvelope::new(vec![
-            (Mass::Kilogram(0.0), Distance::Meter(1.0)),
-            (Mass::Kilogram(800.0), Distance::Meter(1.0)),
-            (Mass::Kilogram(1000.0), Distance::Meter(1.0)),
-            (Mass::Kilogram(1000.0), Distance::Meter(1.5)),
-            (Mass::Kilogram(0.0), Distance::Meter(1.5)),
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(1.0),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(800.0),
+                distance: Distance::Meter(1.0),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1000.0),
+                distance: Distance::Meter(1.0),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(1000.0),
+                distance: Distance::Meter(1.5),
+            },
+            CGLimit {
+                mass: Mass::Kilogram(0.0),
+                distance: Distance::Meter(1.5),
+            },
         ]),
+        notes: None,
     }
 }
 

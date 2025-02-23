@@ -15,21 +15,37 @@
 
 use crate::{Distance, Mass};
 
-/// A mass at a defined point within an aircraft.
+/// A position within the aircraft that can be loaded with a payload.
 ///
-/// An [`Aircraft`] can be loaded with _stations_ that hold a mass at a defined
-/// distance from the aircraft's reference datum. The mass may differ from when
-/// on ramp to after landing (burned fuel or a skydiver).
+/// The payload if an aircraft is loaded to defined _stations_ e.g. a
+/// seat. Thus, the station defines where in reference to the aircraft's datum a
+/// payload can be placed. The [`LoadedStation`] provides a station with it's
+/// actual payload.
 ///
 /// [`Aircraft`]: crate::fp::Aircraft
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Station {
+    /// The lever's arm from the reference datum.
+    pub arm: Distance,
+
+    /// A description of the station.
+    pub description: Option<String>,
+}
+
+/// A mass at a defined point within an aircraft.
+///
+/// The mass may differ from when on ramp to after landing (burned fuel or a
+/// skydiver).
+///
+/// [`Aircraft`]: crate::fp::Aircraft
+#[derive(Clone, Debug, PartialEq)]
+pub struct LoadedStation {
+    /// The station that is being loaded.
+    pub station: Station,
+
     /// The mass on ramp.
     pub on_ramp: Mass,
 
     /// The mass after landing.
     pub after_landing: Mass,
-
-    /// The lever's arm from the reference datum.
-    pub arm: Distance,
 }
