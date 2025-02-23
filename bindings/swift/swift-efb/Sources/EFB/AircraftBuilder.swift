@@ -23,9 +23,7 @@ public struct Station: Identifiable {
 
     public var arm: Measurement<UnitLength> {
         get {
-            Measurement<UnitLength>(
-              efb_station_arm(station).pointee
-            )
+            .init(efb_station_arm(station).pointee)
         }
         set(newArm) {
             efb_station_set_arm(station, EfbDistance(length: newArm))
@@ -52,27 +50,59 @@ public struct Station: Identifiable {
     }
 }
 
-// TODO: Enable editing of tank.
-public struct Tank: Identifiable {
-    public let id: UUID = UUID()
-    public var arm: Measurement<UnitLength>
-    public var capacity: Measurement<UnitVolume>
+public struct FuelTank: Identifiable {
+    let tank: OpaquePointer!
 
-    public init(arm: Measurement<UnitLength>, capacity: Measurement<UnitVolume>) {
-        self.arm = arm
-        self.capacity = capacity
+    public let id: UUID = UUID()
+
+    public var arm: Measurement<UnitLength> {
+        get {
+            .init(efb_fuel_tank_arm(tank).pointee)
+        }
+        set(newArm) {
+            efb_fuel_tank_set_arm(tank, EfbDistance(length: newArm))
+        }
+    }
+
+    public var capacity: Measurement<UnitVolume> {
+        get {
+            .init(efb_fuel_tank_capacity(tank).pointee)
+        }
+        set(newCapacity) {
+            efb_fuel_tank_set_capacity(tank, EfbVolume(volume: newCapacity))
+        }
+    }
+
+    init(_ tank: OpaquePointer) {
+        self.tank = tank
     }
 }
 
-// TODO: Enable editing of limit.
 public struct CGLimit: Identifiable {
-    public let id: UUID = UUID()
-    public var mass: Measurement<UnitMass>
-    public var distance: Measurement<UnitLength>
+    let limit: OpaquePointer!
 
-    public init(mass: Measurement<UnitMass>, distance: Measurement<UnitLength>) {
-        self.mass = mass
-        self.distance = distance
+    public let id: UUID = UUID()
+
+    public var mass: Measurement<UnitMass> {
+        get {
+            .init(efb_cg_limit_mass(limit).pointee)
+        }
+        set(newMass) {
+            efb_cg_limit_set_mass(limit, EfbMass(mass: newMass))
+        }
+    }
+
+    public var distance: Measurement<UnitLength> {
+        get {
+            .init(efb_cg_limit_distance(limit).pointee)
+        }
+        set(newDistance) {
+            efb_cg_limit_set_distance(limit, EfbDistance(length: newDistance))
+        }
+    }
+
+    public init(_ limit: OpaquePointer) {
+        self.limit = limit
     }
 }
 
@@ -121,11 +151,13 @@ public class AircraftBuilder {
         return stations
     }
 
-    public func appendStation(arm: Measurement<UnitLength>, description: String?) {
-        efb_aircraft_builder_stations_push(
-          builder,
-          EfbDistance(length: arm),
-          description
+    public func appendStation(arm: Measurement<UnitLength>, description: String?) -> Station {
+        Station(
+            efb_aircraft_builder_stations_push(
+                builder,
+                EfbDistance(length: arm),
+                description
+            )
         )
     }
 
@@ -143,19 +175,63 @@ public class AircraftBuilder {
         }
     }
 
-    public func appendTank(arm: Measurement<UnitLength>, capacity: Measurement<UnitVolume>) {
-        efb_aircraft_builder_tanks_push(
-            builder, EfbVolume(volume: capacity), EfbDistance(length: arm))
+    /// Returns all fuel tanks.
+    public func tanks() -> [FuelTank] {
+        var tanks: [FuelTank] = []
+
+        if let tank = efb_aircraft_builder_tanks_first(self.builder) {
+            tanks.append(FuelTank(tank))
+
+            while let tank = efb_aircraft_builder_tanks_next(self.builder) {
+                tanks.append(FuelTank(tank))
+            }
+        }
+
+        return tanks
     }
 
+    /// Appends a new fuel tank with the arm and capacity and returns it.
+    public func appendTank(arm: Measurement<UnitLength>, capacity: Measurement<UnitVolume>)
+        -> FuelTank
+    {
+        FuelTank(
+            efb_aircraft_builder_tanks_push(
+                builder, EfbVolume(volume: capacity), EfbDistance(length: arm))
+        )
+    }
+
+    /// Removes the fuel tank at the index.
     public func removeTank(at: Int) {
         efb_aircraft_builder_tanks_remove(builder, at)
     }
 
     // MARK: - Center of Gravity
 
-    public func appendCGLimit(mass: Measurement<UnitMass>, distance: Measurement<UnitLength>) {
-        efb_aircraft_builder_cg_envelope_push(builder, EfbMass(mass: mass), EfbDistance(length: distance))
+    /// Returns all Center of Gravity limits.
+    public func cgEnvelope() -> [CGLimit] {
+        var limits: [CGLimit] = []
+
+        if let limit = efb_aircraft_builder_cg_envelope_first(self.builder) {
+            limits.append(CGLimit(limit))
+
+            while let limit = efb_aircraft_builder_cg_envelope_next(self.builder) {
+                limits.append(CGLimit(limit))
+            }
+        }
+
+        return limits
+    }
+
+    public func appendCGLimit(mass: Measurement<UnitMass>, distance: Measurement<UnitLength>)
+        -> CGLimit
+    {
+        CGLimit(
+            efb_aircraft_builder_cg_envelope_push(
+                builder,
+                EfbMass(mass: mass),
+                EfbDistance(length: distance)
+            )
+        )
     }
 
     public func removeCGLimit(at: Int) {
