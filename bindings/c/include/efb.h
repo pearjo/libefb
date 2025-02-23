@@ -510,7 +510,8 @@ efb_aircraft_builder_new(void);
 void
 efb_aircraft_builder_free(EfbAircraftBuilder *builder);
 
-void
+/// Pushes a new station to the stations and returns it.
+const EfbStation *
 efb_aircraft_builder_stations_push(EfbAircraftBuilder *builder, EfbDistance arm,
                                    const char *description);
 
@@ -549,7 +550,8 @@ void
 efb_aircraft_builder_fuel_type(EfbAircraftBuilder *builder,
                                EfbFuelType fuel_type);
 
-void
+/// Pushes a new tank to the tanks and returns it.
+const EfbFuelTank *
 efb_aircraft_builder_tanks_push(EfbAircraftBuilder *builder, EfbVolume capacity,
                                 EfbDistance arm);
 

@@ -65,18 +65,20 @@ pub extern "C" fn efb_aircraft_builder_free(builder: Box<AircraftBuilder>) {
     drop(builder);
 }
 
+/// Pushes a new station to the stations and returns it.
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_stations_push(
-    builder: &mut AircraftBuilder,
+pub extern "C" fn efb_aircraft_builder_stations_push<'a>(
+    builder: &'a mut AircraftBuilder,
     arm: Distance,
     description: *const c_char,
-) {
+) -> Option<&'a Station> {
     let description = unsafe { CStr::from_ptr(description).to_str() };
 
     builder.stations.push(Station {
         arm,
         description: description.ok().map(String::from),
     });
+    builder.stations.last()
 }
 
 #[no_mangle]
@@ -132,13 +134,15 @@ pub extern "C" fn efb_aircraft_builder_fuel_type(
     let _ = builder.fuel_type.insert(fuel_type);
 }
 
+/// Pushes a new tank to the tanks and returns it.
 #[no_mangle]
-pub extern "C" fn efb_aircraft_builder_tanks_push(
-    builder: &mut AircraftBuilder,
+pub extern "C" fn efb_aircraft_builder_tanks_push<'a>(
+    builder: &'a mut AircraftBuilder,
     capacity: Volume,
     arm: Distance,
-) {
+) -> Option<&'a FuelTank> {
     builder.tanks.push(FuelTank { capacity, arm });
+    builder.tanks.last()
 }
 
 #[no_mangle]
