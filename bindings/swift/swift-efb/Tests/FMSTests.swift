@@ -13,26 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Testing
 import EFB
+import Testing
 
 @Suite struct FMSTests {
-    let fms: FMS;
+    let fms: FMS
 
     private init() {
-        fms = FMS();
+        fms = FMS()
 
         let data = """
-SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
-SEURP EDHFEDA        0        N N53593300E009343600E000000082                   P    MWGE    ITZEHOE/HUNGRIGER WOLF        320782409
-""";
+            SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
+            SEURP EDHFEDA        0        N N53593300E009343600E000000082                   P    MWGE    ITZEHOE/HUNGRIGER WOLF        320782409
+            """
 
-        fms.read(data: data, format: InputFormat.arinc424);
+        fms.read(data: data, format: InputFormat.arinc424)
     }
 
     @Test func decodeRoute() {
-        fms.decode(route: "21010KT N0107 A0250 EDDH EDHF EDDH");
-        let route = fms.route();
+        fms.decode(route: "21010KT N0107 A0250 EDDH EDHF EDDH")
+        let route = fms.route()
         #expect(route.legs().count == 2)
     }
 }
