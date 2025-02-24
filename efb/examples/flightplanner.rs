@@ -16,7 +16,7 @@
 use efb::aircraft::*;
 use efb::fms::*;
 use efb::fp::*;
-use efb::nd::{Fix, InputFormat};
+use efb::nd::InputFormat;
 use efb::*;
 
 const ARINC_424_RECORDS: &'static str = r#"SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
@@ -112,27 +112,6 @@ fn main() {
     // cruising speed of 107 kt and an altitude of 2500 ft.
     let _ = fms.decode("29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF");
 
-    println!("\n   Route\n");
-
-    let route = fms.route();
-
-    for leg in route.legs() {
-        println!(
-            "{} - {}: TC: {}, dist: {}, MC: {}, MH: {}, ETE: {}",
-            leg.from().ident(),
-            leg.to().ident(),
-            leg.bearing(),
-            leg.dist().to_nm(),
-            leg.mc(),
-            leg.mh().unwrap(),
-            leg.ete().unwrap(),
-        );
-    }
-
-    if let Some(ete) = route.ete() {
-        println!("\nETE: {}", ete);
-    }
-
     // Now we can enter some data into the flight planning to get a fuel planning
     // and mass & balance calculation.
     let mut builder = FlightPlanning::builder();
@@ -154,41 +133,5 @@ fn main() {
 
     let _ = fms.build_flight_planning(&builder);
 
-    if let Some(flight_planning) = fms.flight_planning() {
-        if let Some(fuel_planning) = flight_planning.fuel_planning() {
-            println!("\n   Fuel\n");
-
-            println!(
-                "trip:    {:>4.0}, taxi:  {:>4.0}, reserve: {:>4.0}",
-                fuel_planning.trip(),
-                fuel_planning.taxi(),
-                fuel_planning.reserve()
-            );
-
-            println!(
-                "minimum: {:>4.0}, extra: {:>4.0}, total:   {:>4.0}",
-                fuel_planning.min(),
-                fuel_planning.extra().unwrap(),
-                fuel_planning.total()
-            );
-        }
-
-        if let Some(is_balanced) = flight_planning.is_balanced() {
-            println!("\n   Mass & Balance\n");
-
-            // With a proper configured aircraft and fuel planning, we get our mass &
-            // balance and can check whether the aircraft is balanced.
-            println!("balanced: {}", is_balanced);
-        }
-
-        if let Some(mb) = flight_planning.mb() {
-            println!(
-                "on ramp: {} - after landing: {}",
-                mb.mass_on_ramp(),
-                mb.mass_after_landing()
-            );
-        }
-
-        println!("");
-    }
+    println!("{}", fms.print(40))
 }

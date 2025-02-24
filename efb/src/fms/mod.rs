@@ -18,8 +18,10 @@ use crate::error::Error;
 use crate::nd::NavigationData;
 use crate::route::Route;
 
+mod printer;
 mod subs;
 
+pub use printer::*;
 pub use subs::*;
 
 pub struct FMS {
@@ -76,6 +78,13 @@ impl FMS {
 
     pub fn flight_planning(&self) -> Option<&FlightPlanning> {
         self.flight_planning.as_ref()
+    }
+
+    /// Prints the route and planning with a defined line length.
+    pub fn print(&mut self, line_length: usize) -> String {
+        let printer = Printer { line_length };
+        // TODO: Add print errors and return Result.
+        printer.print(self).unwrap_or_default()
     }
 }
 
