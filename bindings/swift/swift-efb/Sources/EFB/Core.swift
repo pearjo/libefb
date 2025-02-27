@@ -128,6 +128,50 @@ public struct Duration: CustomStringConvertible {
     }
 }
 
+// MARK: - Fuel
+
+public struct Fuel {
+    let fuelType: FuelType
+    let mass: Measurement<UnitMass>
+}
+
+extension Fuel {
+    init(_ efbFuel: EfbFuel) {
+        self.fuelType = .init(efbFuel.fuel_type)
+        self.mass = .init(efbFuel.mass)
+    }
+}
+
+extension EfbFuel {
+    init(_ fuel: Fuel) {
+        self.init(fuel_type: EfbFuelType(fuel.fuelType), mass: EfbMass(mass: fuel.mass))
+    }
+}
+
+public enum FuelFlow {
+    case perHour(Fuel)
+}
+
+extension FuelFlow {
+    init(_ efbFuelFlow: EfbFuelFlow) {
+        switch efbFuelFlow.tag {
+        case PerHour:
+            self = .perHour(.init(efbFuelFlow.per_hour))
+        default:
+            fatalError("init(_:) for \(efbFuelFlow) has not been implemented")
+        }
+    }
+}
+
+extension EfbFuelFlow {
+    init(_ fuelFlow: FuelFlow) {
+        switch fuelFlow {
+        case .perHour(let fuel):
+            self = efb_fuel_flow_per_hour(EfbFuel(fuel))
+        }
+    }
+}
+
 public enum FuelType {
     case diesel
     case jetA
