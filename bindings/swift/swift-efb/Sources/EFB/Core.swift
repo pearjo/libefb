@@ -15,7 +15,9 @@
 
 import efb
 
-// TODO: Migrate custom Efb* types to Measurement where possible.
+// TODO: Use custom types but add formatter for them.
+
+// MARK: - Angle
 
 public enum Angle {
     case trueNorth(Float)
@@ -58,6 +60,8 @@ extension EfbAngle {
     }
 }
 
+// MARK: - Distance
+
 public enum Distance {
     case meter(Float)
     case nauticalMiles(Float)
@@ -98,6 +102,8 @@ extension EfbDistance {
         }
     }
 }
+
+// MARK: - Duration
 
 public struct Duration: CustomStringConvertible {
     let hours: UInt8
@@ -149,6 +155,8 @@ extension EfbFuelType {
     }
 }
 
+// MARK: - Speed
+
 public enum Speed {
     case knots(Float)
     case meterPerSecond(Float)
@@ -167,6 +175,8 @@ public enum Speed {
         }
     }
 }
+
+// MARK: - Vertical Distance
 
 public enum VerticalDistance {
     case agl(UInt16)
@@ -195,6 +205,8 @@ public enum VerticalDistance {
         }
     }
 }
+
+// MARK: - Wind
 
 public class Wind: CustomStringConvertible {
     let direction: Angle
