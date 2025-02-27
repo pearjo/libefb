@@ -27,7 +27,10 @@ use std::ffi::{c_char, CString};
 use std::string::ToString;
 
 use efb::diesel;
-use efb::{Angle, Distance, Duration, Fuel, FuelType, Mass, Speed, VerticalDistance, Volume, Wind};
+use efb::{
+    Angle, Distance, Duration, Fuel, FuelFlow, FuelType, Mass, Speed, VerticalDistance, Volume,
+    Wind,
+};
 
 /// Returns the value as C string if [`ToString`] is implemented.
 fn to_string<T>(value: *const T) -> *mut c_char
@@ -152,6 +155,12 @@ pub extern "C" fn efb_duration(s: u32) -> Duration {
 #[no_mangle]
 pub extern "C" fn efb_fuel_diesel_l(l: f32) -> Fuel {
     diesel!(Volume::Liter(l))
+}
+
+/// Returns a fuel flow of `fuel` per hour.
+#[no_mangle]
+pub extern "C" fn efb_fuel_flow_per_hour(fuel: Fuel) -> FuelFlow {
+    FuelFlow::PerHour(fuel)
 }
 
 /// Returns a mass in kilogram.

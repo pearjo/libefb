@@ -15,6 +15,8 @@
 
 mod fuel_planning;
 mod mb;
+mod perf;
 
 pub use fuel_planning::*;
 pub use mb::*;
+pub use perf::*;

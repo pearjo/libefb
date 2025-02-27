@@ -77,6 +77,12 @@ typedef struct EfbLeg EfbLeg;
 /// [`Station`]: super::Station
 typedef struct EfbMassAndBalance EfbMassAndBalance;
 
+typedef struct EfbPerformanceTable EfbPerformanceTable;
+
+/// A row of the performance table presenting a performance up to a specific
+/// level.
+typedef struct EfbPerformanceTableRow EfbPerformanceTableRow;
+
 /// A position within the aircraft that can be loaded with a payload.
 ///
 /// The payload if an aircraft is loaded to defined _stations_ e.g. a
@@ -187,6 +193,19 @@ typedef struct {
   EfbMass mass;
 } EfbFuel;
 
+typedef enum {
+  PerHour,
+} EfbFuelFlow_Tag;
+
+typedef struct {
+  EfbFuelFlow_Tag tag;
+  union {
+    struct {
+      EfbFuel per_hour;
+    };
+  };
+} EfbFuelFlow;
+
 /// A vertical distance.
 typedef enum {
   /// Absolute Altitude as distance above ground level in feet.
@@ -269,19 +288,6 @@ typedef struct {
     };
   };
 } EfbReserve;
-
-typedef enum {
-  PerHour,
-} EfbFuelFlow_Tag;
-
-typedef struct {
-  EfbFuelFlow_Tag tag;
-  union {
-    struct {
-      EfbFuel per_hour;
-    };
-  };
-} EfbFuelFlow;
 
 /// The aircraft performance at a specific level and configuration.
 typedef struct {
@@ -376,6 +382,10 @@ efb_duration(uint32_t s);
 /// Returns `l` liter of Diesel.
 EfbFuel
 efb_fuel_diesel_l(float l);
+
+/// Returns a fuel flow of `fuel` per hour.
+EfbFuelFlow
+efb_fuel_flow_per_hour(EfbFuel fuel);
 
 /// Returns a mass in kilogram.
 EfbMass
@@ -758,6 +768,60 @@ efb_mass_and_balance_balance_on_ramp(const EfbMassAndBalance *mb);
 
 const EfbDistance *
 efb_mass_and_balance_balance_after_landing(const EfbMassAndBalance *mb);
+
+/// Returns a new performance table
+///
+/// Use the table to define the performance at different level.
+///
+/// # Safety
+///
+/// The memory allocated for the table needs to be freed by calling
+/// [`efb_performance_table_free`].
+EfbPerformanceTable *
+efb_performance_table_new(void);
+
+/// Frees the performance table.
+void
+efb_performance_table_free(EfbPerformanceTable *table);
+
+const EfbPerformanceTableRow *
+efb_performance_table_push(EfbPerformanceTable *table,
+                           EfbVerticalDistance level, EfbSpeed tas,
+                           EfbFuelFlow ff);
+
+void
+efb_performance_table_remove(EfbPerformanceTable *table, size_t at);
+
+/// Returns the first performance.
+///
+/// To iterate over the table, call [`efb_performance_table_next`]
+/// until `NULL` is returned:
+///
+/// ```c
+/// for (const EfbPerformanceTableRow *row = efb_performance_table_first(table);
+///      row != NULL;
+///      row = efb_performance_table_next(table))
+/// ```
+const EfbPerformanceTableRow *
+efb_performance_table_first(EfbPerformanceTable *table);
+
+/// Returns the next performance.
+///
+/// When the end of the table is reached, this function returns a null pointer.
+const EfbPerformanceTableRow *
+efb_performance_table_next(EfbPerformanceTable *table);
+
+const EfbSpeed *
+efb_performance_table_row_tas(const EfbPerformanceTableRow *row);
+
+void
+efb_performance_table_row_set_tas(EfbPerformanceTableRow *row, EfbSpeed tas);
+
+const EfbFuelFlow *
+efb_performance_table_row_ff(const EfbPerformanceTableRow *row);
+
+void
+efb_performance_table_row_set_ff(EfbPerformanceTableRow *row, EfbFuelFlow ff);
 
 /// Returns the routes total distance.
 ///
