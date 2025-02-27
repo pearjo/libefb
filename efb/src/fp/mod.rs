@@ -21,4 +21,4 @@ mod perf;
 
 pub use fuel_planning::*;
 pub use mb::MassAndBalance;
-pub use perf::Performance;
+pub use perf::{Performance, PerformanceTable, PerformanceTableRow};
