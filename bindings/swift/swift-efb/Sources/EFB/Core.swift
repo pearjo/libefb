@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import Foundation
 import efb
 
 // TODO: Use custom types but add formatter for them.
@@ -220,6 +221,19 @@ public enum Speed {
     }
 }
 
+extension EfbSpeed {
+    init(_ speed: Speed) {
+        switch speed {
+        case .knots(let kt):
+            self = efb_speed_knots(kt)
+        case .meterPerSecond(let mps):
+            self = efb_speed_mps(mps)
+        case .mach(let mach):
+            self = efb_speed_mach(mach)
+        }
+    }
+}
+
 // MARK: - Vertical Distance
 
 public enum VerticalDistance {
@@ -246,6 +260,17 @@ public enum VerticalDistance {
             self = .unlimited
         default:
             fatalError("Unimplemented EfbVerticalDistance \(efbVerticalDistance.tag)!")
+        }
+    }
+}
+
+extension EfbVerticalDistance {
+    init(_ verticalDistance: VerticalDistance) {
+        switch verticalDistance {
+        case .altitude(let ft):
+            self = efb_vertical_distance_altitude(ft)
+        default:
+            fatalError("init(_:) for \(verticalDistance) has not been implemented")
         }
     }
 }
