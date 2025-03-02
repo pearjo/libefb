@@ -210,10 +210,18 @@ impl Div<Speed> for Distance {
 
 impl fmt::Display for Distance {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Distance::Meter(value) => write!(f, "{value:>5.1} m"),
-            Distance::NauticalMiles(value) => write!(f, "{value:>5.1} NM"),
-        }
+        let (value, unit) = match self {
+            Self::Meter(value) => (value, "m"),
+            Self::NauticalMiles(value) => (value, "NM"),
+        };
+
+        let tmp = if let Some(precision) = f.precision() {
+            format!("{:.precision$} {}", value, unit)
+        } else {
+            format!("{} {}", value, unit)
+        };
+
+        f.pad_integral(true, "", &tmp)
     }
 }
 

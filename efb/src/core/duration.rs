@@ -82,9 +82,14 @@ impl From<Duration> for u32 {
 
 impl Display for Duration {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        // TODO: Allow formatting to round or show full duration!
-        let rounded = self.round();
-        write!(f, "{:02}:{:02}", rounded.hours, rounded.minutes)
+        let tmp = if f.alternate() {
+            format!("{:02}:{:02}:{:02}", self.hours, self.minutes, self.seconds)
+        } else {
+            let rounded = self.round();
+            format!("{:02}:{:02}", rounded.hours, rounded.minutes)
+        };
+
+        f.pad_integral(true, "", &tmp)
     }
 }
 
