@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::ffi::{c_char, CStr};
+use std::ffi::{c_char, CStr, CString};
 use std::path::Path;
 
 use efb::fms::{FlightPlanning, FlightPlanningBuilder, FMS};
@@ -129,4 +129,16 @@ pub extern "C" fn efb_fms_flight_planning(fms: &EfbFMS) -> Option<&FlightPlannin
 #[no_mangle]
 pub extern "C" fn efb_fms_flight_planning_build(fms: &mut EfbFMS, builder: &FlightPlanningBuilder) {
     let _ = fms.inner.build_flight_planning(builder);
+}
+
+/// Prints the route and planning of the FMS.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+#[no_mangle]
+pub extern "C" fn efb_fms_print(fms: &mut EfbFMS, line_length: usize) -> *mut c_char {
+    CString::new(fms.inner.print(line_length))
+        .expect("Invalid FMS printer!")
+        .into_raw()
 }

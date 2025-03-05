@@ -60,7 +60,6 @@ c172_tae125_02_114_at_65_percent_load(const EfbVerticalDistance *level) {
 int
 main(int argc, char *argv[]) {
   EfbFMS *fms = efb_fms_new();
-  EfbRoute *route = efb_fms_route_ref(fms);
 
   // read the ARINC database
   efb_fms_nd_read(fms, ARINC_424_RECORDS, Arinc424);
@@ -68,37 +67,6 @@ main(int argc, char *argv[]) {
   // decode a route from EDDH to EDHF with winds at 20 kt from 290° and
   // cruising speed of 107 kt and an altitude of 2500 ft.
   efb_fms_decode(fms, "29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF");
-
-  printf("\n");
-  printf("   Route\n");
-  printf("\n");
-
-  for (const EfbLeg *leg = efb_route_legs_first(route); leg != NULL;
-       leg = efb_route_legs_next(route)) {
-
-    char *from = efb_leg_get_from(leg);
-    char *to = efb_leg_get_to(leg);
-    char *bearing = efb_angle_to_string(efb_leg_get_bearing(leg));
-    char *dist = efb_distance_to_string(efb_leg_get_dist(leg));
-    char *mc = efb_angle_to_string(efb_leg_get_mc(leg));
-    char *mh = efb_angle_to_string(efb_leg_get_mh(leg));
-    char *ete = efb_duration_to_string(efb_leg_get_ete(leg));
-
-    printf("%s - %s: TC: %s, dist: %s, MC: %s, MH: %s, ETE: %s\n", from, to,
-           bearing, dist, mc, mh, ete);
-
-    efb_string_free(from);
-    efb_string_free(to);
-    efb_string_free(bearing);
-    efb_string_free(dist);
-    efb_string_free(mc);
-    efb_string_free(mh);
-    efb_string_free(ete);
-  }
-
-  char *ete = efb_duration_to_string(efb_route_ete(route));
-  printf("\nETE %s\n", ete);
-  efb_string_free(ete);
 
   // Loading the database and decoding a route was simple so far. Now we get to
   // the part of the flight planning. This needs some more definitions like an
@@ -110,17 +78,13 @@ main(int argc, char *argv[]) {
 
   efb_aircraft_builder_registration(aircraft_builder, "N12345");
 
-  efb_aircraft_builder_stations_push(aircraft_builder,
-                                     efb_distance_m(0.94),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(0.94),
                                      "front seats");
-  efb_aircraft_builder_stations_push(aircraft_builder,
-                                     efb_distance_m(1.85),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(1.85),
                                      "back seats");
-  efb_aircraft_builder_stations_push(aircraft_builder,
-                                     efb_distance_m(2.41),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(2.41),
                                      "first cargo compartment");
-  efb_aircraft_builder_stations_push(aircraft_builder,
-                                     efb_distance_m(3.12),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(3.12),
                                      "second cargo compartment");
 
   efb_aircraft_builder_empty_mass(aircraft_builder, efb_mass_kg(807.0));
@@ -173,9 +137,13 @@ main(int argc, char *argv[]) {
   // now that all data are entered, we can build our planning
   efb_fms_flight_planning_build(fms, builder);
 
+  // finally we can print out the result of our planning
+  char *printout = efb_fms_print(fms, 40);
+  printf("%s", printout);
+  efb_string_free(printout);
+
   efb_flight_planning_builder_free(builder);
   efb_aircraft_builder_free(aircraft_builder);
-  efb_fms_route_unref(route);
   efb_fms_free(fms);
 
   return 0;

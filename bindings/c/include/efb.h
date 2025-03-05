@@ -550,6 +550,14 @@ void
 efb_fms_flight_planning_build(EfbFMS *fms,
                               const EfbFlightPlanningBuilder *builder);
 
+/// Prints the route and planning of the FMS.
+///
+/// # Safety
+///
+/// The returned string needs to be freed by [`efb_string_free`].
+char *
+efb_fms_print(EfbFMS *fms, size_t line_length);
+
 /// Returns a new aircraft builder.
 ///
 /// Use the builder to gradually provide all the different inputs required to
