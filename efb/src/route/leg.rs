@@ -50,21 +50,8 @@ impl Leg {
         let (gs, wca) = {
             match (tas, wind) {
                 (Some(tas), Some(wind)) => {
-                    let tas = tas.to_kt().into_inner();
-                    let ws = wind.speed.to_kt().into_inner();
-
-                    let wca: Angle = {
-                        (ws / tas * (bearing - 180 + wind.direction).as_radians().sin())
-                            .asin()
-                            .into()
-                    };
-
-                    let gs = Speed::Knots(
-                        (tas.powi(2) + ws.powi(2)
-                            - ((2.0 * tas * ws)
-                                * (bearing - wind.direction + wca).as_radians().cos()))
-                        .sqrt(),
-                    );
+                    let wca = wind_correction_angle(&wind, &tas, &bearing);
+                    let gs = ground_speed(&tas, &wind, &wca, &bearing);
 
                     (Some(gs), Some(wca))
                 }
@@ -150,7 +137,6 @@ impl Leg {
         self.gs.as_ref()
     }
 
-    // TODO add test to verify calculation
     /// The wind correction angle based on the wind.
     pub fn wca(&self) -> Option<&Angle> {
         self.wca.as_ref()
@@ -168,5 +154,62 @@ impl Leg {
             (Some(level), Some(ete)) => Some(perf.ff(&level) * ete),
             _ => None,
         }
+    }
+}
+
+fn wind_correction_angle(wind: &Wind, tas: &Speed, bearing: &Angle) -> Angle {
+    let tas = tas.to_kt().into_inner();
+    let ws = wind.speed.to_kt().into_inner();
+
+    let wind_azimuth = wind.direction + 180;
+    // the angle between the wind direction and bearing
+    let wind_angle = *bearing - wind_azimuth;
+
+    // The law of sines gives us
+    //
+    //   sin(wca) / ws = sin(wind_angle) / tas
+    //
+    // from which we get the wca as following:
+    (ws / tas * (wind_angle).as_radians().sin()).asin().into()
+}
+
+fn ground_speed(tas: &Speed, wind: &Wind, wca: &Angle, bearing: &Angle) -> Speed {
+    let tas = tas.to_kt().into_inner();
+    let ws = wind.speed.to_kt().into_inner();
+
+    Speed::Knots(
+        (tas.powi(2) + ws.powi(2)
+            - ((2.0 * tas * ws) * (*bearing - wind.direction + *wca).as_radians().cos()))
+        .sqrt(),
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+
+    use super::*;
+
+    #[test]
+    fn wind_correction_angle_left() {
+        let wca = wind_correction_angle(
+            &Wind::from_str("18050KT").unwrap(),
+            &Speed::from_str("N0100").unwrap(),
+            &90.into(),
+        );
+
+        assert_eq!(wca.as_degrees(), 30);
+    }
+
+    #[test]
+    fn wind_correction_angle_right() {
+        let wca = wind_correction_angle(
+            &Wind::from_str("00050KT").unwrap(),
+            &Speed::from_str("N0100").unwrap(),
+            &90.into(),
+        );
+
+        // negative angles are wrapped: 360 - 30 = 330
+        assert_eq!(wca.as_degrees(), 330);
     }
 }
