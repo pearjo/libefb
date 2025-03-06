@@ -85,3 +85,30 @@ int main(int argc, char *argv[]) {
 
 For more on a specific binding and its usage, refer to the READMEs of
 the bindings.
+
+## Roadmap
+
+In a first stage, the library should be extended to allow proper
+flight planning by adding the following feature:
+
+- [ ] Add runway analysis to planning
+- [ ] Add trips with multiply flights
+- [ ] Add Python bindings to allow easy scripted planning
+- [ ] Add measurement trait and refactor core types
+- [ ] Extend printer to render HTML
+- [ ] Add AIXM parser
+- [ ] Add NOTAMS to FMS
+- [ ] Add vertical flight profile to FMS
+
+Once those feature are available and flight planning can be conducted
+with this library, the goal is to move on to add feature that will be
+needed in flight:
+
+- [ ] Create concept to provide geo-referenced VFR approach charts
+- [ ] Add position input to FMS
+- [ ] Add airspace alerts to FMS
+- [ ] Add location info to FMS
+- [ ] Create concept to gather weather data and METAR
+- [ ] Add initial airport information with frequencies and RWYs
+- [ ] Add landing field analysis for EMER
+- [ ] Add wake turbulence predictor
