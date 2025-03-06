@@ -1,8 +1,14 @@
 # LibEFB -- A bag of flight utilities
 
 This library provides utilities to support the flight planning and air
-navigation. The lib is written in Rust and provides bindings to other
-languages (see `bindings/`).
+navigation. The lib is written in Rust and intended to be integrated
+into EFB applications via one of its language binding (see
+`bindings/`).
+
+> [!NOTE]
+> This library is still in the early stage of development with the
+> first milestone to allow a full pre-flight planning. For more,
+> checkout the roadmap.
 
 ## Getting Started
 
@@ -99,6 +105,8 @@ flight planning by adding the following feature:
 - [ ] Add AIXM parser
 - [ ] Add NOTAMS to FMS
 - [ ] Add vertical flight profile to FMS
+- [ ] Add book to outline how the FMS and planning is used from the
+      user perspective
 
 Once those feature are available and flight planning can be conducted
 with this library, the goal is to move on to add feature that will be
