@@ -13,6 +13,8 @@ execution. The following example just shows the very basics that we
 can enter into the FMS to get started:
 
 ```rust
+use std::path::Path;
+
 use efb::error::Error;
 use efb::fms::FMS;
 use efb::nd::InputFormat;
@@ -22,14 +24,39 @@ fn main() -> Result<(), Error> {
 
     // Read a ARINC 424 file into the navigation data (ND). You can get
     // a dataset at e.g.: https://www.openflightmaps.org
-    fms.nd().read("arinc_ed.pc", InputFormat::Arinc424)?;
+    fms.nd()
+        .read_file(Path::new("arinc_ed.pc"), InputFormat::Arinc424)?;
 
     // Decode a route from EDDH to EDHF with winds at 20 kt from 290° and
     // cruising speed of 107 kt and an altitude of 2500 ft.
     fms.decode("29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF")?;
 
+    // Now we could define an aircraft and continue with our planning
+    // but for now we'll just print the route
+    println!("{}", fms.print(40)); // the line length is set to 40 character
+
     Ok(())
 }
+```
+
+Running this example with a proper ARINC 424 file, we get the following output:
+
+```
+----------------------------------------
+-- ROUTE
+----------------------------------------
+
+TO          HDG          DIST      ETE
+DHN2       354°M       3.2 NM     00:02
+
+TO          HDG          DIST      ETE
+DHN1       354°M       7.5 NM     00:04
+
+TO          HDG          DIST      ETE
+EDHF       298°M      19.6 NM     00:13
+
+DIST                             30.3 NM
+ETE                                00:20
 ```
 
 Following we have the same example using the C binding that can be
@@ -45,6 +72,10 @@ int main(int argc, char *argv[]) {
     efb_fms_nd_read_file(fms, "arinc_ed.pc", Arinc424);
 
     efb_fms_decode(fms, "29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF");
+
+    char *printout = efb_fms_print(fms, 40);
+    printf("%s", printout);
+    efb_string_free(printout);
 
     efb_fms_free(fms);
 
