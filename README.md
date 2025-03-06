@@ -1,8 +1,14 @@
 # LibEFB -- A bag of flight utilities
 
 This library provides utilities to support the flight planning and air
-navigation. The lib is written in Rust and provides bindings to other
-languages (see `bindings/`).
+navigation. The lib is written in Rust and intended to be integrated
+into EFB applications via one of its language binding (see
+`bindings/`).
+
+> [!NOTE]
+> This library is still in the early stage of development with the
+> first milestone to allow a full pre-flight planning. For more,
+> checkout the roadmap.
 
 ## Getting Started
 
