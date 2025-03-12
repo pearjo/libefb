@@ -64,10 +64,18 @@ impl Printer {
         for leg in route.legs() {
             let space = ((self.line_length - 24) / 3) as usize;
 
+            let is_heading = leg.mh().is_some();
+
             writeln!(
                 buffer,
                 "{:<6}{:space$}{:^5}{:space$}{:>8}{:space$}{:^5}",
-                "TO", "", "HDG", "", "DIST", "", "ETE"
+                "TO",
+                "",
+                if is_heading { "HDG" } else { "TRK" },
+                "",
+                "DIST",
+                "",
+                "ETE"
             )?;
 
             writeln!(
@@ -75,7 +83,7 @@ impl Printer {
                 "{:<6}{:space$}{:^5}{:space$}{:>8.1}{:space$}{:^5}",
                 leg.to().ident(),
                 "",
-                leg.mh().unwrap(),
+                leg.mh().unwrap_or(leg.mc()),
                 "",
                 leg.dist().to_nm(),
                 "",
