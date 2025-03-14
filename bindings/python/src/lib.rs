@@ -15,6 +15,9 @@
 
 use pyo3::prelude::*;
 
+mod aircraft;
+use aircraft::register_aircraft_module;
+
 mod core;
 use core::register_core_module;
 
@@ -25,5 +28,6 @@ use fms::register_fms_module;
 fn efb(m: &Bound<'_, PyModule>) -> PyResult<()> {
     register_core_module(m)?;
     register_fms_module(m)?;
+    register_aircraft_module(m)?;
     Ok(())
 }
