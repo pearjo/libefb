@@ -99,7 +99,7 @@ flight planning by adding the following feature:
 
 - [ ] Add runway analysis to planning
 - [ ] Add trips with multiply flights
-- [ ] Add Python bindings to allow easy scripted planning
+- [x] Add Python bindings to allow easy scripted planning
 - [ ] Add measurement trait and refactor core types
 - [ ] Extend printer to render HTML
 - [ ] Add AIXM parser
