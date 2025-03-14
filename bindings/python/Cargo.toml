@@ -14,16 +14,19 @@
 # limitations under the License.
 
 [package]
-name = "efb"
+name = "efb-python"
+publish = false
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-keywords = ["aviation", "EFB"]
+
+[lib]
+crate-type = ["cdylib"]
+doc = false
 
 [dependencies]
-arinc424 = { path = "../arinc424" }
-time = "0.3.36"
-wmm = "0.2.3"
+efb = { path = "../../efb" }
 
-[dev-dependencies]
-clap = { version = "4.5.18", features = ["derive"] }
+[dependencies.pyo3]
+version = "0.23.5"
+features = ["extension-module"]
