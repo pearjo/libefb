@@ -15,11 +15,15 @@
 
 use pyo3::prelude::*;
 
+mod core;
+use core::register_core_module;
+
 mod fms;
 use fms::register_fms_module;
 
 #[pymodule]
 fn efb(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    register_core_module(m)?;
     register_fms_module(m)?;
     Ok(())
 }
