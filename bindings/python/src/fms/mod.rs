@@ -20,6 +20,9 @@ use pyo3::prelude::*;
 use efb::fms::FMS;
 use efb::nd::InputFormat;
 
+mod flight_planning_builder;
+use flight_planning_builder::*;
+
 /// Input format of navigation data.
 #[pyclass(module = "efb", name = "InputFormat", eq, eq_int)]
 #[derive(Clone, PartialEq)]
@@ -79,6 +82,13 @@ impl PyFMS {
         let _ = self.fms.decode(route);
     }
 
+    /// Adds a builder for the flight planning.
+    ///
+    /// :param FlightPlanningBuilder builder:
+    pub fn build_flight_planning(&mut self, builder: PyFlightPlanningBuilder) {
+        let _ = self.fms.build_flight_planning(&builder.into());
+    }
+
     /// Prints the flight planning.
     ///
     /// :param int line_length: The length of the printed lines.
@@ -90,6 +100,7 @@ impl PyFMS {
 }
 
 pub fn register_fms_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<PyFlightPlanningBuilder>()?;
     m.add_class::<PyInputFormat>()?;
     m.add_class::<PyFMS>()?;
     Ok(())

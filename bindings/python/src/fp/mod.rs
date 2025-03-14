@@ -15,23 +15,24 @@
 
 use pyo3::prelude::*;
 
-mod aircraft;
-use aircraft::register_aircraft_module;
+mod fuel_planning;
+pub(crate) use fuel_planning::*;
 
-mod core;
-use core::register_core_module;
+mod perf;
+pub(crate) use perf::*;
 
-mod fp;
-use fp::register_fp_module;
+pub(super) fn register_fp_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    // fuel planning
+    m.add_class::<PyFuelPolicy>()?;
+    m.add_class::<PyMinimumFuel>()?;
+    m.add_class::<PyMaximumFuel>()?;
+    m.add_class::<PyManualFuel>()?;
+    m.add_class::<PyFuelAtLanding>()?;
+    m.add_class::<PyExtraFuel>()?;
+    m.add_class::<PyReserve>()?;
+    m.add_class::<PyManualReserve>()?;
+    // performance
+    m.add_class::<PyPerformance>()?;
 
-mod fms;
-use fms::register_fms_module;
-
-#[pymodule]
-fn efb(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    register_core_module(m)?;
-    register_fms_module(m)?;
-    register_aircraft_module(m)?;
-    register_fp_module(m)?;
     Ok(())
 }

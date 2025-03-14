@@ -22,7 +22,7 @@ use crate::{Fuel, Mass};
 
 use super::{SubSystem, SubSystemBuilder};
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct FlightPlanningBuilder {
     aircraft: Option<Aircraft>,
     mass: Option<Vec<Mass>>,
