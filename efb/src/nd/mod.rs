@@ -68,6 +68,7 @@ impl Fix for NavAid {
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub enum InputFormat {
     Arinc424,
     OpenAir,

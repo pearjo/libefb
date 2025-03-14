@@ -17,7 +17,8 @@
 members = [
     "arinc424",
     "efb",
-    "bindings/c"
+    "bindings/c",
+    "bindings/python",
 ]
 
 [workspace.lints.rust]

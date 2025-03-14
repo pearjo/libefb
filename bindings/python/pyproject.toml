@@ -1,0 +1,15 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "efb"
+dynamic = ["version"]
+description = "LibEFB Python Bindings"
+# readme = "README.md"
+license = "Apache-2.0"
+keywords = ["EFB", "Flight Planning"]
+classifiers = [
+  "Programming Language :: Rust",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
