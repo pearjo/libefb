@@ -25,6 +25,7 @@ pub enum LengthUnit {
     Meters,
     NauticalMiles,
     Inches,
+    Feet,
 }
 
 impl UnitOfMeasure<f32> for LengthUnit {
@@ -33,6 +34,7 @@ impl UnitOfMeasure<f32> for LengthUnit {
             Self::Meters => "m",
             Self::NauticalMiles => "NM",
             Self::Inches => "in",
+            Self::Feet => "ft",
         }
     }
 
@@ -41,6 +43,7 @@ impl UnitOfMeasure<f32> for LengthUnit {
             Self::Meters => value,
             Self::NauticalMiles => value / constants::NAUTICAL_MILE_IN_METER,
             Self::Inches => value / constants::INCH_IN_METER,
+            Self::Feet => value / constants::FEET_IN_METER,
         }
     }
 
@@ -49,6 +52,7 @@ impl UnitOfMeasure<f32> for LengthUnit {
             Self::Meters => *value,
             Self::NauticalMiles => value * constants::NAUTICAL_MILE_IN_METER,
             Self::Inches => value * constants::INCH_IN_METER,
+            Self::Feet => value * constants::FEET_IN_METER,
         }
     }
 }
@@ -76,6 +80,13 @@ impl Length {
             unit: LengthUnit::Inches,
         }
     }
+
+    pub fn ft(value: f32) -> Self {
+        Self {
+            value,
+            unit: LengthUnit::Feet,
+        }
+    }
 }
 
 impl Div<Speed> for Length {
@@ -92,8 +103,8 @@ impl Div<Duration> for Length {
 
     fn div(self, rhs: Duration) -> Self::Output {
         let unit = match self.unit {
-            LengthUnit::Meters | LengthUnit::Inches => SpeedUnit::MetersPerSecond,
             LengthUnit::NauticalMiles => SpeedUnit::Knots,
+            _ => SpeedUnit::MetersPerSecond,
         };
 
         let value = self.to_si() / rhs.to_si() as f32;

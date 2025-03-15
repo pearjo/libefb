@@ -137,6 +137,12 @@ pub extern "C" fn efb_length_m(m: f32) -> Length {
     Length::m(m)
 }
 
+/// Returns a length in feet.
+#[no_mangle]
+pub extern "C" fn efb_length_ft(ft: f32) -> Length {
+    Length::ft(ft)
+}
+
 /// Returns a length in nautical miles.
 #[no_mangle]
 pub extern "C" fn efb_length_nm(nm: f32) -> Length {

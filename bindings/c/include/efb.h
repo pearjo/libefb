@@ -47,6 +47,7 @@ typedef enum {
   Meters,
   NauticalMiles,
   Inches,
+  Feet,
 } EfbLengthUnit;
 
 /// Mass unit with _kg_ as SI unit.
@@ -392,6 +393,10 @@ efb_angle_magnetic_north(float radians);
 /// Returns a length in meter.
 EfbLength
 efb_length_m(float m);
+
+/// Returns a length in feet.
+EfbLength
+efb_length_ft(float ft);
 
 /// Returns a length in nautical miles.
 EfbLength
