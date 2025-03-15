@@ -57,6 +57,26 @@ impl PyMeter {
     }
 }
 
+/// Length in feet.
+///
+/// :param ft: The distance in feet.
+/// :type ft: float
+#[pyclass(module = "efb", name = "Feet", extends = PyLength)]
+pub struct PyFeet;
+
+#[pymethods]
+impl PyFeet {
+    #[new]
+    pub fn new(ft: f32) -> (Self, PyLength) {
+        (
+            PyFeet {},
+            PyLength {
+                distance: Length::ft(ft),
+            },
+        )
+    }
+}
+
 /// Length in nautical miles.
 ///
 /// :param nm: The distance in nautical miles.

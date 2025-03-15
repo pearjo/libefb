@@ -66,6 +66,7 @@ extension EfbAngle {
 public enum Length {
     case meter(Float)
     case nauticalMiles(Float)
+    case feet(Float)
 
     init(_ efbLength: EfbLength) {
         switch efbLength.unit {
@@ -73,6 +74,8 @@ public enum Length {
             self = .meter(efbLength.value)
         case NauticalMiles:
             self = .nauticalMiles(efbLength.value)
+	case Feet:
+	    self = .feet(efbLength.value)
         default:
             fatalError("Unimplemented EfbLength \(efbLength.unit)!")
         }
@@ -100,6 +103,10 @@ extension EfbLength {
             self = efb_length_m(m)
         case .nauticalMiles(let nm):
             self = efb_length_nm(nm)
+        case .nauticalMiles(let nm):
+            self = efb_length_nm(nm)
+        case .feet(let ft):
+	    self = efb_length_ft(ft)
         }
     }
 }
