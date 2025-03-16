@@ -101,6 +101,8 @@ fn main() {
                 distance: Length::m(1.20),
             },
         ]),
+        takeoff_distance: None,
+        landing_distance: None,
         notes: None,
     };
 

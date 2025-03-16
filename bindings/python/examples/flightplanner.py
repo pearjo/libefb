@@ -51,6 +51,10 @@ d_eabc = Aircraft(
         (Kilogram(1111.0), Meter(1.20)),
         (Kilogram(0.0), Meter(1.20))
     ]),
+    gnd_roll_takeoff=Feet(945.0),
+    gnd_roll_takeoff_50ft_obstacle=Feet(1685.0),
+    gnd_roll_landing=Feet(550.0),
+    gnd_roll_landing_50ft_obstacle=Feet(1295.0),
     notes=""
 )
 

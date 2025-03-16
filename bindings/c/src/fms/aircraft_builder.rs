@@ -17,6 +17,7 @@ use std::ffi::{c_char, CStr};
 use std::slice::Iter;
 
 use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
+use efb::fp::TakeoffLandingDistance;
 use efb::measurements::{Length, Mass, Volume};
 use efb::FuelType;
 
@@ -32,6 +33,8 @@ pub struct AircraftBuilder<'a> {
     tanks_iter: Option<Iter<'a, FuelTank>>,
     cg_envelope: Vec<CGLimit>,
     cg_envelope_iter: Option<Iter<'a, CGLimit>>,
+    takeoff_distance: Option<TakeoffLandingDistance>,
+    landing_distance: Option<TakeoffLandingDistance>,
     notes: Option<String>,
 }
 
@@ -45,6 +48,8 @@ impl<'a> AircraftBuilder<'a> {
             fuel_type: self.fuel_type?,
             tanks: self.tanks.clone(),
             cg_envelope: CGEnvelope::new(self.cg_envelope.clone()),
+            takeoff_distance: self.takeoff_distance,
+            landing_distance: self.landing_distance,
             notes: self.notes.clone(),
         })
     }

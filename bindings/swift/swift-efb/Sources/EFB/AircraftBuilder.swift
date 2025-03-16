@@ -244,6 +244,40 @@ public class AircraftBuilder {
         efb_aircraft_builder_cg_envelope_remove(builder, at)
     }
 
+    // MARK: - Ground Roll
+
+    public var gndRollTakeoff: Measurement<UnitLength>? {
+        didSet {
+            if let distance = gndRollTakeoff {
+                efb_aircraft_builder_gnd_roll_takeoff(builder, EfbDistance(length: distance))
+            }
+        }
+    }
+
+    public var gndRollTakeoff50ftObstacle: Measurement<UnitLength>? {
+        didSet {
+            if let distance = gndRollTakeoff50ftObstacle {
+                efb_aircraft_builder_gnd_roll_takeoff_50ft_obstacle(builder, EfbDistance(length: distance))
+            }
+        }
+    }
+
+    public var gndRollLanding: Measurement<UnitLength>? {
+        didSet {
+            if let distance = gndRollLanding {
+                efb_aircraft_builder_gnd_roll_landing(builder, EfbDistance(length: distance))
+            }
+        }
+    }
+
+    public var gndRollLanding50ftObstacle: Measurement<UnitLength>? {
+        didSet {
+            if let distance = gndRollLanding50ftObstacle {
+                efb_aircraft_builder_gnd_roll_landing_50ft_obstacle(builder, EfbDistance(length: distance))
+            }
+        }
+    }
+
     // MARK: - Notes
 
     public var notes: String = "" {

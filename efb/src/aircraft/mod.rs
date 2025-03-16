@@ -17,7 +17,7 @@ pub mod cg_envelope;
 pub mod station;
 
 use crate::error::Error;
-use crate::fp::MassAndBalance;
+use crate::fp::{MassAndBalance, TakeoffLandingDistance};
 use crate::measurements::{Length, Mass, Volume};
 use crate::{Fuel, FuelType};
 
@@ -97,6 +97,8 @@ pub struct FuelTank {
 ///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.20) },
 ///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(1.20) },
 ///     ]),
+///     takeoff_distance: None,
+///     landing_distance: None,
 ///     notes: None,
 /// };
 ///
@@ -147,6 +149,16 @@ pub struct Aircraft {
     /// The center of gravity envelope which must contains the CG at a mass for
     /// the aircraft to be balanced.
     pub cg_envelope: CGEnvelope,
+
+    // TODO: Takeoff and landing distance needs to be associated to an aircraft
+    //   just like the performance but is not part of the aircraft since the
+    //   distances might be reused for other aircraft. Sharing the same
+    //   configurations should avoid errors during the configuration process...
+    /// The ground roll and distance to clear a 50ft obstacle on takeoff.
+    pub takeoff_distance: Option<TakeoffLandingDistance>,
+
+    /// The ground roll and distance to clear a 50ft obstacle on landing.
+    pub landing_distance: Option<TakeoffLandingDistance>,
 
     /// Notes regarding the aircraft e.g. when the empty mass and balance were
     /// determined.
@@ -331,6 +343,9 @@ mod tests {
                 },
             ],
             cg_envelope: CGEnvelope::new(vec![]),
+            // we don't care about the ground roll here
+            takeoff_distance: None,
+            landing_distance: None,
             notes: None,
         };
 
@@ -358,6 +373,8 @@ mod tests {
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),
+            takeoff_distance: None,
+            landing_distance: None,
             notes: None,
         };
 
@@ -376,6 +393,9 @@ mod tests {
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),
+            // we don't care about the ground roll here
+            takeoff_distance: None,
+            landing_distance: None,
             notes: None,
         };
 
