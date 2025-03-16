@@ -98,7 +98,7 @@ In a first stage, the library should be extended to allow proper
 flight planning by adding the following feature:
 
 - [ ] Add runway analysis to planning
-- [ ] Add trips with multiply flights
+- [ ] Add missions with multiple flights
 - [x] Add Python bindings to allow easy scripted planning
 - [ ] Add measurement trait and refactor core types
 - [ ] Extend printer to render HTML
