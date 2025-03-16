@@ -17,11 +17,16 @@
 name = "efb"
 version = "0.1.0"
 edition = "2021"
+authors = ["Joe Pearson"]
 license = "Apache-2.0"
 keywords = ["aviation", "EFB"]
+description = "Electronic Flight Bag library to plan and conduct a flight."
+homepage = "https://github.com/pearjo/libefb"
+repository = "https://github.com/pearjo/libefb"
+readme = "../README.md"
 
 [dependencies]
-arinc424 = { path = "../arinc424" }
+arinc424 = { path = "../arinc424", version = "0.1.0" }
 time = "0.3.36"
 wmm = "0.2.3"
 

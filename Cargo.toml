@@ -20,6 +20,7 @@ members = [
     "bindings/c",
     "bindings/python",
 ]
+resolver = "2"
 
 [workspace.lints.rust]
 unsafe_code = "warn"
