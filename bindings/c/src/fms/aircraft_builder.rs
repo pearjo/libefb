@@ -32,6 +32,10 @@ pub struct AircraftBuilder<'a> {
     tanks_iter: Option<Iter<'a, FuelTank>>,
     cg_envelope: Vec<CGLimit>,
     cg_envelope_iter: Option<Iter<'a, CGLimit>>,
+    gnd_roll_takeoff: Option<Length>,
+    gnd_roll_takeoff_50ft_obstacle: Option<Length>,
+    gnd_roll_landing: Option<Length>,
+    gnd_roll_landing_50ft_obstacle: Option<Length>,
     notes: Option<String>,
 }
 
@@ -45,6 +49,10 @@ impl<'a> AircraftBuilder<'a> {
             fuel_type: self.fuel_type?,
             tanks: self.tanks.clone(),
             cg_envelope: CGEnvelope::new(self.cg_envelope.clone()),
+            gnd_roll_takeoff: self.gnd_roll_takeoff?,
+            gnd_roll_takeoff_50ft_obstacle: self.gnd_roll_takeoff_50ft_obstacle?,
+            gnd_roll_landing: self.gnd_roll_landing?,
+            gnd_roll_landing_50ft_obstacle: self.gnd_roll_landing_50ft_obstacle?,
             notes: self.notes.clone(),
         })
     }
@@ -244,6 +252,38 @@ pub extern "C" fn efb_aircraft_builder_cg_envelope_next<'a>(
         .cg_envelope_iter
         .as_mut()
         .and_then(|iter| iter.next())
+}
+
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_gnd_roll_takeoff(
+    builder: &mut AircraftBuilder,
+    distance: Length,
+) {
+    let _ = builder.gnd_roll_takeoff.insert(distance);
+}
+
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_gnd_roll_takeoff_50ft_obstacle(
+    builder: &mut AircraftBuilder,
+    distance: Length,
+) {
+    let _ = builder.gnd_roll_takeoff_50ft_obstacle.insert(distance);
+}
+
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_gnd_roll_landing(
+    builder: &mut AircraftBuilder,
+    distance: Length,
+) {
+    let _ = builder.gnd_roll_landing.insert(distance);
+}
+
+#[no_mangle]
+pub extern "C" fn efb_aircraft_builder_gnd_roll_landing_50ft_obstacle(
+    builder: &mut AircraftBuilder,
+    distance: Length,
+) {
+    let _ = builder.gnd_roll_landing_50ft_obstacle.insert(distance);
 }
 
 #[no_mangle]

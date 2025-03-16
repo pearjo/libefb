@@ -715,6 +715,22 @@ const EfbCGLimit *
 efb_aircraft_builder_cg_envelope_next(EfbAircraftBuilder *builder);
 
 void
+efb_aircraft_builder_gnd_roll_takeoff(EfbAircraftBuilder *builder,
+                                      EfbLength distance);
+
+void
+efb_aircraft_builder_gnd_roll_takeoff_50ft_obstacle(EfbAircraftBuilder *builder,
+                                                    EfbLength distance);
+
+void
+efb_aircraft_builder_gnd_roll_landing(EfbAircraftBuilder *builder,
+                                      EfbLength distance);
+
+void
+efb_aircraft_builder_gnd_roll_landing_50ft_obstacle(EfbAircraftBuilder *builder,
+                                                    EfbLength distance);
+
+void
 efb_aircraft_builder_notes(EfbAircraftBuilder *builder, const char *notes);
 
 const EfbFuelPlanning *

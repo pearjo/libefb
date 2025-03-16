@@ -36,6 +36,10 @@ use station::*;
 /// :param FuelType fuel_type:
 /// :param list[FuelTank] tanks:
 /// :param CGEnvelope cg_envelope:
+/// :param Distance gnd_roll_takeoff:
+/// :param Distance gnd_roll_takeoff_50ft_obstacle:
+/// :param Distance gnd_roll_landing:
+/// :param Distance gnd_roll_landing_50ft_obstacle:
 /// :param str | None notes: Some notes to make about the aircraft.
 #[pyclass(module = "efb.aircraft", name = "Aircraft", frozen)]
 #[derive(Clone)]
@@ -52,7 +56,20 @@ impl From<PyAircraft> for Aircraft {
 #[pymethods]
 impl PyAircraft {
     #[new]
-    #[pyo3(signature = (registration, stations, empty_mass, empty_balance, fuel_type, tanks, cg_envelope, notes=None))]
+    #[pyo3(signature = (
+        registration,
+        stations,
+        empty_mass,
+        empty_balance,
+        fuel_type,
+        tanks,
+        cg_envelope,
+        gnd_roll_takeoff,
+        gnd_roll_takeoff_50ft_obstacle,
+        gnd_roll_landing,
+        gnd_roll_landing_50ft_obstacle,
+        notes=None
+    ))]
     pub fn new(
         registration: String,
         stations: Vec<PyStation>,
@@ -61,6 +78,10 @@ impl PyAircraft {
         fuel_type: PyFuelType,
         tanks: Vec<PyFuelTank>,
         cg_envelope: PyCGEnvelope,
+        gnd_roll_takeoff: PyDistance,
+        gnd_roll_takeoff_50ft_obstacle: PyDistance,
+        gnd_roll_landing: PyDistance,
+        gnd_roll_landing_50ft_obstacle: PyDistance,
         notes: Option<String>,
     ) -> Self {
         Self {
@@ -72,6 +93,10 @@ impl PyAircraft {
                 fuel_type: fuel_type.into(),
                 tanks: tanks.into_iter().map(|tank| tank.into()).collect(),
                 cg_envelope: cg_envelope.into(),
+                gnd_roll_takeoff: gnd_roll_takeoff.into(),
+                gnd_roll_takeoff_50ft_obstacle: gnd_roll_takeoff_50ft_obstacle.into(),
+                gnd_roll_landing: gnd_roll_landing.into(),
+                gnd_roll_landing_50ft_obstacle: gnd_roll_landing_50ft_obstacle.into(),
                 notes,
             },
         }

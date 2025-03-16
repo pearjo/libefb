@@ -101,6 +101,10 @@ fn main() {
                 distance: Length::m(1.20),
             },
         ]),
+        gnd_roll_takeoff: Length::ft(945.0),
+        gnd_roll_takeoff_50ft_obstacle: Length::ft(1685.0),
+        gnd_roll_landing: Length::ft(550.0),
+        gnd_roll_landing_50ft_obstacle: Length::ft(1295.0),
         notes: None,
     };
 

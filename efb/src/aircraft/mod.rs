@@ -97,6 +97,10 @@ pub struct FuelTank {
 ///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.20) },
 ///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(1.20) },
 ///     ]),
+///     gnd_roll_takeoff: Length::ft(945.0),
+///     gnd_roll_takeoff_50ft_obstacle: Length::ft(1685.0),
+///     gnd_roll_landing: Length::ft(550.0),
+///     gnd_roll_landing_50ft_obstacle: Length::ft(1295.0),
 ///     notes: None,
 /// };
 ///
@@ -147,6 +151,18 @@ pub struct Aircraft {
     /// The center of gravity envelope which must contains the CG at a mass for
     /// the aircraft to be balanced.
     pub cg_envelope: CGEnvelope,
+
+    /// The takeoff ground roll.
+    pub gnd_roll_takeoff: Length,
+
+    /// The total distance over a 50 ft obstacle on takeoff.
+    pub gnd_roll_takeoff_50ft_obstacle: Length,
+
+    /// The landing ground roll.
+    pub gnd_roll_landing: Length,
+
+    /// The total distance over a 50 ft obstacle on landing.
+    pub gnd_roll_landing_50ft_obstacle: Length,
 
     /// Notes regarding the aircraft e.g. when the empty mass and balance were
     /// determined.
@@ -331,6 +347,11 @@ mod tests {
                 },
             ],
             cg_envelope: CGEnvelope::new(vec![]),
+            // we don't care about the ground roll here
+            gnd_roll_takeoff: Length::ft(0.0),
+            gnd_roll_takeoff_50ft_obstacle: Length::ft(0.0),
+            gnd_roll_landing: Length::ft(0.0),
+            gnd_roll_landing_50ft_obstacle: Length::ft(0.0),
             notes: None,
         };
 
@@ -358,6 +379,10 @@ mod tests {
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),
+            gnd_roll_takeoff: Length::ft(0.0),
+            gnd_roll_takeoff_50ft_obstacle: Length::ft(0.0),
+            gnd_roll_landing: Length::ft(0.0),
+            gnd_roll_landing_50ft_obstacle: Length::ft(0.0),
             notes: None,
         };
 
@@ -376,6 +401,11 @@ mod tests {
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),
+            // we don't care about the ground roll here
+            gnd_roll_takeoff: Length::ft(0.0),
+            gnd_roll_takeoff_50ft_obstacle: Length::ft(0.0),
+            gnd_roll_landing: Length::ft(0.0),
+            gnd_roll_landing_50ft_obstacle: Length::ft(0.0),
             notes: None,
         };
 

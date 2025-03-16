@@ -73,6 +73,11 @@ fn aircraft() -> Aircraft {
                 distance: Length::m(1.5),
             },
         ]),
+        // we don't care about the ground roll here
+        gnd_roll_takeoff: Length::ft(0.0),
+        gnd_roll_takeoff_50ft_obstacle: Length::ft(0.0),
+        gnd_roll_landing: Length::ft(0.0),
+        gnd_roll_landing_50ft_obstacle: Length::ft(0.0),
         notes: None,
     }
 }
