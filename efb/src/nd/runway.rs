@@ -13,33 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::*;
-use crate::geom::Coordinate;
+use std::fmt;
 
-#[repr(C)]
-#[derive(Clone, Debug, PartialEq)]
-pub struct Airport {
-    pub icao_ident: String,
-    pub iata_designator: String,
-    pub name: String,
-    pub coordinate: Coordinate,
-    pub mag_var: MagneticVariation,
-    pub runways: Vec<Runway>,
-    pub cycle: AiracCycle,
+use crate::measurements::{Angle, Length};
+
+#[derive(Clone, PartialEq, Debug)]
+pub enum RunwaySurface {
+    Asphalt,
+    Concrete,
+    Grass,
 }
 
-impl Airport {
-    pub fn route_ident(&self) -> String {
-        self.icao_ident.clone()
-    }
+#[derive(Clone, PartialEq, Debug)]
+pub struct Runway {
+    pub(crate) designator: String,
+    pub(crate) bearing: Angle,
+    pub(crate) length: Length,
+    pub(crate) tora: Length,
+    pub(crate) toda: Length,
+    pub(crate) lda: Length,
+    pub(crate) surface: RunwaySurface,
+    pub(crate) slope: f32,
 }
 
-impl Fix for Airport {
-    fn ident(&self) -> String {
-        self.icao_ident.clone()
-    }
-
-    fn coordinate(&self) -> Coordinate {
-        self.coordinate
+impl fmt::Display for Runway {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.designator)
     }
 }
