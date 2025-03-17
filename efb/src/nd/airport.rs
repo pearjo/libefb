@@ -13,10 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::*;
 use crate::geom::Coordinate;
 
-#[repr(C)]
+use crate::VerticalDistance;
+
+use super::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Airport {
     pub icao_ident: String,
@@ -24,6 +26,7 @@ pub struct Airport {
     pub name: String,
     pub coordinate: Coordinate,
     pub mag_var: MagneticVariation,
+    pub elevation: VerticalDistance,
     pub runways: Vec<Runway>,
     pub cycle: AiracCycle,
 }
