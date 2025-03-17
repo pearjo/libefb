@@ -202,7 +202,31 @@ typedef struct {
 
 typedef EfbMeasurementf32SpeedUnit EfbSpeed;
 
-/// The wind with a speed and direction
+/// The wind with a speed and direction.
+///
+/// The wind can be split into headwind (or tailwind) and crosswind components
+/// for a direction. This provides e.g. information of the crosswind component
+/// on landing.
+///
+/// # Examples
+///
+/// ```
+/// # use std::str::FromStr;
+/// # use efb::error::Error;
+/// # use efb::measurements::{Angle, Speed};
+/// # use efb::Wind;
+/// #
+/// # fn main() -> Result<(), Error> {
+/// // the wind as reported from our destinations METAR
+/// // blowing from the south
+/// let wind = Wind::from_str("00010KT")?;
+///
+/// // we land on runway 09 pointing to the east so we have full 10 knots
+/// // crosswind from the right
+/// assert_eq!(wind.crosswind(&Angle::t(90.0)), Speed::kt(-10.0));
+/// #     Ok(())
+/// # }
+/// ```
 typedef struct {
   /// The direction from which the wind comes.
   EfbAngle direction;

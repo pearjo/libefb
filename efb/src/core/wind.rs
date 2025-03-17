@@ -19,7 +19,31 @@ use std::str::FromStr;
 use crate::error::Error;
 use crate::measurements::{Angle, Speed, SpeedUnit};
 
-/// The wind with a speed and direction
+/// The wind with a speed and direction.
+///
+/// The wind can be split into headwind (or tailwind) and crosswind components
+/// for a direction. This provides e.g. information of the crosswind component
+/// on landing.
+///
+/// # Examples
+///
+/// ```
+/// # use std::str::FromStr;
+/// # use efb::error::Error;
+/// # use efb::measurements::{Angle, Speed};
+/// # use efb::Wind;
+/// #
+/// # fn main() -> Result<(), Error> {
+/// // the wind as reported from our destinations METAR
+/// // blowing from the south
+/// let wind = Wind::from_str("00010KT")?;
+///
+/// // we land on runway 09 pointing to the east so we have full 10 knots
+/// // crosswind from the right
+/// assert_eq!(wind.crosswind(&Angle::t(90.0)), Speed::kt(-10.0));
+/// #     Ok(())
+/// # }
+/// ```
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Wind {
@@ -27,6 +51,26 @@ pub struct Wind {
     pub direction: Angle,
     /// The wind speed.
     pub speed: Speed,
+}
+
+impl Wind {
+    /// Returns the headwind relative to the direction.
+    ///
+    /// A negative value indicates a tailwind.
+    pub fn headwind(&self, direction: &Angle) -> Speed {
+        let relative_wind = self.direction - *direction;
+        // TODO: Deal better with headwind or tailwind.
+        self.speed * -relative_wind.to_si().cos()
+    }
+
+    /// Returns the cross wind relative to the direction.
+    ///
+    /// A negative value indicates that the wind comes from the left side
+    /// relative to the direction.
+    pub fn crosswind(&self, direction: &Angle) -> Speed {
+        let relative_wind = self.direction - *direction;
+        self.speed * relative_wind.to_si().sin()
+    }
 }
 
 impl FromStr for Wind {
@@ -87,5 +131,45 @@ mod tests {
             }),
         );
         assert_eq!("330".parse::<Wind>(), Err(Error::UnexpectedString));
+    }
+
+    #[test]
+    fn full_headwind() {
+        let wind = Wind {
+            direction: Angle::t(0.0),
+            speed: Speed::kt(10.0),
+        };
+
+        assert_eq!(wind.headwind(&Angle::t(180.0)), Speed::kt(10.0));
+    }
+
+    #[test]
+    fn full_tailwind() {
+        let wind = Wind {
+            direction: Angle::t(0.0),
+            speed: Speed::kt(10.0),
+        };
+
+        assert_eq!(wind.headwind(&Angle::t(0.0)), Speed::kt(-10.0));
+    }
+
+    #[test]
+    fn full_crosswind_left() {
+        let wind = Wind {
+            direction: Angle::t(0.0),
+            speed: Speed::kt(10.0),
+        };
+
+        assert_eq!(wind.crosswind(&Angle::t(90.0)), Speed::kt(-10.0));
+    }
+
+    #[test]
+    fn full_crosswind_right() {
+        let wind = Wind {
+            direction: Angle::t(0.0),
+            speed: Speed::kt(10.0),
+        };
+
+        assert_eq!(wind.crosswind(&Angle::t(270.0)), Speed::kt(10.0));
     }
 }
