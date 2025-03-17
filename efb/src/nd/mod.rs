@@ -28,6 +28,7 @@ mod airport;
 mod airspace;
 mod fix;
 mod parser;
+mod runway;
 mod waypoint;
 
 pub use airac_cycle::AiracCycle;
@@ -35,6 +36,7 @@ pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use fix::Fix;
 use parser::*;
+pub use runway::*;
 pub use waypoint::*;
 
 #[repr(C)]

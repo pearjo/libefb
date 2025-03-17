@@ -85,6 +85,7 @@ impl From<arinc424::Airport> for Airport {
             name: String::from(""),
             coordinate: (aprt.latitude, aprt.longitude).into(),
             mag_var: aprt.mag_var.into(),
+            runways: Vec::new(),
             cycle: aprt.cycle.into(),
         }
     }
