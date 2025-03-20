@@ -40,7 +40,10 @@
 //! // lets say we need for this distance 15 minutes
 //! let speed = dist / Duration::s(60 * 15);
 //! assert_eq!(speed.value().round(), Speed::kt(126.0).value().round());
+//! ```
 
+mod measurement;
 mod unit_of_measure;
 
+pub use measurement::*;
 pub use unit_of_measure::UnitOfMeasure;
