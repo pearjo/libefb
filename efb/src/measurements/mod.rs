@@ -42,8 +42,25 @@
 //! assert_eq!(speed.value().round(), Speed::kt(126.0).value().round());
 //! ```
 
+mod angle;
+mod constants;
+mod density;
+mod duration;
+mod length;
+mod mass;
 mod measurement;
+mod speed;
+mod temperature;
 mod unit_of_measure;
+mod volume;
 
+pub use angle::{Angle, AngleUnit};
+pub use density::{Density, DensityUnit};
+pub use duration::{Duration, DurationUnit};
+pub use length::{Length, LengthUnit};
+pub use mass::{Mass, MassUnit};
 pub use measurement::*;
+pub use speed::{Speed, SpeedUnit};
+pub use temperature::{Temperature, TemperatureUnit};
 pub use unit_of_measure::UnitOfMeasure;
+pub use volume::{Volume, VolumeUnit};
