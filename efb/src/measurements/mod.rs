@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod measurement;
 mod unit_of_measure;
 
+pub use measurement::*;
 pub use unit_of_measure::UnitOfMeasure;
