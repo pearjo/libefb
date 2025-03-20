@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2024 Joe Pearson
+// Copyright 2025 Joe Pearson
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,25 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! # The Electronic Flight Bag (EFB) Library
-//!
-//! The EFB Library is the foundation for flight planning applications,
-//! providing functionality to plan a flight and get navigational aids
-//! in-flight.
+mod unit_of_measure;
 
-#[macro_use]
-pub mod macros;
-
-mod core;
-pub use core::*;
-
-pub mod aircraft;
-pub mod algorithm;
-pub mod error;
-pub mod fc;
-pub mod fms;
-pub mod fp;
-pub mod geom;
-pub mod measurements;
-pub mod nd;
-pub mod route;
+pub use unit_of_measure::UnitOfMeasure;
