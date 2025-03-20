@@ -13,15 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::{Duration, Speed, Unit};
-use crate::error::Error;
 use std::cmp::{Ord, Ordering, PartialOrd};
 use std::fmt;
-use std::ops::{Add, Div};
 use std::str::FromStr;
 
+use crate::error::Error;
+
 mod constants {
-    pub const NAUTICAL_MILE_IN_METER: f32 = 1852.0;
     pub const METER_IN_FEET: f32 = 3.28084;
 }
 
@@ -144,87 +142,6 @@ impl PartialOrd for VerticalDistance {
     }
 }
 
-/// A metrical or nautical distance.
-#[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum Distance {
-    Meter(f32),
-    NauticalMiles(f32),
-}
-
-impl Distance {
-    /// Consumes the `self`, returning its inner value.
-    pub fn into_inner(self) -> f32 {
-        match self {
-            Self::Meter(v) => v,
-            Self::NauticalMiles(v) => v,
-        }
-    }
-
-    /// Converts to meters.
-    pub fn to_m(self) -> Self {
-        match self {
-            Self::Meter(_) => self,
-            Self::NauticalMiles(nm) => Self::Meter(nm * constants::NAUTICAL_MILE_IN_METER),
-        }
-    }
-
-    /// Converts to nautical miles.
-    pub fn to_nm(self) -> Self {
-        match self {
-            Self::Meter(m) => Self::NauticalMiles(m / constants::NAUTICAL_MILE_IN_METER),
-            Self::NauticalMiles(_) => self,
-        }
-    }
-}
-
-impl Unit for Distance {
-    fn from_si(value: f32) -> Self {
-        Self::Meter(value)
-    }
-
-    fn si(&self) -> f32 {
-        self.to_m().into_inner()
-    }
-}
-
-impl Add for Distance {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Distance::from_si(self.si() + rhs.si())
-    }
-}
-
-impl Div<Speed> for Distance {
-    type Output = Duration;
-
-    // TODO: Work in SI units here!
-    fn div(self, rhs: Speed) -> Self::Output {
-        Duration::from(match self {
-            Distance::Meter(v) => (v / rhs.to_ms().into_inner()).round() as u32,
-            Distance::NauticalMiles(v) => (v / rhs.to_kt().into_inner() * 3600.0).round() as u32,
-        })
-    }
-}
-
-impl fmt::Display for Distance {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let (value, unit) = match self {
-            Self::Meter(value) => (value, "m"),
-            Self::NauticalMiles(value) => (value, "NM"),
-        };
-
-        let tmp = if let Some(precision) = f.precision() {
-            format!("{:.precision$} {}", value, unit)
-        } else {
-            format!("{} {}", value, unit)
-        };
-
-        f.pad_integral(true, "", &tmp)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -278,24 +195,5 @@ mod tests {
         assert!(VerticalDistance::Agl(1000) < VerticalDistance::Agl(2000));
         assert!(VerticalDistance::Altitude(1000) < VerticalDistance::Altitude(2000));
         assert!(VerticalDistance::Msl(1000) < VerticalDistance::Fl(100));
-    }
-
-    #[test]
-    fn distance() {
-        let nm = Distance::NauticalMiles(1.0);
-        assert_eq!(nm.to_m(), Distance::Meter(1852.0));
-    }
-
-    #[test]
-    fn div() {
-        let time = Distance::NauticalMiles(1.0) / Speed::Knots(1.0);
-        assert_eq!(
-            time,
-            Duration {
-                hours: 1,
-                minutes: 0,
-                seconds: 0
-            }
-        );
     }
 }

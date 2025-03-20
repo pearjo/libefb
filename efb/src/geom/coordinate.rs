@@ -16,7 +16,7 @@
 use std::fmt::{Display, Formatter};
 
 use crate::fc;
-use crate::{Angle, Distance};
+use crate::measurements::{Angle, Length};
 
 mod constants {
     pub const EARTH_MEAN_RADIUS: f32 = 6371.0072;
@@ -45,14 +45,14 @@ impl Coordinate {
         let x = lat_a.cos() * lat_b.sin() - lat_a.sin() * lat_b.cos() * delta_long.cos();
         let y = lat_b.cos() * delta_long.sin();
 
-        y.atan2(x).into()
+        Angle::t(y.atan2(x).to_degrees())
     }
 
     // TODO fix distance calculation and add some comments regarding Haversine
     /// Returns the distance from this point to the `other`.
     ///
     /// The distance is calculated according to Haversine.
-    pub fn dist(&self, other: &Coordinate) -> Distance {
+    pub fn dist(&self, other: &Coordinate) -> Length {
         let delta_lat = (other.latitude - self.latitude).to_radians();
         let delta_long = (other.longitude - self.longitude).to_radians();
         let haversine_delta_lat = (delta_lat / 2.0).sin().powi(2);
@@ -62,7 +62,7 @@ impl Coordinate {
             * other.latitude.to_radians().cos()
             * haversine_delta_long;
         let x = 2.0 * y.sqrt().asin();
-        Distance::Meter(x * constants::EARTH_MEAN_RADIUS * 1000.0)
+        Length::m(x * constants::EARTH_MEAN_RADIUS * 1000.0)
     }
 
     pub fn from_dms(latitude: (i8, u8, u8), longitude: (i16, u8, u8)) -> Self {
@@ -84,6 +84,7 @@ impl Display for Coordinate {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::measurements::LengthUnit;
 
     // As benchmark for our testing we use the directions to an airfield as
     // published in the German AIP. The airfield Hungriger Wolf in Itzehoe
@@ -100,12 +101,18 @@ mod tests {
         // From the AIP we get a magnetic heading from the Helgoland VOR (DHE)
         // to EDHF of 97°. With an magnetic variation of 4° east in EDHF, we get
         // a bearing of 101°.
-        assert_eq!(DHE.bearing(&EDHF).as_degrees(), 101);
+        assert_eq!(DHE.bearing(&EDHF).value().round(), 101.0);
     }
 
     #[test]
     fn dist() {
         // the AIP provides only rounded values
-        assert_eq!(DHE.dist(&EDHF).to_nm().into_inner().round(), 60.0);
+        assert_eq!(
+            DHE.dist(&EDHF)
+                .convert_to(LengthUnit::NauticalMiles)
+                .value()
+                .round(),
+            60.0
+        );
     }
 }

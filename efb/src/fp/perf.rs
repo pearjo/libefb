@@ -13,7 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{FuelFlow, Speed, VerticalDistance};
+use crate::measurements::Speed;
+use crate::{FuelFlow, VerticalDistance};
 
 /// A row of the performance table presenting a performance up to a specific
 /// level.

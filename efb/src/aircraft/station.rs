@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{Distance, Mass};
+use crate::measurements::{Length, Mass};
 
 /// A position within the aircraft that can be loaded with a payload.
 ///
@@ -26,7 +26,7 @@ use crate::{Distance, Mass};
 #[derive(Clone, Debug, PartialEq)]
 pub struct Station {
     /// The lever's arm from the reference datum.
-    pub arm: Distance,
+    pub arm: Length,
 
     /// A description of the station.
     pub description: Option<String>,

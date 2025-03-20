@@ -15,8 +15,9 @@
 
 use super::Performance;
 use crate::aircraft::Aircraft;
+use crate::measurements::Duration;
 use crate::route::Route;
-use crate::{Duration, Fuel, VerticalDistance};
+use crate::{Fuel, VerticalDistance};
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]

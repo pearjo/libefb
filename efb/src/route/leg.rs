@@ -14,8 +14,9 @@
 // limitations under the License.
 
 use crate::fp::Performance;
+use crate::measurements::{Angle, AngleUnit, Duration, Length, LengthUnit, Speed};
 use crate::nd::{Fix, NavAid};
-use crate::*;
+use crate::{Fuel, VerticalDistance, Wind};
 
 /// A leg `from` one point `to` another.
 #[derive(Clone, Debug)]
@@ -29,7 +30,7 @@ pub struct Leg {
     mh: Option<Angle>,
     bearing: Angle,
     mc: Angle,
-    dist: Distance,
+    dist: Length,
     gs: Option<Speed>,
     wca: Option<Angle>,
     ete: Option<Duration>,
@@ -45,7 +46,10 @@ impl Leg {
     ) -> Leg {
         let bearing = from.coordinate().bearing(&to.coordinate());
         let mc = bearing + from.mag_var();
-        let dist = from.coordinate().dist(&to.coordinate()).to_nm();
+        let dist = from
+            .coordinate()
+            .dist(&to.coordinate())
+            .convert_to(LengthUnit::NauticalMiles);
 
         let (gs, wca) = {
             match (tas, wind) {
@@ -127,7 +131,7 @@ impl Leg {
     }
 
     /// The distance between the leg's two points.
-    pub fn dist(&self) -> &Distance {
+    pub fn dist(&self) -> &Length {
         &self.dist
     }
 
@@ -158,10 +162,7 @@ impl Leg {
 }
 
 fn wind_correction_angle(wind: &Wind, tas: &Speed, bearing: &Angle) -> Angle {
-    let tas = tas.to_kt().into_inner();
-    let ws = wind.speed.to_kt().into_inner();
-
-    let wind_azimuth = wind.direction + 180;
+    let wind_azimuth = wind.direction + Angle::t(180.0);
     // the angle between the wind direction and bearing
     let wind_angle = *bearing - wind_azimuth;
 
@@ -170,17 +171,21 @@ fn wind_correction_angle(wind: &Wind, tas: &Speed, bearing: &Angle) -> Angle {
     //   sin(wca) / ws = sin(wind_angle) / tas
     //
     // from which we get the wca as following:
-    (ws / tas * (wind_angle).as_radians().sin()).asin().into()
+    Angle::from_si(
+        (wind.speed / *tas * wind_angle.to_si().sin())
+            .to_si()
+            .asin(),
+        AngleUnit::TrueNorth,
+    )
 }
 
 fn ground_speed(tas: &Speed, wind: &Wind, wca: &Angle, bearing: &Angle) -> Speed {
-    let tas = tas.to_kt().into_inner();
-    let ws = wind.speed.to_kt().into_inner();
-
-    Speed::Knots(
-        (tas.powi(2) + ws.powi(2)
-            - ((2.0 * tas * ws) * (*bearing - wind.direction + *wca).as_radians().cos()))
+    Speed::from_si(
+        (*tas * *tas + wind.speed * wind.speed
+            - ((*tas * wind.speed * 2.0) * (*bearing - wind.direction + *wca).to_si().cos()))
+        .to_si()
         .sqrt(),
+        *tas.unit(),
     )
 }
 
@@ -195,10 +200,10 @@ mod tests {
         let wca = wind_correction_angle(
             &Wind::from_str("18050KT").unwrap(),
             &Speed::from_str("N0100").unwrap(),
-            &90.into(),
+            &Angle::t(90.0),
         );
 
-        assert_eq!(wca.as_degrees(), 30);
+        assert_eq!(wca.value().round(), 30.0);
     }
 
     #[test]
@@ -206,10 +211,10 @@ mod tests {
         let wca = wind_correction_angle(
             &Wind::from_str("00050KT").unwrap(),
             &Speed::from_str("N0100").unwrap(),
-            &90.into(),
+            &Angle::t(90.0),
         );
 
         // negative angles are wrapped: 360 - 30 = 330
-        assert_eq!(wca.as_degrees(), 330);
+        assert_eq!(wca.value().round(), 330.0);
     }
 }

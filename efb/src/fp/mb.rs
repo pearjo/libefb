@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use crate::aircraft::LoadedStation;
-use crate::{Distance, Mass, Unit};
+use crate::measurements::{Length, LengthUnit, Mass};
 
 /// The mass & balance on ramp and after landing.
 ///
@@ -28,8 +28,8 @@ use crate::{Distance, Mass, Unit};
 pub struct MassAndBalance {
     on_ramp: Mass,
     after_landing: Mass,
-    balance_on_ramp: Distance,
-    balance_after_landing: Distance,
+    balance_on_ramp: Length,
+    balance_after_landing: Length,
 }
 
 impl MassAndBalance {
@@ -38,24 +38,27 @@ impl MassAndBalance {
     /// **Note: The stations must define all mass of the aircraft.** This
     /// includes the empty mass, fuel tanks and removable mass.
     pub fn new(loaded_stations: &Vec<LoadedStation>) -> Self {
-        let mut on_ramp = Mass::Kilogram(0.0);
-        let mut after_landing = Mass::Kilogram(0.0);
+        let mut on_ramp = Mass::kg(0.0);
+        let mut after_landing = Mass::kg(0.0);
         let mut moment_on_ramp: f32 = 0.0;
         let mut moment_after_landing: f32 = 0.0;
 
         for loaded_station in loaded_stations {
             on_ramp = on_ramp + loaded_station.on_ramp;
             after_landing = after_landing + loaded_station.after_landing;
-            moment_on_ramp += loaded_station.on_ramp.si() * loaded_station.station.arm.si();
+            moment_on_ramp += loaded_station.on_ramp.to_si() * loaded_station.station.arm.to_si();
             moment_after_landing +=
-                loaded_station.after_landing.si() * loaded_station.station.arm.si();
+                loaded_station.after_landing.to_si() * loaded_station.station.arm.to_si();
         }
 
         Self {
             on_ramp,
             after_landing,
-            balance_on_ramp: Distance::from_si(moment_on_ramp / on_ramp.si()),
-            balance_after_landing: Distance::from_si(moment_after_landing / after_landing.si()),
+            balance_on_ramp: Length::from_si(moment_on_ramp / on_ramp.to_si(), LengthUnit::Meters),
+            balance_after_landing: Length::from_si(
+                moment_after_landing / after_landing.to_si(),
+                LengthUnit::Meters,
+            ),
         }
     }
 
@@ -67,11 +70,11 @@ impl MassAndBalance {
         &self.after_landing
     }
 
-    pub fn balance_on_ramp(&self) -> &Distance {
+    pub fn balance_on_ramp(&self) -> &Length {
         &self.balance_on_ramp
     }
 
-    pub fn balance_after_landing(&self) -> &Distance {
+    pub fn balance_after_landing(&self) -> &Length {
         &self.balance_after_landing
     }
 }
@@ -85,20 +88,20 @@ mod tests {
         vec![
             LoadedStation {
                 station: Station {
-                    arm: Distance::Meter(1.0),
+                    arm: Length::m(1.0),
                     description: None,
                 },
-                on_ramp: Mass::Kilogram(80.0),
-                after_landing: Mass::Kilogram(80.0),
+                on_ramp: Mass::kg(80.0),
+                after_landing: Mass::kg(80.0),
             },
             // we have a skydiver in the back that jumps out during the flight
             LoadedStation {
                 station: Station {
-                    arm: Distance::Meter(2.0),
+                    arm: Length::m(2.0),
                     description: None,
                 },
-                on_ramp: Mass::Kilogram(80.0),
-                after_landing: Mass::Kilogram(0.0),
+                on_ramp: Mass::kg(80.0),
+                after_landing: Mass::kg(0.0),
             },
         ]
     }
@@ -106,14 +109,14 @@ mod tests {
     #[test]
     fn mass_changes_during_flight() {
         let mb = MassAndBalance::new(&test_stations());
-        assert_eq!(mb.mass_on_ramp(), &Mass::Kilogram(160.0));
-        assert_eq!(mb.mass_after_landing(), &Mass::Kilogram(80.0));
+        assert_eq!(mb.mass_on_ramp(), &Mass::kg(160.0));
+        assert_eq!(mb.mass_after_landing(), &Mass::kg(80.0));
     }
 
     #[test]
     fn balance_changes_during_flight() {
         let mb = MassAndBalance::new(&test_stations());
-        assert_eq!(mb.balance_on_ramp(), &Distance::Meter(1.50));
-        assert_eq!(mb.balance_after_landing(), &Distance::Meter(1.0));
+        assert_eq!(mb.balance_on_ramp(), &Length::m(1.50));
+        assert_eq!(mb.balance_after_landing(), &Length::m(1.0));
     }
 }

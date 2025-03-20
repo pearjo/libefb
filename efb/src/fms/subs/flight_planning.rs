@@ -17,8 +17,9 @@
 use crate::aircraft::Aircraft;
 use crate::error::Error;
 use crate::fp::*;
+use crate::measurements::Mass;
 use crate::route::Route;
-use crate::{Fuel, Mass};
+use crate::Fuel;
 
 use super::{SubSystem, SubSystemBuilder};
 
