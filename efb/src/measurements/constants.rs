@@ -13,25 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod angle;
-mod constants;
-mod density;
-mod duration;
-mod length;
-mod mass;
-mod measurement;
-mod speed;
-mod temperature;
-mod unit_of_measure;
-mod volume;
-
-pub use angle::{Angle, AngleUnit};
-pub use density::{Density, DensityUnit};
-pub use duration::{Duration, DurationUnit};
-pub use length::{Length, LengthUnit};
-pub use mass::{Mass, MassUnit};
-pub use measurement::*;
-pub use speed::{Speed, SpeedUnit};
-pub use temperature::{Temperature, TemperatureUnit};
-pub use unit_of_measure::UnitOfMeasure;
-pub use volume::{Volume, VolumeUnit};
+pub const INCH_IN_METER: f32 = 0.0254;
+pub const KELVIN_IN_CELSIUS: f64 = 273.15;
+pub const METER_PER_SECONDS_IN_KNOTS: f32 = 1.943844;
+pub const NAUTICAL_MILE_IN_METER: f32 = 1852.0;
+pub const PI2: f32 = std::f32::consts::PI * 2.0;
