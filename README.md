@@ -100,7 +100,7 @@ flight planning by adding the following feature:
 - [ ] Add runway analysis to planning
 - [ ] Add missions with multiple flights
 - [x] Add Python bindings to allow easy scripted planning
-- [ ] Add measurement trait and refactor core types
+- [x] Add measurement trait and refactor core types
 - [ ] Extend printer to render HTML
 - [ ] Add AIXM parser
 - [ ] Add NOTAMS to FMS

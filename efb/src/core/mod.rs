@@ -13,26 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod angle;
-mod density;
 mod dist;
-mod duration;
 mod fuel;
 mod mag_var;
-mod mass;
-mod speed;
-mod volume;
 mod wind;
 
-pub use angle::*;
-pub use density::*;
-pub use dist::*;
-pub use duration::*;
+pub use dist::VerticalDistance;
 pub use fuel::*;
 pub use mag_var::*;
-pub use mass::Mass;
-pub use speed::*;
-pub use volume::*;
 pub use wind::*;
 
 /// A trait to convert to and from the International System of Units (SI).

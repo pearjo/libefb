@@ -16,6 +16,7 @@
 use efb::aircraft::*;
 use efb::fms::*;
 use efb::fp::*;
+use efb::measurements::*;
 use efb::nd::InputFormat;
 use efb::*;
 
@@ -31,18 +32,18 @@ fn main() {
     let perf = Performance::from(
         |vd| {
             let tas = if *vd >= VerticalDistance::Altitude(10000) {
-                Speed::Knots(114.0)
+                Speed::kt(114.0)
             } else if *vd >= VerticalDistance::Altitude(8000) {
-                Speed::Knots(112.0)
+                Speed::kt(112.0)
             } else if *vd >= VerticalDistance::Altitude(6000) {
-                Speed::Knots(110.0)
+                Speed::kt(110.0)
             } else if *vd >= VerticalDistance::Altitude(4000) {
-                Speed::Knots(109.0)
+                Speed::kt(109.0)
             } else {
-                Speed::Knots(107.0)
+                Speed::kt(107.0)
             };
 
-            let ff = FuelFlow::PerHour(diesel!(Volume::Liter(21.0)));
+            let ff = FuelFlow::PerHour(diesel!(Volume::l(21.0)));
 
             (tas, ff)
         },
@@ -55,49 +56,49 @@ fn main() {
         registration: String::from("N12345"),
         stations: vec![
             Station {
-                arm: Distance::Meter(0.94),
+                arm: Length::m(0.94),
                 description: Some(String::from("front seats")),
             },
             Station {
-                arm: Distance::Meter(1.85),
+                arm: Length::m(1.85),
                 description: Some(String::from("back seats")),
             },
             Station {
-                arm: Distance::Meter(2.41),
+                arm: Length::m(2.41),
                 description: Some(String::from("first cargo compartment")),
             },
             Station {
-                arm: Distance::Meter(3.12),
+                arm: Length::m(3.12),
                 description: Some(String::from("second cargo compartment")),
             },
         ],
-        empty_mass: Mass::Kilogram(807.0),
-        empty_balance: Distance::Meter(1.0),
+        empty_mass: Mass::kg(807.0),
+        empty_balance: Length::m(1.0),
         fuel_type: FuelType::Diesel,
         tanks: vec![FuelTank {
-            capacity: Volume::Liter(168.8),
-            arm: Distance::Meter(1.22),
+            capacity: Volume::l(168.8),
+            arm: Length::m(1.22),
         }],
         cg_envelope: CGEnvelope::new(vec![
             CGLimit {
-                mass: Mass::Kilogram(0.0),
-                distance: Distance::Meter(0.89),
+                mass: Mass::kg(0.0),
+                distance: Length::m(0.89),
             },
             CGLimit {
-                mass: Mass::Kilogram(885.0),
-                distance: Distance::Meter(0.89),
+                mass: Mass::kg(885.0),
+                distance: Length::m(0.89),
             },
             CGLimit {
-                mass: Mass::Kilogram(1111.0),
-                distance: Distance::Meter(1.02),
+                mass: Mass::kg(1111.0),
+                distance: Length::m(1.02),
             },
             CGLimit {
-                mass: Mass::Kilogram(1111.0),
-                distance: Distance::Meter(1.20),
+                mass: Mass::kg(1111.0),
+                distance: Length::m(1.20),
             },
             CGLimit {
-                mass: Mass::Kilogram(0.0),
-                distance: Distance::Meter(1.20),
+                mass: Mass::kg(0.0),
+                distance: Length::m(1.20),
             },
         ]),
         notes: None,
@@ -120,15 +121,15 @@ fn main() {
         .set_aircraft(aircraft)
         .set_mass(vec![
             // we're in the front
-            Mass::Kilogram(80.0),
+            Mass::kg(80.0),
             // and no mass on the other stations
-            Mass::Kilogram(0.0),
-            Mass::Kilogram(0.0),
-            Mass::Kilogram(0.0),
+            Mass::kg(0.0),
+            Mass::kg(0.0),
+            Mass::kg(0.0),
         ])
-        .set_policy(FuelPolicy::ManualFuel(diesel!(Volume::Liter(80.0))))
-        .set_taxi(diesel!(Volume::Liter(10.0)))
-        .set_reserve(Reserve::Manual(Duration::from(1800))) // 30 min
+        .set_policy(FuelPolicy::ManualFuel(diesel!(Volume::l(80.0))))
+        .set_taxi(diesel!(Volume::l(10.0)))
+        .set_reserve(Reserve::Manual(Duration::s(1800))) // 30 min
         .set_perf(perf);
 
     let _ = fms.build_flight_planning(&builder);

@@ -16,13 +16,13 @@
 use std::fmt::{Display, Formatter, Result};
 use std::ops::{Add, Div, Mul, Sub};
 
-use super::{Density, Duration, Mass, Volume};
+use crate::measurements::{Density, Duration, Mass, Volume};
 
 mod constants {
     use super::Density;
 
-    pub const DIESEL_AT_ISA: Density = Density::KilogramPerLiter(0.838);
-    pub const JET_A_AT_ISA: Density = Density::KilogramPerLiter(0.8);
+    pub const DIESEL_AT_ISA: Density = Density::kg_per_l(0.838);
+    pub const JET_A_AT_ISA: Density = Density::kg_per_l(0.8);
 }
 
 #[repr(C)]
@@ -149,7 +149,7 @@ impl Mul<Duration> for FuelFlow {
     type Output = Fuel;
 
     fn mul(self, rhs: Duration) -> Self::Output {
-        let hours: f32 = u32::from(rhs) as f32 / 3600.0;
+        let hours: f32 = *rhs.value() as f32 / 3600.0;
 
         match self {
             Self::PerHour(fuel) => fuel * hours,
@@ -163,35 +163,35 @@ mod tests {
 
     #[test]
     fn fuel_from_volume() {
-        let lhs = Fuel::from_volume(Volume::Liter(10.0), &FuelType::Diesel);
-        let rhs = diesel!(Volume::Liter(10.0));
+        let lhs = Fuel::from_volume(Volume::l(10.0), &FuelType::Diesel);
+        let rhs = diesel!(Volume::l(10.0));
         assert_eq!(lhs, rhs);
     }
 
     #[test]
     fn add_fuel() {
-        let lhs = diesel!(Volume::Liter(10.0));
-        let rhs = diesel!(Volume::Liter(10.0));
-        assert_eq!(lhs + rhs, diesel!(Volume::Liter(20.0)));
+        let lhs = diesel!(Volume::l(10.0));
+        let rhs = diesel!(Volume::l(10.0));
+        assert_eq!(lhs + rhs, diesel!(Volume::l(20.0)));
     }
 
     #[test]
     fn sub_fuel() {
-        let lhs = diesel!(Volume::Liter(10.0));
-        let rhs = diesel!(Volume::Liter(10.0));
-        assert_eq!(lhs - rhs, diesel!(Volume::Liter(0.0)));
+        let lhs = diesel!(Volume::l(10.0));
+        let rhs = diesel!(Volume::l(10.0));
+        assert_eq!(lhs - rhs, diesel!(Volume::l(0.0)));
     }
 
     #[test]
     fn mul_fuel() {
-        let lhs = diesel!(Volume::Liter(10.0));
-        assert_eq!(lhs * 10.0, diesel!(Volume::Liter(100.0)));
+        let lhs = diesel!(Volume::l(10.0));
+        assert_eq!(lhs * 10.0, diesel!(Volume::l(100.0)));
     }
 
     #[test]
     fn mul_fuel_flow() {
-        let lhs = FuelFlow::PerHour(diesel!(Volume::Liter(10.0)));
-        let rhs = Duration::from(7200); // 2h
-        assert_eq!(lhs * rhs, diesel!(Volume::Liter(20.0)));
+        let lhs = FuelFlow::PerHour(diesel!(Volume::l(10.0)));
+        let rhs = Duration::s(7200); // 2h
+        assert_eq!(lhs * rhs, diesel!(Volume::l(20.0)));
     }
 }
