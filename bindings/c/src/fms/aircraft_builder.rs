@@ -17,7 +17,8 @@ use std::ffi::{c_char, CStr};
 use std::slice::Iter;
 
 use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
-use efb::{Distance, FuelType, Mass, Volume};
+use efb::measurements::{Length, Mass, Volume};
+use efb::FuelType;
 
 #[derive(Default)]
 pub struct AircraftBuilder<'a> {
@@ -25,7 +26,7 @@ pub struct AircraftBuilder<'a> {
     stations: Vec<Station>,
     stations_iter: Option<Iter<'a, Station>>,
     empty_mass: Option<Mass>,
-    empty_balance: Option<Distance>,
+    empty_balance: Option<Length>,
     fuel_type: Option<FuelType>,
     tanks: Vec<FuelTank>,
     tanks_iter: Option<Iter<'a, FuelTank>>,
@@ -84,7 +85,7 @@ pub extern "C" fn efb_aircraft_builder_registration(
 #[no_mangle]
 pub extern "C" fn efb_aircraft_builder_stations_push<'a>(
     builder: &'a mut AircraftBuilder,
-    arm: Distance,
+    arm: Length,
     description: *const c_char,
 ) -> Option<&'a Station> {
     let description = unsafe { CStr::from_ptr(description).to_str() };
@@ -136,7 +137,7 @@ pub extern "C" fn efb_aircraft_builder_empty_mass(builder: &mut AircraftBuilder,
 #[no_mangle]
 pub extern "C" fn efb_aircraft_builder_empty_balance(
     builder: &mut AircraftBuilder,
-    distance: Distance,
+    distance: Length,
 ) {
     let _ = builder.empty_balance.insert(distance);
 }
@@ -154,7 +155,7 @@ pub extern "C" fn efb_aircraft_builder_fuel_type(
 pub extern "C" fn efb_aircraft_builder_tanks_push<'a>(
     builder: &'a mut AircraftBuilder,
     capacity: Volume,
-    arm: Distance,
+    arm: Length,
 ) -> Option<&'a FuelTank> {
     builder.tanks.push(FuelTank { capacity, arm });
     builder.tanks.last()
@@ -198,7 +199,7 @@ pub extern "C" fn efb_aircraft_builder_tanks_next<'a>(
 pub extern "C" fn efb_aircraft_builder_cg_envelope_push<'a>(
     builder: &'a mut AircraftBuilder,
     mass: Mass,
-    distance: Distance,
+    distance: Length,
 ) -> Option<&'a CGLimit> {
     builder.cg_envelope.push(CGLimit { mass, distance });
     builder.cg_envelope.last()

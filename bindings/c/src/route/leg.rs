@@ -15,9 +15,10 @@
 
 use std::ffi::{c_char, CString};
 
+use efb::measurements::{Angle, Duration, Length, Speed};
 use efb::nd::Fix;
 use efb::route::Leg;
-use efb::{Angle, Distance, Duration, Speed, VerticalDistance, Wind};
+use efb::{VerticalDistance, Wind};
 
 /// Returns the ident from where the leg starts.
 ///
@@ -85,7 +86,7 @@ pub extern "C" fn efb_leg_get_mc(leg: &Leg) -> &Angle {
 
 /// Returns the distance between the leg's two points.
 #[no_mangle]
-pub extern "C" fn efb_leg_get_dist(leg: &Leg) -> &Distance {
+pub extern "C" fn efb_leg_get_dist(leg: &Leg) -> &Length {
     leg.dist()
 }
 

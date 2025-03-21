@@ -27,9 +27,9 @@ public class Route {
     /// The distance is none if the route has no legs.
     ///
     /// - Returns: The optional distance of the route.
-    public func dist() -> Distance? {
-        efb_route_dist(self.route).map { (dist) -> Distance in
-            try! Distance(dist.pointee)
+    public func dist() -> Length? {
+        efb_route_dist(self.route).map { (dist) -> Length in
+            Length(dist.pointee)
         }
     }
 
@@ -73,7 +73,7 @@ public struct Leg {
     public let magneticHeading: Angle?
     public let bearing: Angle
     public let magneticCourse: Angle
-    public let distance: Distance
+    public let distance: Length
     public let groundSpeed: Speed?
     public let ete: Duration?
 
@@ -111,7 +111,7 @@ public struct Leg {
 
         bearing = Angle(efb_leg_get_bearing(leg).pointee)
         magneticCourse = Angle(efb_leg_get_mc(leg).pointee)
-        distance = Distance(efb_leg_get_dist(leg).pointee)
+        distance = Length(efb_leg_get_dist(leg).pointee)
 
         groundSpeed = efb_leg_get_gs(leg).map { (gs) -> Speed in
             Speed(gs.pointee)

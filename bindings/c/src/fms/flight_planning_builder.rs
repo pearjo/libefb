@@ -15,7 +15,8 @@
 
 use efb::fms::FlightPlanningBuilder;
 use efb::fp::{FuelPolicy, Performance, Reserve};
-use efb::{Fuel, FuelFlow, Mass, Speed, VerticalDistance};
+use efb::measurements::{Mass, Speed};
+use efb::{Fuel, FuelFlow, VerticalDistance};
 
 use super::AircraftBuilder;
 

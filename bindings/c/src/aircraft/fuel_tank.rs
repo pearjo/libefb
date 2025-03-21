@@ -14,16 +14,16 @@
 // limitations under the License.
 
 use efb::aircraft::FuelTank;
-use efb::{Distance, Volume};
+use efb::measurements::{Length, Volume};
 
 /// Returns the tanks arm in reference to the aircraft's datum.
 #[no_mangle]
-pub extern "C" fn efb_fuel_tank_arm(tank: &FuelTank) -> &Distance {
+pub extern "C" fn efb_fuel_tank_arm(tank: &FuelTank) -> &Length {
     &tank.arm
 }
 
 #[no_mangle]
-pub extern "C" fn efb_fuel_tank_set_arm(tank: &mut FuelTank, arm: Distance) {
+pub extern "C" fn efb_fuel_tank_set_arm(tank: &mut FuelTank, arm: Length) {
     tank.arm = arm
 }
 

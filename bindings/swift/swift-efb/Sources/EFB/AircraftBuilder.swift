@@ -26,7 +26,7 @@ public struct Station: Identifiable {
             .init(efb_station_arm(station).pointee)
         }
         set(newArm) {
-            efb_station_set_arm(station, EfbDistance(length: newArm))
+            efb_station_set_arm(station, EfbLength(length: newArm))
         }
     }
 
@@ -60,7 +60,7 @@ public struct FuelTank: Identifiable {
             .init(efb_fuel_tank_arm(tank).pointee)
         }
         set(newArm) {
-            efb_fuel_tank_set_arm(tank, EfbDistance(length: newArm))
+            efb_fuel_tank_set_arm(tank, EfbLength(length: newArm))
         }
     }
 
@@ -97,7 +97,7 @@ public struct CGLimit: Identifiable {
             .init(efb_cg_limit_distance(limit).pointee)
         }
         set(newDistance) {
-            efb_cg_limit_set_distance(limit, EfbDistance(length: newDistance))
+            efb_cg_limit_set_distance(limit, EfbLength(length: newDistance))
         }
     }
 
@@ -136,7 +136,7 @@ public class AircraftBuilder {
     public var emptyBalance: Measurement<UnitLength>? {
         didSet {
             if let distance = emptyBalance {
-                efb_aircraft_builder_empty_balance(builder, EfbDistance(length: distance))
+                efb_aircraft_builder_empty_balance(builder, EfbLength(length: distance))
             }
         }
     }
@@ -161,7 +161,7 @@ public class AircraftBuilder {
         Station(
             efb_aircraft_builder_stations_push(
                 builder,
-                EfbDistance(length: arm),
+                EfbLength(length: arm),
                 description
             )
         )
@@ -202,7 +202,7 @@ public class AircraftBuilder {
     {
         FuelTank(
             efb_aircraft_builder_tanks_push(
-                builder, EfbVolume(volume: capacity), EfbDistance(length: arm))
+                builder, EfbVolume(volume: capacity), EfbLength(length: arm))
         )
     }
 
@@ -235,7 +235,7 @@ public class AircraftBuilder {
             efb_aircraft_builder_cg_envelope_push(
                 builder,
                 EfbMass(mass: mass),
-                EfbDistance(length: distance)
+                EfbLength(length: distance)
             )
         )
     }

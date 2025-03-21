@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use efb::fp::MassAndBalance;
-use efb::{Distance, Mass};
+use efb::measurements::{Length, Mass};
 
 #[no_mangle]
 pub extern "C" fn efb_mass_and_balance_mass_on_ramp(mb: &MassAndBalance) -> &Mass {
@@ -27,11 +27,11 @@ pub extern "C" fn efb_mass_and_balance_mass_after_landing(mb: &MassAndBalance) -
 }
 
 #[no_mangle]
-pub extern "C" fn efb_mass_and_balance_balance_on_ramp(mb: &MassAndBalance) -> &Distance {
+pub extern "C" fn efb_mass_and_balance_balance_on_ramp(mb: &MassAndBalance) -> &Length {
     mb.balance_on_ramp()
 }
 
 #[no_mangle]
-pub extern "C" fn efb_mass_and_balance_balance_after_landing(mb: &MassAndBalance) -> &Distance {
+pub extern "C" fn efb_mass_and_balance_balance_after_landing(mb: &MassAndBalance) -> &Length {
     mb.balance_after_landing()
 }
