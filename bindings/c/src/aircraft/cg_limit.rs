@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use efb::aircraft::CGLimit;
-use efb::{Distance, Mass};
+use efb::measurements::{Length, Mass};
 
 /// Returns the limit's mass.
 #[no_mangle]
@@ -29,11 +29,11 @@ pub extern "C" fn efb_cg_limit_set_mass(limit: &mut CGLimit, mass: Mass) {
 
 /// Returns the limit's distance in reference to the aircraft's datum.
 #[no_mangle]
-pub extern "C" fn efb_cg_limit_distance(limit: &CGLimit) -> &Distance {
+pub extern "C" fn efb_cg_limit_distance(limit: &CGLimit) -> &Length {
     &limit.distance
 }
 
 #[no_mangle]
-pub extern "C" fn efb_cg_limit_set_distance(limit: &mut CGLimit, distance: Distance) {
+pub extern "C" fn efb_cg_limit_set_distance(limit: &mut CGLimit, distance: Length) {
     limit.distance = distance
 }

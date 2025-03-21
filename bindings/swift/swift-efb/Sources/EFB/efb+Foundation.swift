@@ -20,13 +20,13 @@ import efb
 
 extension Measurement<UnitLength> {
     init(_ efbDistance: EfbDistance) {
-        switch efbDistance.tag {
+        switch efbDistance.unit {
         case Meter:
-            self.init(value: Double(efbDistance.meter), unit: .meters)
+            self.init(value: Double(efbDistance.value), unit: .meters)
         case NauticalMiles:
-            self.init(value: Double(efbDistance.nautical_miles), unit: .nauticalMiles)
+            self.init(value: Double(efbDistance.value), unit: .nauticalMiles)
         default:
-            fatalError("init(_:) for \(efbDistance.tag) has not been implemented")
+            fatalError("init(_:) for \(efbDistance.unit) has not been implemented")
         }
     }
 }
@@ -48,11 +48,11 @@ extension EfbDistance {
 
 extension Measurement<UnitMass> {
     init(_ efbMass: EfbMass) {
-        switch efbMass.tag {
+        switch efbMass.unit {
         case Kilogram:
-            self.init(value: Double(efbMass.kilogram), unit: .kilograms)
+            self.init(value: Double(efbMass.value), unit: .kilograms)
         default:
-            fatalError("init(_:) for \(efbMass.tag) has not been implemented")
+            fatalError("init(_:) for \(efbMass.unit) has not been implemented")
         }
     }
 }
@@ -72,11 +72,11 @@ extension EfbMass {
 
 extension Measurement<UnitVolume> {
     init(_ efbVolume: EfbVolume) {
-        switch efbVolume.tag {
+        switch efbVolume.unit {
         case Liter:
-            self.init(value: Double(efbVolume.liter), unit: .liters)
+            self.init(value: Double(efbVolume.value), unit: .liters)
         default:
-            fatalError("init(_:) for \(efbVolume.tag) has not been implemented")
+            fatalError("init(_:) for \(efbVolume.unit) has not been implemented")
         }
     }
 }

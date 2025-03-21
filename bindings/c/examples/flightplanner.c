@@ -78,34 +78,34 @@ main(int argc, char *argv[]) {
 
   efb_aircraft_builder_registration(aircraft_builder, "N12345");
 
-  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(0.94),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_length_m(0.94),
                                      "front seats");
-  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(1.85),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_length_m(1.85),
                                      "back seats");
-  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(2.41),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_length_m(2.41),
                                      "first cargo compartment");
-  efb_aircraft_builder_stations_push(aircraft_builder, efb_distance_m(3.12),
+  efb_aircraft_builder_stations_push(aircraft_builder, efb_length_m(3.12),
                                      "second cargo compartment");
 
   efb_aircraft_builder_empty_mass(aircraft_builder, efb_mass_kg(807.0));
 
-  efb_aircraft_builder_empty_balance(aircraft_builder, efb_distance_m(1.0));
+  efb_aircraft_builder_empty_balance(aircraft_builder, efb_length_m(1.0));
 
   efb_aircraft_builder_fuel_type(aircraft_builder, Diesel);
 
   efb_aircraft_builder_tanks_push(aircraft_builder, efb_volume_l(168.8),
-                                  efb_distance_m(1.22));
+                                  efb_length_m(1.22));
 
   efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(0.0),
-                                        efb_distance_m(0.89));
+                                        efb_length_m(0.89));
   efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(885.0),
-                                        efb_distance_m(0.89));
+                                        efb_length_m(0.89));
   efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(1111.0),
-                                        efb_distance_m(1.02));
+                                        efb_length_m(1.02));
   efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(1111.0),
-                                        efb_distance_m(1.20));
+                                        efb_length_m(1.20));
   efb_aircraft_builder_cg_envelope_push(aircraft_builder, efb_mass_kg(0.0),
-                                        efb_distance_m(1.20));
+                                        efb_length_m(1.20));
 
   // Now we can enter some data into the flight planning to get a fuel planning
   // and mass & balance calculation.

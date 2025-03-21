@@ -21,6 +21,16 @@
 #include <stdlib.h>
 
 typedef enum {
+  TrueNorth,
+  MagneticNorth,
+  Radian,
+} EfbAngleUnit;
+
+typedef enum {
+  Seconds,
+} EfbDurationUnit;
+
+typedef enum {
   Diesel,
   JetA,
 } EfbFuelType;
@@ -29,6 +39,27 @@ typedef enum {
   Arinc424,
   OpenAir,
 } EfbInputFormat;
+
+typedef enum {
+  Meters,
+  NauticalMiles,
+  Inches,
+} EfbLengthUnit;
+
+typedef enum {
+  Kilograms,
+  Pounds,
+} EfbMassUnit;
+
+typedef enum {
+  MetersPerSecond,
+  Knots,
+  Mach,
+} EfbSpeedUnit;
+
+typedef enum {
+  Liter,
+} EfbVolumeUnit;
 
 typedef struct EfbAircraftBuilder EfbAircraftBuilder;
 
@@ -93,92 +124,40 @@ typedef struct EfbPerformanceTableRow EfbPerformanceTableRow;
 /// [`Aircraft`]: crate::fp::Aircraft
 typedef struct EfbStation EfbStation;
 
-/// An angle in the range from 0° to 360°.
-///
-/// An angle in degree as [`i16`] or in radians as [`f32`] can be converted into
-/// an Angle and it's value will be wrapped into the range from 0° to 360°.
-///
-/// ```
-/// use efb::Angle;
-/// let west: Angle = (-90).into();
-/// assert_eq!(west.as_degrees(), 270);
-/// ```
-typedef enum {
-  TrueNorth,
-  MagneticNorth,
-} EfbAngle_Tag;
+typedef struct {
+  float value;
+  EfbAngleUnit unit;
+} EfbMeasurementf32AngleUnit;
+
+typedef EfbMeasurementf32AngleUnit EfbAngle;
 
 typedef struct {
-  EfbAngle_Tag tag;
-  union {
-    struct {
-      float true_north;
-    };
-    struct {
-      float magnetic_north;
-    };
-  };
-} EfbAngle;
+  float value;
+  EfbLengthUnit unit;
+} EfbMeasurementf32LengthUnit;
 
-/// A metrical or nautical distance.
-typedef enum {
-  Meter,
-  NauticalMiles,
-} EfbDistance_Tag;
+typedef EfbMeasurementf32LengthUnit EfbLength;
 
 typedef struct {
-  EfbDistance_Tag tag;
-  union {
-    struct {
-      float meter;
-    };
-    struct {
-      float nautical_miles;
-    };
-  };
-} EfbDistance;
+  uint32_t value;
+  EfbDurationUnit unit;
+} EfbMeasurementu32DurationUnit;
 
-/// A duration measured in hours, minutes and seconds.
-typedef struct {
-  uint8_t hours;
-  uint8_t minutes;
-  uint8_t seconds;
-} EfbDuration;
-
-typedef enum {
-  Kilogram,
-} EfbMass_Tag;
+typedef EfbMeasurementu32DurationUnit EfbDuration;
 
 typedef struct {
-  EfbMass_Tag tag;
-  union {
-    struct {
-      float kilogram;
-    };
-  };
-} EfbMass;
+  float value;
+  EfbMassUnit unit;
+} EfbMeasurementf32MassUnit;
 
-/// The speed in either nautical or metrical units.
-typedef enum {
-  Knots,
-  MeterPerSecond,
-  Mach,
-} EfbSpeed_Tag;
+typedef EfbMeasurementf32MassUnit EfbMass;
 
 typedef struct {
-  EfbSpeed_Tag tag;
-  union {
-    struct {
-      float knots;
-    };
-    struct {
-      float meter_per_second;
-    };
-    struct {
-      float mach;
-    };
-  };
-} EfbSpeed;
+  float value;
+  EfbSpeedUnit unit;
+} EfbMeasurementf32SpeedUnit;
+
+typedef EfbMeasurementf32SpeedUnit EfbSpeed;
 
 /// The wind with a speed and direction
 typedef struct {
@@ -240,18 +219,12 @@ typedef struct {
   };
 } EfbVerticalDistance;
 
-typedef enum {
-  Liter,
-} EfbVolume_Tag;
-
 typedef struct {
-  EfbVolume_Tag tag;
-  union {
-    struct {
-      float liter;
-    };
-  };
-} EfbVolume;
+  float value;
+  EfbVolumeUnit unit;
+} EfbMeasurementf32VolumeUnit;
+
+typedef EfbMeasurementf32VolumeUnit EfbVolume;
 
 typedef enum {
   MinimumFuel,
@@ -319,13 +292,13 @@ efb_string_free(char *s);
 char *
 efb_angle_to_string(const EfbAngle *angle);
 
-/// Returns the distance formatted as string.
+/// Returns the length formatted as string.
 ///
 /// # Safety
 ///
 /// The returned string needs to be freed by [`efb_string_free`].
 char *
-efb_distance_to_string(const EfbDistance *distance);
+efb_length_to_string(const EfbLength *length);
 
 /// Returns the duration formatted as string.
 ///
@@ -367,17 +340,29 @@ efb_angle_true_north(float radians);
 EfbAngle
 efb_angle_magnetic_north(float radians);
 
-/// Returns a distance in meter.
-EfbDistance
-efb_distance_m(float m);
+/// Returns a length in meter.
+EfbLength
+efb_length_m(float m);
 
-/// Returns a distance in nautical miles.
-EfbDistance
-efb_distance_nm(float nm);
+/// Returns a length in nautical miles.
+EfbLength
+efb_length_nm(float nm);
 
 /// Returns the seconds `s` as duration.
 EfbDuration
 efb_duration(uint32_t s);
+
+/// Returns the hours of the duration.
+uint32_t
+efb_duration_hours(const EfbDuration *duration);
+
+/// Returns the minutes of the duration.
+uint32_t
+efb_duration_minutes(const EfbDuration *duration);
+
+/// Returns the seconds of the duration.
+uint32_t
+efb_duration_seconds(const EfbDuration *duration);
 
 /// Returns `l` liter of Diesel.
 EfbFuel
@@ -449,18 +434,18 @@ void
 efb_cg_limit_set_mass(EfbCGLimit *limit, EfbMass mass);
 
 /// Returns the limit's distance in reference to the aircraft's datum.
-const EfbDistance *
+const EfbLength *
 efb_cg_limit_distance(const EfbCGLimit *limit);
 
 void
-efb_cg_limit_set_distance(EfbCGLimit *limit, EfbDistance distance);
+efb_cg_limit_set_distance(EfbCGLimit *limit, EfbLength distance);
 
 /// Returns the tanks arm in reference to the aircraft's datum.
-const EfbDistance *
+const EfbLength *
 efb_fuel_tank_arm(const EfbFuelTank *tank);
 
 void
-efb_fuel_tank_set_arm(EfbFuelTank *tank, EfbDistance arm);
+efb_fuel_tank_set_arm(EfbFuelTank *tank, EfbLength arm);
 
 /// Returns the tanks capacity.
 const EfbVolume *
@@ -470,11 +455,11 @@ void
 efb_fuel_tank_set_capacity(EfbFuelTank *tank, EfbVolume capacity);
 
 /// Returns the stations arm in reference to the aircraft's datum.
-const EfbDistance *
+const EfbLength *
 efb_station_arm(const EfbStation *station);
 
 void
-efb_station_set_arm(EfbStation *station, EfbDistance arm);
+efb_station_set_arm(EfbStation *station, EfbLength arm);
 
 /// Returns the stations description or null if undefined.
 ///
@@ -580,7 +565,7 @@ efb_aircraft_builder_registration(EfbAircraftBuilder *builder,
 
 /// Pushes a new station to the stations and returns it.
 const EfbStation *
-efb_aircraft_builder_stations_push(EfbAircraftBuilder *builder, EfbDistance arm,
+efb_aircraft_builder_stations_push(EfbAircraftBuilder *builder, EfbLength arm,
                                    const char *description);
 
 void
@@ -612,7 +597,7 @@ efb_aircraft_builder_empty_mass(EfbAircraftBuilder *builder, EfbMass mass);
 
 void
 efb_aircraft_builder_empty_balance(EfbAircraftBuilder *builder,
-                                   EfbDistance distance);
+                                   EfbLength distance);
 
 void
 efb_aircraft_builder_fuel_type(EfbAircraftBuilder *builder,
@@ -621,7 +606,7 @@ efb_aircraft_builder_fuel_type(EfbAircraftBuilder *builder,
 /// Pushes a new tank to the tanks and returns it.
 const EfbFuelTank *
 efb_aircraft_builder_tanks_push(EfbAircraftBuilder *builder, EfbVolume capacity,
-                                EfbDistance arm);
+                                EfbLength arm);
 
 void
 efb_aircraft_builder_tanks_remove(EfbAircraftBuilder *builder, size_t at);
@@ -649,7 +634,7 @@ efb_aircraft_builder_tanks_next(EfbAircraftBuilder *builder);
 /// limit.
 const EfbCGLimit *
 efb_aircraft_builder_cg_envelope_push(EfbAircraftBuilder *builder, EfbMass mass,
-                                      EfbDistance distance);
+                                      EfbLength distance);
 
 void
 efb_aircraft_builder_cg_envelope_remove(EfbAircraftBuilder *builder, size_t at);
@@ -771,10 +756,10 @@ efb_mass_and_balance_mass_on_ramp(const EfbMassAndBalance *mb);
 const EfbMass *
 efb_mass_and_balance_mass_after_landing(const EfbMassAndBalance *mb);
 
-const EfbDistance *
+const EfbLength *
 efb_mass_and_balance_balance_on_ramp(const EfbMassAndBalance *mb);
 
-const EfbDistance *
+const EfbLength *
 efb_mass_and_balance_balance_after_landing(const EfbMassAndBalance *mb);
 
 /// Returns a new performance table
@@ -831,10 +816,10 @@ efb_performance_table_row_ff(const EfbPerformanceTableRow *row);
 void
 efb_performance_table_row_set_ff(EfbPerformanceTableRow *row, EfbFuelFlow ff);
 
-/// Returns the routes total distance.
+/// Returns the routes total length.
 ///
 /// If the route has no legs, a NULL pointer is returned.
-const EfbDistance *
+const EfbLength *
 efb_route_dist(EfbRoute *route);
 
 /// Returns the estimated time enroute.
@@ -900,7 +885,7 @@ const EfbAngle *
 efb_leg_get_mc(const EfbLeg *leg);
 
 /// Returns the distance between the leg's two points.
-const EfbDistance *
+const EfbLength *
 efb_leg_get_dist(const EfbLeg *leg);
 
 /// Returns the ground speed in knots or null if unknown.

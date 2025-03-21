@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use efb::measurements::{Duration, Length};
 use efb::route::{Leg, Route};
-use efb::{Distance, Duration};
 
 mod leg;
 
@@ -37,7 +37,7 @@ pub struct EfbRoute<'a> {
     inner: &'a mut Route,
     legs: Option<Legs<'a>>,
     // TODO: Rework the Route to avoid this additional wrapping.
-    dist: Option<Distance>,
+    dist: Option<Length>,
     ete: Option<Duration>,
 }
 
@@ -77,11 +77,11 @@ impl<'a> Iterator for Legs<'a> {
     }
 }
 
-/// Returns the routes total distance.
+/// Returns the routes total length.
 ///
 /// If the route has no legs, a NULL pointer is returned.
 #[no_mangle]
-pub extern "C" fn efb_route_dist<'a>(route: &'a mut EfbRoute) -> Option<&'a Distance> {
+pub extern "C" fn efb_route_dist<'a>(route: &'a mut EfbRoute) -> Option<&'a Length> {
     let _ = route.dist.take();
 
     if let Some(dist) = route.inner.dist() {

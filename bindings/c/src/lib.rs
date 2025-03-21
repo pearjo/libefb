@@ -27,10 +27,8 @@ use std::ffi::{c_char, CString};
 use std::string::ToString;
 
 use efb::diesel;
-use efb::{
-    Angle, Distance, Duration, Fuel, FuelFlow, FuelType, Mass, Speed, VerticalDistance, Volume,
-    Wind,
-};
+use efb::measurements::{Angle, Duration, Length, Mass, Speed, Volume};
+use efb::{Fuel, FuelFlow, FuelType, VerticalDistance, Wind};
 
 /// Returns the value as C string if [`ToString`] is implemented.
 fn to_string<T>(value: *const T) -> *mut c_char
@@ -71,14 +69,14 @@ pub unsafe extern "C" fn efb_angle_to_string(angle: *const Angle) -> *mut c_char
     to_string(angle)
 }
 
-/// Returns the distance formatted as string.
+/// Returns the length formatted as string.
 ///
 /// # Safety
 ///
 /// The returned string needs to be freed by [`efb_string_free`].
 #[no_mangle]
-pub unsafe extern "C" fn efb_distance_to_string(distance: *const Distance) -> *mut c_char {
-    to_string(distance)
+pub unsafe extern "C" fn efb_length_to_string(length: *const Length) -> *mut c_char {
+    to_string(length)
 }
 
 /// Returns the duration formatted as string.
@@ -124,37 +122,55 @@ pub unsafe extern "C" fn efb_speed_to_string(speed: *const Speed) -> *mut c_char
 /// Returns an angle with reference to true north.
 #[no_mangle]
 pub extern "C" fn efb_angle_true_north(radians: f32) -> Angle {
-    Angle::TrueNorth(radians)
+    Angle::t(radians)
 }
 
 /// Returns an angle with reference to magnetic north.
 #[no_mangle]
 pub extern "C" fn efb_angle_magnetic_north(radians: f32) -> Angle {
-    Angle::MagneticNorth(radians)
+    Angle::m(radians)
 }
 
-/// Returns a distance in meter.
+/// Returns a length in meter.
 #[no_mangle]
-pub extern "C" fn efb_distance_m(m: f32) -> Distance {
-    Distance::Meter(m)
+pub extern "C" fn efb_length_m(m: f32) -> Length {
+    Length::m(m)
 }
 
-/// Returns a distance in nautical miles.
+/// Returns a length in nautical miles.
 #[no_mangle]
-pub extern "C" fn efb_distance_nm(nm: f32) -> Distance {
-    Distance::NauticalMiles(nm)
+pub extern "C" fn efb_length_nm(nm: f32) -> Length {
+    Length::nm(nm)
 }
 
 /// Returns the seconds `s` as duration.
 #[no_mangle]
 pub extern "C" fn efb_duration(s: u32) -> Duration {
-    Duration::from(s)
+    Duration::s(s)
+}
+
+/// Returns the hours of the duration.
+#[no_mangle]
+pub extern "C" fn efb_duration_hours(duration: &Duration) -> u32 {
+    duration.hours()
+}
+
+/// Returns the minutes of the duration.
+#[no_mangle]
+pub extern "C" fn efb_duration_minutes(duration: &Duration) -> u32 {
+    duration.minutes()
+}
+
+/// Returns the seconds of the duration.
+#[no_mangle]
+pub extern "C" fn efb_duration_seconds(duration: &Duration) -> u32 {
+    duration.seconds()
 }
 
 /// Returns `l` liter of Diesel.
 #[no_mangle]
 pub extern "C" fn efb_fuel_diesel_l(l: f32) -> Fuel {
-    diesel!(Volume::Liter(l))
+    diesel!(Volume::l(l))
 }
 
 /// Returns a fuel flow of `fuel` per hour.
@@ -166,25 +182,25 @@ pub extern "C" fn efb_fuel_flow_per_hour(fuel: Fuel) -> FuelFlow {
 /// Returns a mass in kilogram.
 #[no_mangle]
 pub extern "C" fn efb_mass_kg(kg: f32) -> Mass {
-    Mass::Kilogram(kg)
+    Mass::kg(kg)
 }
 
 /// Returns a speed in knots.
 #[no_mangle]
 pub extern "C" fn efb_speed_knots(kt: f32) -> Speed {
-    Speed::Knots(kt)
+    Speed::kt(kt)
 }
 
 /// Returns a speed in m/s.
 #[no_mangle]
 pub extern "C" fn efb_speed_mps(mps: f32) -> Speed {
-    Speed::MeterPerSecond(mps)
+    Speed::mps(mps)
 }
 
 /// Returns a speed in mach.
 #[no_mangle]
 pub extern "C" fn efb_speed_mach(mach: f32) -> Speed {
-    Speed::Mach(mach)
+    Speed::mach(mach)
 }
 
 /// Returns true if `a == b`.
@@ -232,5 +248,5 @@ pub extern "C" fn efb_vertical_distance_altitude(ft: u16) -> VerticalDistance {
 /// Returns a volume in liter.
 #[no_mangle]
 pub extern "C" fn efb_volume_l(l: f32) -> Volume {
-    Volume::Liter(l)
+    Volume::l(l)
 }

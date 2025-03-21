@@ -17,16 +17,16 @@ use std::ffi::{c_char, CStr, CString};
 use std::ptr::null_mut;
 
 use efb::aircraft::Station;
-use efb::Distance;
+use efb::measurements::Length;
 
 /// Returns the stations arm in reference to the aircraft's datum.
 #[no_mangle]
-pub extern "C" fn efb_station_arm(station: &Station) -> &Distance {
+pub extern "C" fn efb_station_arm(station: &Station) -> &Length {
     &station.arm
 }
 
 #[no_mangle]
-pub extern "C" fn efb_station_set_arm(station: &mut Station, arm: Distance) {
+pub extern "C" fn efb_station_set_arm(station: &mut Station, arm: Length) {
     station.arm = arm
 }
 
