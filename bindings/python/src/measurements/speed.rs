@@ -15,7 +15,7 @@
 
 use pyo3::prelude::*;
 
-use efb::Speed;
+use efb::measurements::Speed;
 
 #[pyclass(module = "efb", name = "Speed", subclass, frozen)]
 #[derive(Clone)]
@@ -49,7 +49,7 @@ impl PyKnots {
         (
             Self {},
             PySpeed {
-                speed: Speed::Knots(kt),
+                speed: Speed::kt(kt),
             },
         )
     }
@@ -68,7 +68,7 @@ impl PyMeterPerSecond {
         (
             Self {},
             PySpeed {
-                speed: Speed::MeterPerSecond(mps),
+                speed: Speed::mps(mps),
             },
         )
     }
@@ -87,7 +87,7 @@ impl PyMach {
         (
             Self {},
             PySpeed {
-                speed: Speed::Mach(mach),
+                speed: Speed::mach(mach),
             },
         )
     }

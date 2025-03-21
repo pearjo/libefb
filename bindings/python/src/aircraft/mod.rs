@@ -17,7 +17,8 @@ use pyo3::prelude::*;
 
 use efb::aircraft::Aircraft;
 
-use crate::core::{PyDistance, PyFuelType, PyMass};
+use crate::core::PyFuelType;
+use crate::measurements::{PyLength, PyMass};
 
 mod cg_envelope;
 use cg_envelope::*;
@@ -56,7 +57,7 @@ impl PyAircraft {
         registration: String,
         stations: Vec<PyStation>,
         empty_mass: PyMass,
-        empty_balance: PyDistance,
+        empty_balance: PyLength,
         fuel_type: PyFuelType,
         tanks: Vec<PyFuelTank>,
         cg_envelope: PyCGEnvelope,

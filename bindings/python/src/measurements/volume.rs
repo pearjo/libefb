@@ -15,41 +15,41 @@
 
 use pyo3::prelude::*;
 
-use efb::Mass;
+use efb::measurements::Volume;
 
-#[pyclass(module = "efb", name = "Mass", subclass, frozen)]
+#[pyclass(module = "efb", name = "Volume", subclass, frozen)]
 #[derive(Clone)]
-pub struct PyMass {
-    mass: Mass,
+pub struct PyVolume {
+    volume: Volume,
 }
 
-impl From<PyMass> for Mass {
-    fn from(mass: PyMass) -> Self {
-        mass.mass
+impl From<PyVolume> for Volume {
+    fn from(volume: PyVolume) -> Self {
+        volume.volume
     }
 }
 
 #[pymethods]
-impl PyMass {
+impl PyVolume {
     fn __repr__(&self) -> PyResult<String> {
-        PyResult::Ok(format!("{}", self.mass))
+        Ok(format!("{}", self.volume))
     }
 }
 
-/// Mass in kilogram.
+/// Volume in liter.
 ///
-/// :param float kg: The mass in kilogram.
-#[pyclass(module = "efb", name = "Kilogram", extends = PyMass)]
-pub struct PyKilogram;
+/// :param float l: The volume in liter.
+#[pyclass(module = "efb", name = "Liter", extends = PyVolume)]
+pub struct PyLiter;
 
 #[pymethods]
-impl PyKilogram {
+impl PyLiter {
     #[new]
-    pub fn new(kg: f32) -> (Self, PyMass) {
+    fn new(l: f32) -> (Self, PyVolume) {
         (
             Self {},
-            PyMass {
-                mass: Mass::Kilogram(kg),
+            PyVolume {
+                volume: Volume::l(l),
             },
         )
     }

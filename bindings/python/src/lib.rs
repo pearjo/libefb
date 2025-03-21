@@ -27,11 +27,15 @@ use fp::register_fp_module;
 mod fms;
 use fms::register_fms_module;
 
+mod measurements;
+use measurements::register_measurements_module;
+
 #[pymodule]
 fn efb(m: &Bound<'_, PyModule>) -> PyResult<()> {
     register_core_module(m)?;
     register_fms_module(m)?;
     register_aircraft_module(m)?;
     register_fp_module(m)?;
+    register_measurements_module(m)?;
     Ok(())
 }

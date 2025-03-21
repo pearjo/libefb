@@ -17,7 +17,7 @@ use pyo3::prelude::*;
 
 use efb::{Fuel, FuelFlow, FuelType};
 
-use super::{PyMass, PyVolume};
+use crate::measurements::{PyMass, PyVolume};
 
 /// The type of fuel.
 #[pyclass(module = "efb", name = "FuelType", eq, eq_int)]

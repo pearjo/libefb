@@ -18,8 +18,9 @@ use pyo3::prelude::*;
 use efb::fms::FlightPlanningBuilder;
 
 use crate::aircraft::PyAircraft;
-use crate::core::{PyFuel, PyMass};
+use crate::core::PyFuel;
 use crate::fp::{PyFuelPolicy, PyPerformance, PyReserve};
+use crate::measurements::PyMass;
 
 /// :param Aircraft aircraft:
 /// :param Mass mass:

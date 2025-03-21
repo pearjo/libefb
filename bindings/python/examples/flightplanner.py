@@ -62,7 +62,7 @@ flight_planning = FlightPlanningBuilder(
     # for taxiing we add a buffer and plan with 10 liters
     taxi=Diesel(Liter(10)),
     # we want a fuel reserve of 30 minutes
-    reserve=ManualReserve(Duration(0, 30, 0)),
+    reserve=ManualReserve(Duration(1800)),
     perf=Performance([
         # this is a very incomplete performance table
         (Altitude(1000), Knots(107), PerHour(Diesel(Liter(21))))

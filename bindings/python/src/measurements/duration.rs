@@ -15,12 +15,10 @@
 
 use pyo3::prelude::*;
 
-use efb::Duration;
+use efb::measurements::Duration;
 
 /// A time duration.
 ///
-/// :param int hours:
-/// :param int minutes:
 /// :param int seconds:
 #[pyclass(module = "efb", name = "Duration", frozen)]
 #[derive(Clone)]
@@ -37,13 +35,27 @@ impl From<PyDuration> for Duration {
 #[pymethods]
 impl PyDuration {
     #[new]
-    pub fn new(hours: u8, minutes: u8, seconds: u8) -> Self {
+    pub fn new(seconds: u32) -> Self {
         Self {
-            duration: efb::Duration {
-                hours,
-                minutes,
-                seconds,
-            },
+            duration: Duration::s(seconds),
+        }
+    }
+
+    pub fn hours(&self) -> u32 {
+        self.duration.hours()
+    }
+
+    pub fn minutes(&self) -> u32 {
+        self.duration.minutes()
+    }
+
+    pub fn seconds(&self) -> u32 {
+        self.duration.seconds()
+    }
+
+    pub fn round(&self) -> Self {
+        Self {
+            duration: self.duration.round(),
         }
     }
 
