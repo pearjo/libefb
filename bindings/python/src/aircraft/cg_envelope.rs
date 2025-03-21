@@ -17,10 +17,10 @@ use pyo3::prelude::*;
 
 use efb::aircraft::{CGEnvelope, CGLimit};
 
-use crate::core::{PyDistance, PyMass};
+use crate::measurements::{PyLength, PyMass};
 
 #[derive(FromPyObject)]
-pub struct PyCGLimit(PyMass, PyDistance);
+pub struct PyCGLimit(PyMass, PyLength);
 
 /// A Center of Gravity (CG) envelope.
 ///

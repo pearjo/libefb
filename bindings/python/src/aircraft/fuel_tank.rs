@@ -17,7 +17,7 @@ use pyo3::prelude::*;
 
 use efb::aircraft::FuelTank;
 
-use crate::core::{PyDistance, PyVolume};
+use crate::measurements::{PyLength, PyVolume};
 
 /// An aircraft's fuel tank.
 ///
@@ -38,7 +38,7 @@ impl From<PyFuelTank> for FuelTank {
 #[pymethods]
 impl PyFuelTank {
     #[new]
-    pub fn new(capacity: PyVolume, arm: PyDistance) -> Self {
+    pub fn new(capacity: PyVolume, arm: PyLength) -> Self {
         Self {
             tank: FuelTank {
                 capacity: capacity.into(),
