@@ -17,7 +17,7 @@ use pyo3::prelude::*;
 
 use efb::aircraft::Station;
 
-use crate::core::PyDistance;
+use crate::measurements::PyLength;
 
 /// A station that can be loaded with payload.
 ///
@@ -39,7 +39,7 @@ impl From<PyStation> for Station {
 impl PyStation {
     #[new]
     #[pyo3(signature = (arm, description=None))]
-    pub fn new(arm: PyDistance, description: Option<String>) -> Self {
+    pub fn new(arm: PyLength, description: Option<String>) -> Self {
         Self {
             station: Station {
                 arm: arm.into(),

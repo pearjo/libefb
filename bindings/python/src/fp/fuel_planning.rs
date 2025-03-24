@@ -17,7 +17,8 @@ use pyo3::prelude::*;
 
 use efb::fp::{FuelPolicy, Reserve};
 
-use crate::core::{PyDuration, PyFuel};
+use crate::core::PyFuel;
+use crate::measurements::PyDuration;
 
 #[pyclass(module = "efb", name = "FuelPolicy", subclass)]
 #[derive(Clone)]

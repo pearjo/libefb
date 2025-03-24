@@ -14,7 +14,8 @@
 // limitations under the License.
 
 use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
-use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
+use efb::measurements::{Length, Mass, Volume};
+use efb::{diesel, Fuel, FuelType};
 
 /// Returns the an aircraft we use for the tests.
 fn aircraft() -> Aircraft {
@@ -22,54 +23,54 @@ fn aircraft() -> Aircraft {
         registration: String::from("N12345"),
         stations: vec![
             Station {
-                arm: Distance::Meter(1.0),
+                arm: Length::m(1.0),
                 description: None,
             },
             Station {
-                arm: Distance::Meter(2.0),
+                arm: Length::m(2.0),
                 description: None,
             },
         ],
-        empty_mass: Mass::Kilogram(800.0),
-        empty_balance: Distance::Meter(1.0),
+        empty_mass: Mass::kg(800.0),
+        empty_balance: Length::m(1.0),
         fuel_type: FuelType::Diesel,
         tanks: vec![
             // To spice things up, lets test with two tanks in the wings
             // configured as separate tanks and an additional tank in the
             // aft cargo compartment.
             FuelTank {
-                capacity: Volume::Liter(50.0),
-                arm: Distance::Meter(1.0),
+                capacity: Volume::l(50.0),
+                arm: Length::m(1.0),
             },
             FuelTank {
-                capacity: Volume::Liter(50.0),
-                arm: Distance::Meter(1.0),
+                capacity: Volume::l(50.0),
+                arm: Length::m(1.0),
             },
             FuelTank {
-                capacity: Volume::Liter(20.0),
-                arm: Distance::Meter(1.5),
+                capacity: Volume::l(20.0),
+                arm: Length::m(1.5),
             },
         ],
         cg_envelope: CGEnvelope::new(vec![
             CGLimit {
-                mass: Mass::Kilogram(0.0),
-                distance: Distance::Meter(1.0),
+                mass: Mass::kg(0.0),
+                distance: Length::m(1.0),
             },
             CGLimit {
-                mass: Mass::Kilogram(800.0),
-                distance: Distance::Meter(1.0),
+                mass: Mass::kg(800.0),
+                distance: Length::m(1.0),
             },
             CGLimit {
-                mass: Mass::Kilogram(1000.0),
-                distance: Distance::Meter(1.0),
+                mass: Mass::kg(1000.0),
+                distance: Length::m(1.0),
             },
             CGLimit {
-                mass: Mass::Kilogram(1000.0),
-                distance: Distance::Meter(1.5),
+                mass: Mass::kg(1000.0),
+                distance: Length::m(1.5),
             },
             CGLimit {
-                mass: Mass::Kilogram(0.0),
-                distance: Distance::Meter(1.5),
+                mass: Mass::kg(0.0),
+                distance: Length::m(1.5),
             },
         ]),
         notes: None,
@@ -85,22 +86,22 @@ fn mb_matches_mass_and_fuel() {
     let mb = ac
         .mb(
             // On ramp we have a pilot in the front and a PAX in the back.
-            &vec![Mass::Kilogram(80.0), Mass::Kilogram(80.0)],
+            &vec![Mass::kg(80.0), Mass::kg(80.0)],
             // The PAX was a sky diver and jumped out during the flight.
-            &vec![Mass::Kilogram(80.0), Mass::Kilogram(0.0)],
+            &vec![Mass::kg(80.0), Mass::kg(0.0)],
             // We departed with 40 liter of Diesel distributed between the first
             // two tanks.
             &vec![
-                diesel!(Volume::Liter(20.0)),
-                diesel!(Volume::Liter(20.0)),
-                diesel!(Volume::Liter(0.0)),
+                diesel!(Volume::l(20.0)),
+                diesel!(Volume::l(20.0)),
+                diesel!(Volume::l(0.0)),
             ],
             // Our PAX was so kind and did a pretty stunt by air refueling our
             // aircraft mid flight.
             &vec![
-                diesel!(Volume::Liter(40.0)),
-                diesel!(Volume::Liter(40.0)),
-                diesel!(Volume::Liter(10.0)),
+                diesel!(Volume::l(40.0)),
+                diesel!(Volume::l(40.0)),
+                diesel!(Volume::l(10.0)),
             ],
         )
         .unwrap();
@@ -110,7 +111,7 @@ fn mb_matches_mass_and_fuel() {
     // - 160 kg for pilot and PAX
     // - 33.52 kg of Diesel
     // This gives a total of 993.52 kg on ramp.
-    assert_eq!(mb.mass_on_ramp(), &Mass::Kilogram(993.52));
+    assert_eq!(mb.mass_on_ramp(), &Mass::kg(993.52));
 
     // We have the following masses after landing:
     // - 800 kg (empty mass)
@@ -118,7 +119,7 @@ fn mb_matches_mass_and_fuel() {
     // - 75.42 kg (Diesel)
     // This gives a total of 955.42 kg on ramp.
     // TODO check why we get 955.42004 and not 955.42
-    assert_eq!(mb.mass_after_landing(), &Mass::Kilogram(955.42004));
+    assert_eq!(mb.mass_after_landing(), &Mass::kg(955.42004));
 
     // We have the following moment on ramp:
     // - 800 kg * 1 m = 800 kg m (empty aircraft)
@@ -127,7 +128,7 @@ fn mb_matches_mass_and_fuel() {
     // - 33.52 kg * 1 m = 33.52 kg m (Diesel)
     // The sum of moment is 1073.52 kg m divided by the total mass returns
     // us a balance on ramp of 1.0805218 m.
-    assert_eq!(mb.balance_on_ramp(), &Distance::Meter(1.0805218));
+    assert_eq!(mb.balance_on_ramp(), &Length::m(1.0805218));
 
     // We have the following moment after landing:
     // - 800 kg * 1 m = 800 kg m (empty aircraft)
@@ -136,7 +137,7 @@ fn mb_matches_mass_and_fuel() {
     // - 8.38 kg * 1.5 m = 12.57 kg m (Diesel third tank)
     // The sum of moment is 959.61 kg m divided by the total mass returns
     // us a balance after landing of 1.0043855 m.
-    assert_eq!(mb.balance_after_landing(), &Distance::Meter(1.0043855));
+    assert_eq!(mb.balance_after_landing(), &Length::m(1.0043855));
 
     assert!(ac.is_balanced(&mb));
 }
@@ -150,12 +151,12 @@ fn mb_fuel_is_distributed_equally() {
     let _mb = ac
         .mb_from_const_mass_and_equally_distributed_fuel(
             // On ramp we have a pilot in the front and a PAX in the back.
-            &vec![Mass::Kilogram(80.0), Mass::Kilogram(80.0)],
+            &vec![Mass::kg(80.0), Mass::kg(80.0)],
             // We departed with 60 liter of Diesel distributed between all
             // tanks
-            &diesel!(Volume::Liter(60.0)),
+            &diesel!(Volume::l(60.0)),
             // and burned 30 Liter that were drawn from all tanks equally.
-            &diesel!(Volume::Liter(30.0)),
+            &diesel!(Volume::l(30.0)),
         )
         .unwrap();
 }
@@ -166,18 +167,18 @@ fn mb_for_exceeded_fuel_capacity_on_ramp() {
     let ac = aircraft();
 
     ac.mb(
-        &vec![Mass::Kilogram(0.0), Mass::Kilogram(0.0)],
-        &vec![Mass::Kilogram(0.0), Mass::Kilogram(0.0)],
+        &vec![Mass::kg(0.0), Mass::kg(0.0)],
+        &vec![Mass::kg(0.0), Mass::kg(0.0)],
         // Ooops... We have a type and tried to plan with 400 liter.
         &vec![
-            diesel!(Volume::Liter(200.0)),
-            diesel!(Volume::Liter(200.0)),
-            diesel!(Volume::Liter(0.0)),
+            diesel!(Volume::l(200.0)),
+            diesel!(Volume::l(200.0)),
+            diesel!(Volume::l(0.0)),
         ],
         &vec![
-            diesel!(Volume::Liter(0.0)),
-            diesel!(Volume::Liter(0.0)),
-            diesel!(Volume::Liter(0.0)),
+            diesel!(Volume::l(0.0)),
+            diesel!(Volume::l(0.0)),
+            diesel!(Volume::l(0.0)),
         ],
     )
     .unwrap();
@@ -189,18 +190,18 @@ fn mb_for_exceeded_fuel_capacity_after_landing() {
     let ac = aircraft();
 
     ac.mb(
-        &vec![Mass::Kilogram(0.0), Mass::Kilogram(0.0)],
-        &vec![Mass::Kilogram(0.0), Mass::Kilogram(0.0)],
+        &vec![Mass::kg(0.0), Mass::kg(0.0)],
+        &vec![Mass::kg(0.0), Mass::kg(0.0)],
         &vec![
-            diesel!(Volume::Liter(0.0)),
-            diesel!(Volume::Liter(0.0)),
-            diesel!(Volume::Liter(0.0)),
+            diesel!(Volume::l(0.0)),
+            diesel!(Volume::l(0.0)),
+            diesel!(Volume::l(0.0)),
         ],
         // Ooops... We have a type and tried to land with 400 liter.
         &vec![
-            diesel!(Volume::Liter(200.0)),
-            diesel!(Volume::Liter(200.0)),
-            diesel!(Volume::Liter(0.0)),
+            diesel!(Volume::l(200.0)),
+            diesel!(Volume::l(200.0)),
+            diesel!(Volume::l(0.0)),
         ],
     )
     .unwrap();

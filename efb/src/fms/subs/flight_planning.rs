@@ -17,8 +17,9 @@
 use crate::aircraft::Aircraft;
 use crate::error::Error;
 use crate::fp::*;
+use crate::measurements::Mass;
 use crate::route::Route;
-use crate::{Fuel, Mass};
+use crate::Fuel;
 
 use super::{SubSystem, SubSystemBuilder};
 
@@ -120,8 +121,8 @@ impl SubSystemBuilder for FlightPlanningBuilder {
             (Some(aircraft), Some(mass), Some(fuel_planning)) => {
                 Some(aircraft.mb_from_const_mass_and_equally_distributed_fuel(
                     mass,
-                    &fuel_planning.on_ramp(),
-                    &fuel_planning.after_landing(),
+                    fuel_planning.on_ramp(),
+                    fuel_planning.after_landing(),
                 )?)
             }
             _ => None,

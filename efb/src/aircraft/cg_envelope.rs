@@ -15,12 +15,12 @@
 
 use crate::algorithm;
 use crate::fp::MassAndBalance;
-use crate::{Distance, Mass, Unit};
+use crate::measurements::{Length, Mass};
 
 #[derive(Clone, Debug)]
 pub struct CGLimit {
     pub mass: Mass,
-    pub distance: Distance,
+    pub distance: Length,
 }
 
 /// An aircraft's center of gravity (CG) envelope.
@@ -31,13 +31,13 @@ pub struct CGLimit {
 ///
 /// # Examples
 ///
-/// ```
-/// use efb::{Mass, Distance};
-/// use efb::aircraft::{CGEnvelope, CGLimit, LoadedStation, Station};
-/// use efb::fp::MassAndBalance;
+/// This is how an envelope of a Cessna 172 might look like:
 ///
-/// // This is how an envelope of a C172 might look like:
-/// //
+/// ```
+/// # use efb::measurements::{Mass, Length};
+/// # use efb::aircraft::{CGEnvelope, CGLimit, LoadedStation, Station};
+/// # use efb::fp::MassAndBalance;
+/// #
 /// // M     2--------------3
 /// // a    /               |
 /// // s   /                |
@@ -46,14 +46,13 @@ pub struct CGLimit {
 /// //    |                 |
 /// //    0-----------------4
 /// //
-/// //               Distance
-/// //
+/// //               Length
 /// let cg_envelope = CGEnvelope::new(vec![
-///     CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(0.89) },    // 0
-///     CGLimit { mass: Mass::Kilogram(885.0), distance: Distance::Meter(0.89) },  // 1
-///     CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.02) }, // 2
-///     CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.20) }, // 3
-///     CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(1.20) },    // 4
+///     CGLimit { mass: Mass::kg(0.0), distance: Length::m(0.89) },    // 0
+///     CGLimit { mass: Mass::kg(885.0), distance: Length::m(0.89) },  // 1
+///     CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.02) }, // 2
+///     CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.20) }, // 3
+///     CGLimit { mass: Mass::kg(0.0), distance: Length::m(1.20) },    // 4
 /// ]);
 ///
 /// // now we calculate the mass & balance which we want to check against our envelope
@@ -62,17 +61,17 @@ pub struct CGLimit {
 ///     LoadedStation {
 ///         // we and the fuel have an arm of 1.1 m from the reference datum
 ///         station: Station {
-///             arm: Distance::Meter(1.1),
+///             arm: Length::m(1.1),
 ///             description: None,
 ///         },
 ///         // we start our journey with the pilot and some fuel on board
-///         on_ramp: Mass::Kilogram(897.0),
+///         on_ramp: Mass::kg(897.0),
 ///         // and we burned 10 kg on our little sight seeing trip
-///         after_landing: Mass::Kilogram(887.0),
+///         after_landing: Mass::kg(887.0),
 ///     },
 /// ]);
 ///
-/// // now we can check if our CG is within the envelope
+/// // finally we can check if our CG is within the envelope
 /// assert!(cg_envelope.contains(&mb));
 /// ```
 #[derive(Clone, Debug)]
@@ -98,16 +97,16 @@ impl CGEnvelope {
             .limits
             .iter()
             .map(|mb| algorithm::Point {
-                x: mb.distance.si(),
-                y: mb.mass.si(),
+                x: mb.distance.to_si(),
+                y: mb.mass.to_si(),
             })
             .collect();
 
-        let wn = |mass: &Mass, balance: &Distance| -> i32 {
+        let wn = |mass: &Mass, balance: &Length| -> i32 {
             algorithm::winding_number(
                 &algorithm::Point {
-                    x: balance.si(),
-                    y: mass.si(),
+                    x: balance.to_si(),
+                    y: mass.to_si(),
                 },
                 &envelope,
             )
@@ -142,43 +141,43 @@ mod tests {
         //
         let envelope = CGEnvelope::new(vec![
             CGLimit {
-                mass: Mass::Kilogram(0.0),
-                distance: Distance::Meter(0.0),
+                mass: Mass::kg(0.0),
+                distance: Length::m(0.0),
             },
             CGLimit {
-                mass: Mass::Kilogram(0.5),
-                distance: Distance::Meter(0.0),
+                mass: Mass::kg(0.5),
+                distance: Length::m(0.0),
             },
             CGLimit {
-                mass: Mass::Kilogram(1.0),
-                distance: Distance::Meter(0.25),
+                mass: Mass::kg(1.0),
+                distance: Length::m(0.25),
             },
             CGLimit {
-                mass: Mass::Kilogram(1.0),
-                distance: Distance::Meter(1.0),
+                mass: Mass::kg(1.0),
+                distance: Length::m(1.0),
             },
             CGLimit {
-                mass: Mass::Kilogram(0.0),
-                distance: Distance::Meter(1.0),
+                mass: Mass::kg(0.0),
+                distance: Length::m(1.0),
             },
         ]);
 
         let balanced = MassAndBalance::new(&vec![LoadedStation {
             station: Station {
-                arm: Distance::Meter(0.5),
+                arm: Length::m(0.5),
                 description: None,
             },
-            on_ramp: Mass::Kilogram(0.5),
-            after_landing: Mass::Kilogram(0.5),
+            on_ramp: Mass::kg(0.5),
+            after_landing: Mass::kg(0.5),
         }]);
 
         let unbalanced = MassAndBalance::new(&vec![LoadedStation {
             station: Station {
-                arm: Distance::Meter(0.0),
+                arm: Length::m(0.0),
                 description: None,
             },
-            on_ramp: Mass::Kilogram(1.0),
-            after_landing: Mass::Kilogram(1.0),
+            on_ramp: Mass::kg(1.0),
+            after_landing: Mass::kg(1.0),
         }]);
 
         assert!(

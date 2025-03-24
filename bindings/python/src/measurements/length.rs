@@ -15,63 +15,63 @@
 
 use pyo3::prelude::*;
 
-use efb::Distance;
+use efb::measurements::Length;
 
 /// A distance measurement.
-#[pyclass(module = "efb", name = "Distance", subclass, frozen)]
+#[pyclass(module = "efb", name = "Length", subclass, frozen)]
 #[derive(Clone)]
-pub struct PyDistance {
-    distance: Distance,
+pub struct PyLength {
+    distance: Length,
 }
 
-impl From<PyDistance> for Distance {
-    fn from(distance: PyDistance) -> Self {
+impl From<PyLength> for Length {
+    fn from(distance: PyLength) -> Self {
         distance.distance
     }
 }
 
 #[pymethods]
-impl PyDistance {
+impl PyLength {
     fn __repr__(&self) -> PyResult<String> {
         PyResult::Ok(format!("{}", self.distance))
     }
 }
 
-/// Distance in meter.
+/// Length in meter.
 ///
 /// :param m: The distance in meter.
 /// :type m: float
-#[pyclass(module = "efb", name = "Meter", extends = PyDistance)]
+#[pyclass(module = "efb", name = "Meter", extends = PyLength)]
 pub struct PyMeter;
 
 #[pymethods]
 impl PyMeter {
     #[new]
-    pub fn new(m: f32) -> (Self, PyDistance) {
+    pub fn new(m: f32) -> (Self, PyLength) {
         (
             PyMeter {},
-            PyDistance {
-                distance: Distance::Meter(m),
+            PyLength {
+                distance: Length::m(m),
             },
         )
     }
 }
 
-/// Distance in nautical miles.
+/// Length in nautical miles.
 ///
 /// :param nm: The distance in nautical miles.
 /// :type nm: float
-#[pyclass(module = "efb", name = "NauticalMiles", extends = PyDistance)]
+#[pyclass(module = "efb", name = "NauticalMiles", extends = PyLength)]
 pub struct PyNauticalMiles;
 
 #[pymethods]
 impl PyNauticalMiles {
     #[new]
-    fn new(nm: f32) -> (Self, PyDistance) {
+    fn new(nm: f32) -> (Self, PyLength) {
         (
             PyNauticalMiles {},
-            PyDistance {
-                distance: Distance::NauticalMiles(nm),
+            PyLength {
+                distance: Length::nm(nm),
             },
         )
     }

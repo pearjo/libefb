@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2024 Joe Pearson
+// Copyright 2025 Joe Pearson
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum Density {
-    KilogramPerLiter(f32),
-}
+pub const INCH_IN_METER: f32 = 0.0254;
+pub const KELVIN_IN_CELSIUS: f64 = 273.15;
+pub const METER_PER_SECONDS_IN_KNOTS: f32 = 1.943844;
+pub const NAUTICAL_MILE_IN_METER: f32 = 1852.0;
+pub const PI2: f32 = std::f32::consts::PI * 2.0;

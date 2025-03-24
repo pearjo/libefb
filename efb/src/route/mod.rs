@@ -19,8 +19,9 @@ pub use leg::Leg;
 
 use crate::error::Error;
 use crate::fp::Performance;
+use crate::measurements::{Duration, Length, Speed};
 use crate::nd::*;
-use crate::{Distance, Duration, Fuel, Speed, VerticalDistance, Wind};
+use crate::{Fuel, VerticalDistance, Wind};
 
 #[derive(Debug)]
 pub enum RouteElement {
@@ -172,12 +173,11 @@ impl Route {
     }
 
     /// Returns the total distance of the route.
-    pub fn dist(&self) -> Option<Distance> {
+    pub fn dist(&self) -> Option<Length> {
         self.legs
             .iter()
             .map(|leg| *leg.dist())
             .reduce(|acc, dist| acc + dist)
-            .map(|dist| dist.to_nm())
     }
 
     /// Returns the estimated time en-route.

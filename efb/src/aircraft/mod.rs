@@ -18,7 +18,8 @@ pub mod station;
 
 use crate::error::Error;
 use crate::fp::MassAndBalance;
-use crate::{Distance, Fuel, FuelType, Mass, Volume};
+use crate::measurements::{Length, Mass, Volume};
+use crate::{Fuel, FuelType};
 
 pub use cg_envelope::{CGEnvelope, CGLimit};
 pub use station::{LoadedStation, Station};
@@ -30,7 +31,7 @@ pub struct FuelTank {
     pub capacity: Volume,
 
     /// The distance of the tank to the aircraft's reference datum.
-    pub arm: Distance,
+    pub arm: Length,
 }
 
 /// The aircraft we're planning to fly with.
@@ -52,47 +53,49 @@ pub struct FuelTank {
 ///
 /// # Examples
 ///
-/// ```
-/// use efb::{diesel, Distance, Fuel, FuelType, Mass, Volume};
-/// use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
-/// use efb::fp::MassAndBalance;
+/// This is how a C172 of our flying club with a Diesel engine would look like:
 ///
-/// // this is how a C172 of our flying club with a Diesel engine would look like:
+/// ```
+/// # use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
+/// # use efb::fp::MassAndBalance;
+/// # use efb::measurements::{Length, Mass, Volume};
+/// # use efb::{diesel, Fuel, FuelType};
+/// #
 /// let ac = Aircraft {
 ///     registration: String::from("N12345"),
 ///     stations: vec![
 ///         Station {
-///             arm: Distance::Meter(0.94),
+///             arm: Length::m(0.94),
 ///             description: Some(String::from("front seats")),
 ///         },
 ///         Station {
-///             arm: Distance::Meter(1.85),
+///             arm: Length::m(1.85),
 ///             description: Some(String::from("back seats")),
 ///         },
 ///         Station {
-///             arm: Distance::Meter(2.41),
+///             arm: Length::m(2.41),
 ///             description: Some(String::from("first cargo compartment")),
 ///         },
 ///         Station {
-///             arm: Distance::Meter(3.12),
+///             arm: Length::m(3.12),
 ///             description: Some(String::from("second cargo compartment")),
 ///         },
 ///     ],
-///     empty_mass: Mass::Kilogram(807.0),
-///     empty_balance: Distance::Meter(1.0),
+///     empty_mass: Mass::kg(807.0),
+///     empty_balance: Length::m(1.0),
 ///     fuel_type: FuelType::Diesel,
 ///     tanks: vec![
 ///         FuelTank {
-///             capacity: Volume::Liter(168.8),
-///             arm: Distance::Meter(1.22),
+///             capacity: Volume::l(168.8),
+///             arm: Length::m(1.22),
 ///         },
 ///     ],
 ///     cg_envelope: CGEnvelope::new(vec![
-///         CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(0.89) },
-///         CGLimit { mass: Mass::Kilogram(885.0), distance: Distance::Meter(0.89) },
-///         CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.02) },
-///         CGLimit { mass: Mass::Kilogram(1111.0), distance: Distance::Meter(1.20) },
-///         CGLimit { mass: Mass::Kilogram(0.0), distance: Distance::Meter(1.20) },
+///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(0.89) },
+///         CGLimit { mass: Mass::kg(885.0), distance: Length::m(0.89) },
+///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.02) },
+///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.20) },
+///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(1.20) },
 ///     ]),
 ///     notes: None,
 /// };
@@ -103,16 +106,16 @@ pub struct FuelTank {
 /// let mb = ac.mb_from_const_mass_and_equally_distributed_fuel(
 ///     &vec![
 ///         // we're in the front
-///         Mass::Kilogram(80.0),
+///         Mass::kg(80.0),
 ///         // and no mass on the other stations
-///         Mass::Kilogram(0.0),
-///         Mass::Kilogram(0.0),
-///         Mass::Kilogram(0.0)
+///         Mass::kg(0.0),
+///         Mass::kg(0.0),
+///         Mass::kg(0.0)
 ///     ],
 ///     // we start our flight with 80 Liter of Diesel
-///     &diesel!(Volume::Liter(80.0)),
+///     &diesel!(Volume::l(80.0)),
 ///     // and land with 60 Liter remaining in our tank
-///     &diesel!(Volume::Liter(60.0)),
+///     &diesel!(Volume::l(60.0)),
 /// );
 ///
 /// // finally we can check if the aircraft is balanced throughout the flight
@@ -133,7 +136,7 @@ pub struct Aircraft {
 
     /// The center of gravity of the empty aircraft taken from the last mass and
     /// balance report.
-    pub empty_balance: Distance,
+    pub empty_balance: Length,
 
     /// The aircraft's fuel type.
     pub fuel_type: FuelType,
@@ -314,17 +317,17 @@ mod tests {
         let ac = Aircraft {
             registration: String::from("N12345"),
             stations: vec![],
-            empty_mass: Mass::Kilogram(0.0),
-            empty_balance: Distance::Meter(0.0),
+            empty_mass: Mass::kg(0.0),
+            empty_balance: Length::m(0.0),
             fuel_type: FuelType::Diesel,
             tanks: vec![
                 FuelTank {
-                    capacity: Volume::Liter(40.0),
-                    arm: Distance::Meter(1.0),
+                    capacity: Volume::l(40.0),
+                    arm: Length::m(1.0),
                 },
                 FuelTank {
-                    capacity: Volume::Liter(40.0),
-                    arm: Distance::Meter(1.0),
+                    capacity: Volume::l(40.0),
+                    arm: Length::m(1.0),
                 },
             ],
             cg_envelope: CGEnvelope::new(vec![]),
@@ -332,7 +335,7 @@ mod tests {
         };
 
         // thus our total usable fuel is 80 Liter
-        assert_eq!(ac.usable_fuel(), Some(diesel!(Volume::Liter(80.0))));
+        assert_eq!(ac.usable_fuel(), Some(diesel!(Volume::l(80.0))));
     }
 
     #[test]
@@ -342,16 +345,16 @@ mod tests {
             registration: String::from("N12345"),
             stations: vec![
                 Station {
-                    arm: Distance::Meter(1.0),
+                    arm: Length::m(1.0),
                     description: None,
                 },
                 Station {
-                    arm: Distance::Meter(2.0),
+                    arm: Length::m(2.0),
                     description: None,
                 },
             ],
-            empty_mass: Mass::Kilogram(0.0),
-            empty_balance: Distance::Meter(0.0),
+            empty_mass: Mass::kg(0.0),
+            empty_balance: Length::m(0.0),
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),
@@ -368,8 +371,8 @@ mod tests {
         let ac = Aircraft {
             registration: String::from("N12345"),
             stations: vec![],
-            empty_mass: Mass::Kilogram(800.0),
-            empty_balance: Distance::Meter(1.0),
+            empty_mass: Mass::kg(800.0),
+            empty_balance: Length::m(1.0),
             fuel_type: FuelType::Diesel,
             tanks: vec![],
             cg_envelope: CGEnvelope::new(vec![]),

@@ -17,6 +17,7 @@ use std::fmt::{Error, Write as _};
 
 use super::{FlightPlanning, FMS};
 use crate::fp::FuelPlanning;
+use crate::measurements::LengthUnit;
 use crate::nd::*;
 use crate::route::Route;
 
@@ -53,7 +54,7 @@ impl Printer {
         writeln!(buffer, "{}", "-".repeat(self.line_length))?;
         writeln!(buffer, "-- {}", title)?;
         writeln!(buffer, "{}", "-".repeat(self.line_length))?;
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
         Ok(())
     }
 
@@ -62,13 +63,13 @@ impl Printer {
         self.write_section(buffer, "ROUTE")?;
 
         for leg in route.legs() {
-            let space = ((self.line_length - 24) / 3) as usize;
+            let space = (self.line_length - 23) / 3;
 
             let is_heading = leg.mh().is_some();
 
             writeln!(
                 buffer,
-                "{:<6}{:space$}{:^5}{:space$}{:>8}{:space$}{:^5}",
+                "{:<6}{:space$}{:^6}{:space$}{:>8}{:space$}{:^5}",
                 "TO",
                 "",
                 if is_heading { "HDG" } else { "TRK" },
@@ -80,17 +81,17 @@ impl Printer {
 
             writeln!(
                 buffer,
-                "{:<6}{:space$}{:^5}{:space$}{:>8.1}{:space$}{:^5}",
+                "{:<6}{:space$}{:^6.0}{:space$}{:>8.1}{:space$}{:^5}",
                 leg.to().ident(),
                 "",
                 leg.mh().unwrap_or(leg.mc()),
                 "",
-                leg.dist().to_nm(),
+                leg.dist().convert_to(LengthUnit::NauticalMiles),
                 "",
                 leg.ete().unwrap(),
             )?;
 
-            writeln!(buffer, "")?;
+            writeln!(buffer)?;
         }
 
         if let Some(dist) = route.dist() {
@@ -101,7 +102,7 @@ impl Printer {
             writeln!(buffer, "ETE {:>1$}", ete, self.line_length - 4)?;
         }
 
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
 
         Ok(())
     }
@@ -158,7 +159,7 @@ impl Printer {
             self.line_length - 6
         )?;
 
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
 
         Ok(())
     }
@@ -195,7 +196,7 @@ impl Printer {
             None => "N/A",
         };
 
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
         writeln!(buffer, "BALANCED {:>1$}", balanced, self.line_length - 9)?;
 
         Ok(())

@@ -17,7 +17,8 @@ use pyo3::prelude::*;
 
 use efb::fp::{Performance, PerformanceTableRow};
 
-use crate::core::{PyFuelFlow, PySpeed, PyVerticalDistance};
+use crate::core::{PyFuelFlow, PyVerticalDistance};
+use crate::measurements::PySpeed;
 
 #[derive(FromPyObject)]
 pub struct PyPerformanceTableRow(PyVerticalDistance, PySpeed, PyFuelFlow);

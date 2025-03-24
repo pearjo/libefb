@@ -32,5 +32,6 @@ pub mod fc;
 pub mod fms;
 pub mod fp;
 pub mod geom;
+pub mod measurements;
 pub mod nd;
 pub mod route;

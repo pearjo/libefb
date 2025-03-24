@@ -32,7 +32,7 @@ import Testing
 
     @Test func decodeRoute() {
         fms.decode(route: "21010KT N0107 A0250 EDDH EDHF EDDH")
-        let route = fms.route()
+        let route = fms.route
         #expect(route.legs().count == 2)
     }
 }

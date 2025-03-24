@@ -16,7 +16,8 @@
 use std::slice::Iter;
 
 use efb::fp;
-use efb::{FuelFlow, Speed, VerticalDistance};
+use efb::measurements::Speed;
+use efb::{FuelFlow, VerticalDistance};
 
 #[derive(Default)]
 pub struct PerformanceTable<'a> {

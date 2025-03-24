@@ -13,7 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{FuelFlow, Speed, VerticalDistance};
+use crate::measurements::Speed;
+use crate::{FuelFlow, VerticalDistance};
 
 /// A row of the performance table presenting a performance up to a specific
 /// level.
@@ -77,8 +78,7 @@ impl Performance {
     ///
     /// Panics if the map holds no performance value which should never happen.
     fn at_level(&self, level: &VerticalDistance) -> &PerformanceTableRow {
-        &self
-            .table
+        self.table
             .iter()
             .rfind(|row| &row.level <= level)
             .expect("There should be at least one row in the table.")

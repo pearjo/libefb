@@ -19,40 +19,40 @@ import efb
 // MARK: - Length
 
 extension Measurement<UnitLength> {
-    init(_ efbDistance: EfbDistance) {
-        switch efbDistance.tag {
-        case Meter:
-            self.init(value: Double(efbDistance.meter), unit: .meters)
+    init(_ efbLength: EfbLength) {
+        switch efbLength.unit {
+        case Meters:
+            self.init(value: Double(efbLength.value), unit: .meters)
         case NauticalMiles:
-            self.init(value: Double(efbDistance.nautical_miles), unit: .nauticalMiles)
+            self.init(value: Double(efbLength.value), unit: .nauticalMiles)
         default:
-            fatalError("init(_:) for \(efbDistance.tag) has not been implemented")
+            fatalError("init(_:) for \(efbLength.unit) has not been implemented")
         }
     }
 }
 
-extension EfbDistance {
+extension EfbLength {
     init(length: Measurement<UnitLength>) {
         switch length.unit {
         case .meters:
-            self = efb_distance_m(Float(length.value))
+            self = efb_length_m(Float(length.value))
         case .nauticalMiles:
-            self = efb_distance_nm(Float(length.value))
+            self = efb_length_nm(Float(length.value))
         default:
             self.init(length: length.converted(to: .meters))
         }
     }
 }
-
+    
 // MARK: - Mass
 
 extension Measurement<UnitMass> {
     init(_ efbMass: EfbMass) {
-        switch efbMass.tag {
-        case Kilogram:
-            self.init(value: Double(efbMass.kilogram), unit: .kilograms)
+        switch efbMass.unit {
+        case Kilograms:
+            self.init(value: Double(efbMass.value), unit: .kilograms)
         default:
-            fatalError("init(_:) for \(efbMass.tag) has not been implemented")
+            fatalError("init(_:) for \(efbMass.unit) has not been implemented")
         }
     }
 }
@@ -72,11 +72,11 @@ extension EfbMass {
 
 extension Measurement<UnitVolume> {
     init(_ efbVolume: EfbVolume) {
-        switch efbVolume.tag {
+        switch efbVolume.unit {
         case Liter:
-            self.init(value: Double(efbVolume.liter), unit: .liters)
+            self.init(value: Double(efbVolume.value), unit: .liters)
         default:
-            fatalError("init(_:) for \(efbVolume.tag) has not been implemented")
+            fatalError("init(_:) for \(efbVolume.unit) has not been implemented")
         }
     }
 }
