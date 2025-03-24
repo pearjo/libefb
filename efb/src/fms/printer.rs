@@ -54,7 +54,7 @@ impl Printer {
         writeln!(buffer, "{}", "-".repeat(self.line_length))?;
         writeln!(buffer, "-- {}", title)?;
         writeln!(buffer, "{}", "-".repeat(self.line_length))?;
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
         Ok(())
     }
 
@@ -63,7 +63,7 @@ impl Printer {
         self.write_section(buffer, "ROUTE")?;
 
         for leg in route.legs() {
-            let space = ((self.line_length - 23) / 3) as usize;
+            let space = (self.line_length - 23) / 3;
 
             let is_heading = leg.mh().is_some();
 
@@ -91,7 +91,7 @@ impl Printer {
                 leg.ete().unwrap(),
             )?;
 
-            writeln!(buffer, "")?;
+            writeln!(buffer)?;
         }
 
         if let Some(dist) = route.dist() {
@@ -102,7 +102,7 @@ impl Printer {
             writeln!(buffer, "ETE {:>1$}", ete, self.line_length - 4)?;
         }
 
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
 
         Ok(())
     }
@@ -159,7 +159,7 @@ impl Printer {
             self.line_length - 6
         )?;
 
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
 
         Ok(())
     }
@@ -196,7 +196,7 @@ impl Printer {
             None => "N/A",
         };
 
-        writeln!(buffer, "")?;
+        writeln!(buffer)?;
         writeln!(buffer, "BALANCED {:>1$}", balanced, self.line_length - 9)?;
 
         Ok(())

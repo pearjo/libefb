@@ -29,7 +29,7 @@ fn parse_numeric_field(
         .and_then(|v| {
             range
                 .contains(&v)
-                .then(|| v)
+                .then_some(v)
                 .ok_or(FieldError::NumberOutOfRange)
         })
 }
