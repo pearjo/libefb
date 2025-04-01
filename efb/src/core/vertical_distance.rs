@@ -33,6 +33,9 @@ pub enum VerticalDistance {
     /// Altitude in feet with reference to a local air pressure.
     Altitude(u16), // TODO does it make sense to have ALT?
 
+    /// Pressure altitude in feet.
+    PressureAltitude(i16),
+
     /// Flight level in hundreds of feet as altitude at standard air pressure.
     Fl(u16),
 
@@ -44,6 +47,16 @@ pub enum VerticalDistance {
 
     /// An unlimited vertical distance.
     Unlimited,
+}
+
+impl VerticalDistance {
+    // https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
+    pub fn pa(elevation: &i16, qnh: &f32) -> Self {
+        // TODO: Add pressure unit
+        Self::PressureAltitude(
+            elevation + (145366.45 * (1.0 - (qnh / 1013.23).powf(0.190284)).round()) as i16,
+        )
+    }
 }
 
 impl FromStr for VerticalDistance {
@@ -93,6 +106,7 @@ impl fmt::Display for VerticalDistance {
             VerticalDistance::Agl(value) => write!(f, "{value} AGL"),
             VerticalDistance::Msl(value) => write!(f, "{value} MSL"),
             VerticalDistance::Altitude(value) => write!(f, "{value} ALT"),
+            VerticalDistance::PressureAltitude(value) => write!(f, "PA {value}"),
             VerticalDistance::Unlimited => write!(f, "unlimited"),
         }
     }
