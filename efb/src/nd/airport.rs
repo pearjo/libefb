@@ -31,12 +31,6 @@ pub struct Airport {
     pub cycle: AiracCycle,
 }
 
-impl Airport {
-    pub fn route_ident(&self) -> String {
-        self.icao_ident.clone()
-    }
-}
-
 impl Fix for Airport {
     fn ident(&self) -> String {
         self.icao_ident.clone()
