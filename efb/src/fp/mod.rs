@@ -16,9 +16,13 @@
 //! Flight Planning.
 
 mod fuel_planning;
+mod ground_roll;
 mod mb;
 mod perf;
+mod runway_analysis;
 
 pub use fuel_planning::*;
+pub use ground_roll::*;
 pub use mb::MassAndBalance;
 pub use perf::{Performance, PerformanceTable, PerformanceTableRow};
+pub use runway_analysis::*;

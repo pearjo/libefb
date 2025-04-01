@@ -128,10 +128,15 @@ impl SubSystemBuilder for FlightPlanningBuilder {
             _ => None,
         };
 
+        // let rwy_analysis = match () {
+        //     _ => None,
+        // };
+
         Ok(FlightPlanning {
             aircraft: self.aircraft.clone(),
             fuel_planning,
             mb,
+            rwy_analysis: None,
         })
     }
 }
@@ -141,6 +146,7 @@ pub struct FlightPlanning {
     aircraft: Option<Aircraft>,
     fuel_planning: Option<FuelPlanning>,
     mb: Option<MassAndBalance>,
+    rwy_analysis: Option<RunwayAnalysis>,
 }
 
 impl FlightPlanning {
@@ -157,6 +163,10 @@ impl FlightPlanning {
             (Some(ac), Some(mb)) => Some(ac.is_balanced(mb)),
             _ => None,
         }
+    }
+
+    pub fn rwy_analysis(&self) -> Option<&RunwayAnalysis> {
+        self.rwy_analysis.as_ref()
     }
 }
 
