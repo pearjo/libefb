@@ -258,6 +258,8 @@ typedef enum {
   Agl,
   /// Altitude in feet with reference to a local air pressure.
   Altitude,
+  /// Pressure altitude in feet.
+  PressureAltitude,
   /// Flight level in hundreds of feet as altitude at standard air pressure.
   Fl,
   /// Ground level.
@@ -276,6 +278,9 @@ typedef struct {
     };
     struct {
       uint16_t altitude;
+    };
+    struct {
+      int16_t pressure_altitude;
     };
     struct {
       uint16_t fl;

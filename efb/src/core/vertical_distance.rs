@@ -18,9 +18,13 @@ use std::fmt;
 use std::str::FromStr;
 
 use crate::error::Error;
+use crate::measurements::Pressure;
 
 mod constants {
+    use crate::measurements::Pressure;
+
     pub const METER_IN_FEET: f32 = 3.28084;
+    pub const STD_PRESSURE: Pressure = Pressure::h_pa(1013.23); // 29.92 inHg
 }
 
 /// A vertical distance.
@@ -33,6 +37,9 @@ pub enum VerticalDistance {
     /// Altitude in feet with reference to a local air pressure.
     Altitude(u16), // TODO does it make sense to have ALT?
 
+    /// Pressure altitude in feet.
+    PressureAltitude(i16),
+
     /// Flight level in hundreds of feet as altitude at standard air pressure.
     Fl(u16),
 
@@ -44,6 +51,18 @@ pub enum VerticalDistance {
 
     /// An unlimited vertical distance.
     Unlimited,
+}
+
+impl VerticalDistance {
+    /// Returns the pressure altitude based on the elevation and the QNH.
+    pub fn pa(elevation: &i16, qnh: &Pressure) -> Self {
+        // https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
+        Self::PressureAltitude(
+            elevation
+                + (145366.45 * (1.0 - (*qnh / constants::STD_PRESSURE).powf(0.190284)).round())
+                    as i16,
+        )
+    }
 }
 
 impl FromStr for VerticalDistance {
@@ -93,6 +112,7 @@ impl fmt::Display for VerticalDistance {
             VerticalDistance::Agl(value) => write!(f, "{value} AGL"),
             VerticalDistance::Msl(value) => write!(f, "{value} MSL"),
             VerticalDistance::Altitude(value) => write!(f, "{value} ALT"),
+            VerticalDistance::PressureAltitude(value) => write!(f, "PA {value}"),
             VerticalDistance::Unlimited => write!(f, "unlimited"),
         }
     }
@@ -116,6 +136,7 @@ impl Ord for VerticalDistance {
 
             // now compare what can only be compared to the same type
             (Self::Agl(v), Self::Agl(o)) => v.cmp(o),
+            (Self::PressureAltitude(v), Self::PressureAltitude(o)) => v.cmp(o),
 
             _ => {
                 fn to_msl(vd: &VerticalDistance) -> u16 {
