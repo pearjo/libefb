@@ -18,6 +18,32 @@
 //! The EFB Library is the foundation for flight planning applications,
 //! providing functionality to plan a flight and get navigational aids
 //! in-flight.
+//!
+//! ## Acronyms & Abbreviations
+//!
+//! Aviation if full of Acronyms. To not lose track between FMS and RWY, the
+//! following section covers acronyms used within this crate.
+//!
+//! ### A
+//!
+//! - **AFM** Aircraft Flight Manual
+//!
+//! ### E
+//!
+//! - **Elev** Elevation
+//!
+//! ### F
+//!
+//! - **FMS** Flight Management System
+//!
+//! ### P
+//!
+//! - **POH** Pilot Operation Handbook
+//!
+//! ### R
+//!
+//! - **RWY** Runway
+//! - **RWYCC** Runway Condition Code
 
 #[macro_use]
 pub mod macros;
