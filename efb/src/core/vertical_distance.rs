@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use core::f32;
 use std::cmp::{Ord, Ordering, PartialOrd};
 use std::fmt;
 use std::str::FromStr;
@@ -160,6 +161,20 @@ impl Ord for VerticalDistance {
 impl PartialOrd for VerticalDistance {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+impl From<VerticalDistance> for f32 {
+    fn from(value: VerticalDistance) -> Self {
+        match value {
+            VerticalDistance::Gnd => 0.0,
+            VerticalDistance::Fl(value) => value.into(),
+            VerticalDistance::Agl(value) => value.into(),
+            VerticalDistance::Msl(value) => value.into(),
+            VerticalDistance::Altitude(value) => value.into(),
+            VerticalDistance::PressureAltitude(value) => value.into(),
+            VerticalDistance::Unlimited => f32::INFINITY,
+        }
     }
 }
 

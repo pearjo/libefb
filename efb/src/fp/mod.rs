@@ -18,7 +18,9 @@
 mod fuel_planning;
 mod mb;
 mod perf;
+mod takeoff_landing_performance;
 
 pub use fuel_planning::*;
 pub use mb::MassAndBalance;
 pub use perf::{Performance, PerformanceTable, PerformanceTableRow};
+pub use takeoff_landing_performance::*;
