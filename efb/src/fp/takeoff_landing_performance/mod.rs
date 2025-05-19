@@ -16,6 +16,10 @@
 use crate::VerticalDistance;
 use crate::measurements::{Length, Temperature};
 
+mod influences;
+
+pub use influences::*;
+
 #[derive(Clone, Eq, PartialEq, PartialOrd, Debug)]
 pub struct TakeoffLandingDistance {
     ground_roll: Length,
