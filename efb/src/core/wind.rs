@@ -60,7 +60,7 @@ impl Wind {
     pub fn headwind(&self, direction: &Angle) -> Speed {
         let relative_wind = self.direction - *direction;
         // TODO: Deal better with headwind or tailwind.
-        self.speed * -relative_wind.to_si().cos()
+        self.speed * relative_wind.to_si().cos()
     }
 
     /// Returns the cross wind relative to the direction.
@@ -140,7 +140,7 @@ mod tests {
             speed: Speed::kt(10.0),
         };
 
-        assert_eq!(wind.headwind(&Angle::t(180.0)), Speed::kt(10.0));
+        assert_eq!(wind.headwind(&Angle::t(0.0)), Speed::kt(10.0));
     }
 
     #[test]
@@ -150,7 +150,7 @@ mod tests {
             speed: Speed::kt(10.0),
         };
 
-        assert_eq!(wind.headwind(&Angle::t(0.0)), Speed::kt(-10.0));
+        assert_eq!(wind.headwind(&Angle::t(180.0)), Speed::kt(-10.0));
     }
 
     #[test]
