@@ -16,8 +16,10 @@
 use crate::VerticalDistance;
 use crate::measurements::{Length, Temperature};
 
+mod altering_factors;
 mod influences;
 
+pub use altering_factors::*;
 pub use influences::*;
 
 #[derive(Clone, Eq, PartialEq, PartialOrd, Debug)]

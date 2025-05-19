@@ -16,6 +16,7 @@
 use core::f32;
 use std::cmp::{Ord, Ordering, PartialOrd};
 use std::fmt;
+use std::ops::Div;
 use std::str::FromStr;
 
 use crate::error::Error;
@@ -161,6 +162,25 @@ impl Ord for VerticalDistance {
 impl PartialOrd for VerticalDistance {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+impl Div for VerticalDistance {
+    type Output = f32;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        match (self, rhs) {
+            (Self::Gnd, Self::Gnd) => 1.0,
+            (Self::Fl(a), Self::Fl(b)) => (a / b).into(),
+            (Self::Agl(a), Self::Agl(b)) => (a / b).into(),
+            (Self::Msl(a), Self::Msl(b)) => (a / b).into(),
+            (Self::Altitude(a), Self::Altitude(b)) => (a / b).into(),
+            (Self::PressureAltitude(a), Self::PressureAltitude(b)) => (a / b).into(),
+            (Self::Unlimited, Self::Unlimited) => 1.0,
+            _ => unimplemented!(
+                "Division of vertical distances of different types is not yet supported!"
+            ),
+        }
     }
 }
 

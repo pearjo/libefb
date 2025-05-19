@@ -15,25 +15,53 @@
 
 use std::fmt;
 
+use crate::VerticalDistance;
 use crate::measurements::{Angle, Length};
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum RunwaySurface {
     Asphalt,
     Concrete,
     Grass,
 }
 
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+pub enum RunwayConditionCode {
+    /// Dry.
+    Six,
+
+    /// Frost, wet, slush, dry snow or wet snow.
+    Five,
+
+    /// Compacted snow.
+    Four,
+
+    /// Wet (slippery), dry snow, wet snow, dry snow on top of compacted snow,
+    /// wet snow on top of compacted snow or compacted snow.
+    Three,
+
+    /// Standing water or slush.
+    Two,
+
+    /// Ice.
+    One,
+
+    /// Wet ice, water on top of compacted snow or dry snow or wet snow on top
+    /// of ice.
+    Zero,
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct Runway {
-    pub(crate) designator: String,
-    pub(crate) bearing: Angle,
-    pub(crate) length: Length,
-    pub(crate) tora: Length,
-    pub(crate) toda: Length,
-    pub(crate) lda: Length,
-    pub(crate) surface: RunwaySurface,
-    pub(crate) slope: f32,
+    pub designator: String,
+    pub bearing: Angle,
+    pub length: Length,
+    pub tora: Length,
+    pub toda: Length,
+    pub lda: Length,
+    pub surface: RunwaySurface,
+    pub slope: f32,
+    pub elev: VerticalDistance,
 }
 
 impl fmt::Display for Runway {
