@@ -19,16 +19,47 @@ use std::str::FromStr;
 use efb::aircraft::{LoadedStation, Station};
 use efb::fp::{
     AlteringFactor, AlteringFactors, FactorOfEffect, MassAndBalance, RunwayAnalysis,
-    TakeoffLandingPerformance, TakeoffLandingPerformanceChart,
+    TakeoffLandingPerformance,
 };
 use efb::nd::{Runway, RunwayConditionCode, RunwaySurface};
 use efb::{VerticalDistance, Wind};
 
 use efb::measurements::*;
 
-fn c172r_takeoff_performance() -> TakeoffLandingPerformance {
-    TakeoffLandingPerformance {
-        chart: TakeoffLandingPerformanceChart::Table(vec![
+/// Runway analysis to test.
+///
+/// # Conditions
+///
+/// This analysis uses performance data of a Cessna 172R with altering factors
+/// according to the POH. Takeoff is on a fictitious grass runway 27 with
+/// following properties:
+///
+/// - Length: 3600ft
+/// - TORA: 2900ft
+/// - TODA: 2900ft
+/// - LDA: 2900ft
+/// - Slope: 0%
+/// - Elev: GND
+///
+/// The influences affecting the takeoff are 10kt wind directly on the RWY at
+/// 20°C. The RWYCC is 6.
+///
+/// # Expected Results
+///
+/// For wind and runway surface we get the following factors: -11.1111% for 10kt
+/// headwind and +15% for dry grass. At 20°C on ground level, the ground roll
+/// from the table is 980ft and distance to clear a 50ft obstacle is 1745ft. The
+/// grass has only an effect on the ground roll so we get the following
+/// estimated lengths:
+///
+/// - Ground roll: 1001.7777ft
+/// - Distance to clear 50ft obstacle: 1744.8888ft
+///
+/// With a TORA of 2900ft we have a margin of 1898.2223ft which is 65% of the
+/// available length.
+fn rwy_analysis() -> RunwayAnalysis {
+    let perf = TakeoffLandingPerformance {
+        table: vec![
             (
                 VerticalDistance::PressureAltitude(0),
                 Temperature::celsius(0.0),
@@ -59,8 +90,8 @@ fn c172r_takeoff_performance() -> TakeoffLandingPerformance {
                 Length::ft(1135.0),
                 Length::ft(2015.0),
             ),
-        ]),
-        factors: AlteringFactors::new(&vec![
+        ],
+        factors: Some(AlteringFactors::new(&vec![
             // Decrease distances 10% for each 9 knots headwind. For operation
             // with tail winds up to 10 knots, increase distances by 10% for
             // each 2 knots.
@@ -77,21 +108,16 @@ fn c172r_takeoff_performance() -> TakeoffLandingPerformance {
             AlteringFactor::IncreaseRWYCC(HashMap::from([
                 ((None, Some(RunwaySurface::Grass)), 0.15), // we'll add 15% on any grass
             ])),
-        ]),
-    }
-}
-
-#[test]
-fn takeoff_ground_roll() {
-    let perf = c172r_takeoff_performance();
+        ])),
+    };
 
     let west_grass_rwy = Runway {
         designator: String::from("27"),
         bearing: Angle::t(270.0),
-        length: Length::m(1100.0),
-        tora: Length::m(900.0),
-        toda: Length::m(900.0),
-        lda: Length::m(900.0),
+        length: Length::ft(3600.0),
+        tora: Length::ft(2900.0),
+        toda: Length::ft(2900.0),
+        lda: Length::ft(2900.0),
         surface: RunwaySurface::Grass,
         slope: 0.0,
         elev: VerticalDistance::Gnd,
@@ -108,25 +134,44 @@ fn takeoff_ground_roll() {
         after_landing: Mass::kg(1111.0),
     }]);
 
-    let analysis = RunwayAnalysis::takeoff(
+    RunwayAnalysis::takeoff(
         &west_grass_rwy,
         RunwayConditionCode::Six,
         &Wind::from_str("27010KT").unwrap(),
         Temperature::celsius(20.0),
         &mb,
         &perf,
-    );
+        None,
+    )
+}
 
-    assert_eq!(analysis.headwind(), &Speed::kt(10.0));
-    assert_eq!(analysis.crosswind(), &Speed::kt(0.0));
+#[test]
+fn wind_components() {
+    let rwy_analysis = rwy_analysis();
+    assert_eq!(rwy_analysis.headwind(), &Speed::kt(10.0));
+    assert_eq!(rwy_analysis.crosswind(), &Speed::kt(0.0));
+}
 
-    // We have 10kt headwind (-11.1111%) and dry grass (+15%). At 20°C on ground
-    // level, the ground roll from the table is 980ft and distance to clear a
-    // 50ft obstacle is 1745ft. The grass has only an effect on the ground roll
-    // so we get the following estimated lengths:
+#[test]
+fn ground_roll_and_distance_to_clear_obstacle() {
+    let rwy_analysis = rwy_analysis();
+
     assert!(
-        *(*analysis.ground_roll() - Length::ft(1001.7777)).value() <= f32::EPSILON,
+        *(*rwy_analysis.ground_roll() - Length::ft(1001.7777)).value() <= f32::EPSILON,
         "the ground roll estimated with {} wasn't correct!",
-        analysis.ground_roll()
+        rwy_analysis.ground_roll()
     );
+
+    assert!(
+        *(*rwy_analysis.clear_obstacle() - Length::ft(1744.8888)).value() <= f32::EPSILON,
+        "the distance to clear a 50ft obstacle estimated with {} wasn't correct!",
+        rwy_analysis.ground_roll()
+    );
+}
+
+#[test]
+fn ground_roll_margin() {
+    let rwy_analysis = rwy_analysis();
+    assert!(*(*rwy_analysis.margin() - Length::ft(1898.2223)).value() <= f32::EPSILON);
+    assert_eq!((rwy_analysis.pct_margin() * 100.0).round(), 65.0);
 }
