@@ -46,6 +46,27 @@ impl TakeoffLandingDistance {
 #[derive(Clone, Debug)]
 pub struct TakeoffLandingPerformance {
     pub table: Vec<(VerticalDistance, Temperature, Length, Length)>,
+    pub factors: Option<AlteringFactors>,
+}
+
+impl TakeoffLandingPerformance {
+    /// Minimal predicted takeoff or landing distance.
+    pub fn min_distance(&self, influences: &Influences) -> TakeoffLandingDistance {
+        let distance = self.distance(influences.temperature(), influences.level());
+
+        TakeoffLandingDistance {
+            ground_roll: distance.ground_roll
+                * self
+                    .factors
+                    .as_ref()
+                    .map_or(1.0, |f| f.ground_roll_factor(influences)),
+            clear_obstacle: distance.clear_obstacle
+                * self
+                    .factors
+                    .as_ref()
+                    .map_or(1.0, |f| f.clear_obstacle_factor(influences)),
+        }
+    }
 }
 
 impl TakeoffLandingPerformance {
@@ -54,12 +75,11 @@ impl TakeoffLandingPerformance {
         temperature: &Temperature,
         pa: &VerticalDistance,
     ) -> TakeoffLandingDistance {
-        // TODO: Add option to get interpolated value.
         // Since the ground roll and distance to clear an obstacle
         // increase with pressure altitude and temperature, the
         // conservative value is provided by the next higher PA or
         // temperature.
-        let closest = &self
+        let closest = self
             .table
             .iter()
             .reduce(|closest, row| {
@@ -133,6 +153,7 @@ mod tests {
                     Length::ft(4800.0),
                 ),
             ],
+            factors: None,
         };
 
         assert_eq!(
