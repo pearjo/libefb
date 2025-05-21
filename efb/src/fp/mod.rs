@@ -14,6 +14,16 @@
 // limitations under the License.
 
 //! Flight Planning.
+//!
+//! This module contains tools to help planning a flight. The following aspects
+//! of the flight planning are covered by this module:
+//!
+//! - [`FuelPlanning`] to estimate the fuel required for the trip including any
+//!   safety reserves
+//! - [`MassAndBalance`] to check if the mass and CG are within the aircraft's
+//!   bounds
+//! - [`RunwayAnalysis`] to estimate the ground roll and distance to clear a
+//!   50ft obstacle on takeoff or landing
 
 mod fuel_planning;
 mod mb;
