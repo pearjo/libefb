@@ -17,6 +17,8 @@ mod leg;
 
 pub use leg::Leg;
 
+use std::rc::Rc;
+
 use crate::error::Error;
 use crate::fp::Performance;
 use crate::measurements::{Duration, Length, Speed};
@@ -29,6 +31,7 @@ pub enum RouteElement {
     Level(VerticalDistance),
     Wind(Wind),
     NavAid(NavAid),
+    RunwayDesignator(String),
 }
 
 /// A route that goes from an origin to a destination.
@@ -99,6 +102,14 @@ impl Route {
                 elements.push(RouteElement::Speed(value));
             } else if let Ok(value) = element.parse::<Wind>() {
                 elements.push(RouteElement::Wind(value));
+            } else if element.starts_with("RWY") {
+                if let Some(RouteElement::NavAid(NavAid::Airport(_))) = elements.last() {
+                    elements.push(RouteElement::RunwayDesignator(
+                        element.strip_prefix("RWY").unwrap_or_default().to_string(),
+                    ));
+                } else {
+                    return Err(Error::UnexpectedRunwayInRoute);
+                }
             } else {
                 return Err(Error::UnexpectedRouteElement);
             }
@@ -164,6 +175,34 @@ impl Route {
         ))
     }
 
+    /// Returns the origin airport if one is defined in the route.
+    pub fn origin(&self) -> Option<Rc<Airport>> {
+        self.legs.first().and_then(|leg| match leg.from() {
+            NavAid::Airport(aprt) => Some(aprt.clone()),
+            _ => None,
+        })
+    }
+
+    /// Returns the takeoff runway if a defined in the route.
+    pub fn takeoff_rwy(&self) -> Option<Runway> {
+        let aprt = self.origin()?;
+        self.aprt_rwy_from_elements(aprt)
+    }
+
+    /// Returns  the destination airport if one is defined in the route.
+    pub fn destination(&self) -> Option<Rc<Airport>> {
+        self.legs.last().and_then(|leg| match leg.to() {
+            NavAid::Airport(aprt) => Some(aprt.clone()),
+            _ => None,
+        })
+    }
+
+    /// Returns the landing runway if a defined in the route.
+    pub fn landing_rwy(&self) -> Option<Runway> {
+        let aprt = self.destination()?;
+        self.aprt_rwy_from_elements(aprt)
+    }
+
     /// Returns the fuel consumption en-route for the given performance.
     pub fn fuel(&self, perf: &Performance) -> Option<Fuel> {
         self.legs
@@ -187,6 +226,30 @@ impl Route {
             .filter_map(|leg| leg.ete().cloned())
             .reduce(|acc, ete| acc + ete)
     }
+}
+
+impl Route {
+    /// Returns the runway from an airport if a designator is next to the
+    /// airport element.
+    fn aprt_rwy_from_elements(&self, aprt: Rc<Airport>) -> Option<Runway> {
+        let designator = self
+            .elements
+            .iter()
+            .position(|element| match element {
+                RouteElement::NavAid(NavAid::Airport(other)) => &aprt == other,
+                _ => false,
+            })
+            // the next element to our airport must be the runway
+            .and_then(|position| match self.elements.get(position + 1) {
+                Some(RouteElement::RunwayDesignator(designator)) => Some(designator),
+                _ => None,
+            })?;
+
+        aprt.runways
+            .iter()
+            .find(|rwy| &rwy.designator == designator)
+            .cloned()
+    }
 
     fn legs_from_elements(elements: &Vec<RouteElement>) -> Vec<Leg> {
         let mut level: Option<VerticalDistance> = None;
@@ -208,6 +271,7 @@ impl Route {
                         to = Some(navaid.clone());
                     }
                 }
+                _ => (),
             }
 
             match (from.clone(), to.clone()) {

@@ -29,6 +29,7 @@ pub enum Error {
     ExpectedFuelPlanning,
 
     UnexpectedRouteElement,
+    UnexpectedRunwayInRoute,
 
     UnexpectedString,
 
