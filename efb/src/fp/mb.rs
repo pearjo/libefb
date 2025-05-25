@@ -22,8 +22,8 @@ use crate::measurements::{Length, LengthUnit, Mass};
 /// loaded on the aircraft. The mass is computed as sum of all station's mass
 /// and the balance is the sum of all moment divided by the total mass.
 ///
-/// [`Aircraft`]: super::Aircraft
-/// [`Station`]: super::Station
+/// [`Aircraft`]: crate::aircraft::Aircraft
+/// [`Station`]: crate::aircraft::Station
 #[derive(Debug)]
 pub struct MassAndBalance {
     on_ramp: Mass,

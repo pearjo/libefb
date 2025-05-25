@@ -16,7 +16,7 @@
 /// Creates Diesel [`Fuel`] from the [`Volume`] at ISA conditions.
 ///
 /// [`Fuel`]: crate::Fuel
-/// [`Volume`]: crate::Volume
+/// [`Volume`]: crate::measurements::Volume
 #[macro_export]
 macro_rules! diesel {
     ($volume:expr) => {
@@ -30,7 +30,7 @@ macro_rules! diesel {
 /// Creates Jet-A [`Fuel`] from the [`Volume`] at ISA conditions.
 ///
 /// [`Fuel`]: crate::Fuel
-/// [`Volume`]: crate::Volume
+/// [`Volume`]: crate::measurements::Volume
 #[macro_export]
 macro_rules! jet_a {
     ($volume:expr) => {

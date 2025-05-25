@@ -63,7 +63,7 @@ pub enum RouteElement {
 /// we would have wind from south-east (135°) on the leg from EDDH to DHD, but
 /// the wind would turn to south (180°) for the remaining legs.
 ///
-/// [`leg`]: crate::fp::legs::Leg
+/// [`leg`]: Leg
 /// [`fixes`]: crate::nd::Fix
 #[derive(Debug)]
 pub struct Route {

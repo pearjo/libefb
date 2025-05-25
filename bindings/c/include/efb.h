@@ -71,6 +71,7 @@ typedef enum {
 
 typedef struct EfbAircraftBuilder EfbAircraftBuilder;
 
+/// A point that spawns the CG envelope.
 typedef struct EfbCGLimit EfbCGLimit;
 
 /// The Flight Management System (FMS).
@@ -112,8 +113,8 @@ typedef struct EfbLeg EfbLeg;
 /// loaded on the aircraft. The mass is computed as sum of all station's mass
 /// and the balance is the sum of all moment divided by the total mass.
 ///
-/// [`Aircraft`]: super::Aircraft
-/// [`Station`]: super::Station
+/// [`Aircraft`]: crate::aircraft::Aircraft
+/// [`Station`]: crate::aircraft::Station
 typedef struct EfbMassAndBalance EfbMassAndBalance;
 
 typedef struct EfbPerformanceTable EfbPerformanceTable;

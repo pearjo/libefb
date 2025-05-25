@@ -19,28 +19,70 @@
 //! providing functionality to plan a flight and get navigational aids
 //! in-flight.
 //!
-//! ## Acronyms & Abbreviations
+//! ## Overview
+//!
+//! At the core of the EFB is the [`FMS`]. It holds the [navigation data],
+//! [route] and delegates the [flight planning]. The following example shows the
+//! simplest planning:
+//!
+//! ```
+//! # use efb::error::Error;
+//! use efb::fms::FMS;
+//! use efb::nd::InputFormat;
+//!
+//! # fn main() -> Result<(), Error> {
+//! // create the FMS
+//! let mut fms = FMS::new();
+//!
+//! // Read navigation data from ARINC 424 records. Here we have the two airports
+//! // EDDH (Hamburg) with the runway 33 and EDHF (Itzehoe) with runway 20.
+//! let records = r#"SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
+//! SEURP EDDHEDGRW33    0120273330 N53374300E009595081                          151                                           124362502
+//! SEURP EDHFEDA        0        N N53593300E009343600E000000082                   P    MWGE    ITZEHOE/HUNGRIGER WOLF        320782409
+//! SEURP EDHFEDGRW20    0034122060 N53594752E009344856                          098                                           120792502
+//! "#;
+//! fms.nd().read(records, InputFormat::Arinc424)?;
+//!
+//! // Now we can decode a Route from EDDH to EDHF with takeoff runway 33 and
+//! // landing runway 20. Cruise speed is 107kt at an cruise altitude of 2500ft.
+//! // The wind is 20kt from 290°.
+//! fms.decode("29020KT N0107 A0250 EDDH RWY33 DHN2 DHN1 EDHF RWY20")?;
+//! #     Ok(())
+//! # }
+//! ```
+//!
+//! From here we can start to define a [`FlightPlanningBuilder`] that holds all
+//! information required to let the FMS build a flight planning.
+//!
+//! [`FMS`]: fms::FMS
+//! [navigation data]: nd::NavigationData
+//! [route]: route::Route
+//! [flight planning]: fms::FlightPlanning
+//! [`FlightPlanningBuilder`]: fms::FlightPlanningBuilder
+//!
+//! # Acronyms & Abbreviations
 //!
 //! Aviation if full of Acronyms. To not lose track between FMS and RWY, the
 //! following section covers acronyms used within this crate.
 //!
-//! ### A
+//! ## A
 //!
 //! - **AFM** Aircraft Flight Manual
 //!
-//! ### E
+//! ## E
 //!
+//! - **EFB** Electronic Flight Bag
 //! - **Elev** Elevation
 //!
-//! ### F
+//! ## F
 //!
 //! - **FMS** Flight Management System
 //!
-//! ### P
+//! ## P
 //!
 //! - **POH** Pilot Operation Handbook
 //!
-//! ### R
+//! ## R
 //!
 //! - **RWY** Runway
 //! - **RWYCC** Runway Condition Code
