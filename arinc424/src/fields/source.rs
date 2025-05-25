@@ -13,10 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod airport;
-mod runway;
-mod waypoint;
+use std::str::FromStr;
 
-pub use airport::Airport;
-pub use runway::Runway;
-pub use waypoint::Waypoint;
+use super::{Field, FieldError};
+
+#[derive(Debug, PartialEq)]
+pub enum Source<const I: usize> {
+    GovernmentSources,
+    OtherSources,
+    BearingInTrue,
+}
+
+impl<const I: usize> Field for Source<I> {}
+
+impl<const I: usize> FromStr for Source<I> {
+    type Err = FieldError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match &s[I..I + 1] {
+            "Y" => Ok(Self::GovernmentSources),
+            "N" | " " => Ok(Self::OtherSources),
+            "T" => Ok(Self::BearingInTrue),
+            _ => Err(FieldError::UnexpectedChar("unexpected source identifier")),
+        }
+    }
+}

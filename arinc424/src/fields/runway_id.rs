@@ -13,10 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod airport;
-mod runway;
-mod waypoint;
+use std::str::FromStr;
 
-pub use airport::Airport;
-pub use runway::Runway;
-pub use waypoint::Waypoint;
+use super::{Field, FieldError};
+
+pub struct RunwayId<const I: usize> {
+    pub designator: String,
+}
+
+impl<const I: usize> Field for RunwayId<I> {}
+
+impl<const I: usize> FromStr for RunwayId<I> {
+    type Err = FieldError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match &s[I + 4..I + 5] {
+            " " | "C" | "L" | "R" | "W" | "G" | "U" => {
+                let designator = s[I + 2..I + 5].trim_end().to_string();
+                Ok(Self { designator })
+            }
+            _ => Err(FieldError::UnexpectedChar("unexpected designation suffix")),
+        }
+    }
+}

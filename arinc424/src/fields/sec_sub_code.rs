@@ -62,6 +62,7 @@ pub enum SubCode<const I: usize> {
     // Airport
     ReferencePoint,
     Gate,
+    Runway,
     // Heliport, Airport
     TerminalWaypoint,
     MSA,
@@ -114,6 +115,10 @@ impl<const I: usize> FromStr for SubCode<I> {
                 SecCode::Table => Ok(Self::CruisingTable),
                 SecCode::Airspace => Ok(Self::ControlledAirspace),
                 _ => sub_code_error!("C"),
+            },
+            "G" => match sec_code {
+                SecCode::Airport => Ok(Self::Runway),
+                _ => sub_code_error!("G"),
             },
             "S" => match sec_code {
                 SecCode::MORA => Ok(Self::GridMORA),

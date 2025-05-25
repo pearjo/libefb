@@ -30,7 +30,8 @@ impl FromStr for Arinc424Record {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut airports: Vec<Rc<Airport>> = Vec::new();
+        let mut airports: Vec<Airport> = Vec::new();
+        let mut rwy_record_lines: Vec<&str> = Vec::new();
         let mut waypoints: Vec<Rc<Waypoint>> = Vec::new();
 
         // TODO add some nice error handling
@@ -40,18 +41,32 @@ impl FromStr for Arinc424Record {
                     waypoints.push(Rc::new(waypoint_record.into()));
                 }
             }
-            "P " => {
-                if &line[12..13] == "A" {
+            "P " => match &line[12..13] {
+                "A" => {
                     if let Ok(airport_record) = arinc424::Airport::from_str(line) {
-                        airports.push(Rc::new(airport_record.into()));
+                        airports.push(airport_record.into());
                     }
                 }
-            }
+                "G" => rwy_record_lines.push(line),
+                _ => {}
+            },
             _ => {}
         });
 
+        // now that we know all airports, we can assign the runways
+        rwy_record_lines.iter().for_each(|line| {
+            if let Ok(rwy_record) = arinc424::Runway::from_str(line) {
+                if let Some(aprt) = airports
+                    .iter_mut()
+                    .find(|aprt| rwy_record.arpt_ident == aprt.icao_ident.as_str())
+                {
+                    aprt.runways.push(rwy_record.into());
+                }
+            }
+        });
+
         Ok(Self {
-            airports,
+            airports: airports.into_iter().map(Rc::new).collect(),
             waypoints,
         })
     }

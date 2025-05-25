@@ -15,6 +15,7 @@
 
 use crate::fc;
 use crate::geom::Coordinate;
+use crate::measurements::{Angle, Length};
 use crate::nd::*;
 use crate::{MagneticVariation, VerticalDistance};
 
@@ -73,6 +74,35 @@ impl<const I: usize> From<arinc424::RegnCode<I>> for Region {
             Self::Enroute
         } else {
             Self::TerminalArea(value.into_inner())
+        }
+    }
+}
+
+impl<const I: usize> From<arinc424::RwyBrg<I>> for Angle {
+    fn from(rwy_brg: arinc424::RwyBrg<I>) -> Self {
+        match rwy_brg {
+            arinc424::RwyBrg::MagneticNorth(degree) => Self::m(degree),
+            arinc424::RwyBrg::TrueNorth(degree) => Self::t(degree as f32),
+        }
+    }
+}
+
+impl From<arinc424::Runway> for Runway {
+    fn from(rwy: arinc424::Runway) -> Self {
+        let length = Length::ft(u32::from(rwy.runway_length) as f32);
+
+        Runway {
+            designator: rwy.runway_id.designator,
+            bearing: rwy.rwy_brg.into(),
+            length,
+            tora: length.clone(),
+            toda: length.clone(),
+            lda: length.clone(),
+            // FIXME: Use proper surface!
+            surface: RunwaySurface::Asphalt,
+            slope: rwy.rwy_grad.degree,
+            // FIXME: Use proper elevation!
+            elev: VerticalDistance::Gnd,
         }
     }
 }

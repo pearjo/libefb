@@ -25,15 +25,19 @@ mod cycle;
 mod datum;
 mod fix_ident;
 mod frn;
-mod icao_code;
 mod iata;
+mod icao_code;
 mod mag_true_ind;
 mod mag_var;
 mod name_desc;
 mod name_ind;
 mod record_type;
 mod regn_code;
+mod runway_id;
+mod rwy_brg;
+mod rwy_grad;
 mod sec_sub_code;
+mod source;
 mod waypoint_type;
 mod waypoint_usage;
 
@@ -45,19 +49,23 @@ pub use cycle::Cycle;
 pub use datum::Datum;
 pub use fix_ident::FixIdent;
 pub use frn::FileRecordNumber;
-pub use icao_code::IcaoCode;
 pub use iata::Iata;
+pub use icao_code::IcaoCode;
 pub use mag_true_ind::MagTrueInd;
 pub use mag_var::MagVar;
 pub use name_desc::NameDesc;
 pub use name_ind::NameInd;
 pub use record_type::RecordType;
 pub use regn_code::RegnCode;
+pub use runway_id::RunwayId;
+pub use rwy_brg::RwyBrg;
+pub use rwy_grad::RwyGrad;
 pub use sec_sub_code::{SecCode, SubCode};
+pub use source::Source;
 pub use waypoint_type::WaypointType;
 pub use waypoint_usage::WaypointUsage;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum FieldError {
     InvalidLength,
     InvalidValue(&'static str),
@@ -112,5 +120,39 @@ impl<const I: usize, const N: usize> fmt::Display for AlphaNumericField<I, N> {
                 .map_err(|_| fmt::Error)?
                 .trim_end()
         )
+    }
+}
+
+#[derive(Debug)]
+pub struct NumericField<const I: usize, const N: usize>(u32);
+
+impl<const I: usize, const N: usize> Field for NumericField<I, N> {}
+
+impl<const I: usize, const N: usize> str::FromStr for NumericField<I, N> {
+    type Err = FieldError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s[I..I + N].parse::<u32>() {
+            Ok(b) => Ok(Self(b)),
+            _ => Err(FieldError::NotANumber),
+        }
+    }
+}
+
+impl<const I: usize, const N: usize> PartialEq<u32> for NumericField<I, N> {
+    fn eq(&self, other: &u32) -> bool {
+        self.0 == *other
+    }
+}
+
+impl<const I: usize, const N: usize> fmt::Display for NumericField<I, N> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl<const I: usize, const N: usize> From<NumericField<I, N>> for u32 {
+    fn from(value: NumericField<I, N>) -> Self {
+        value.0
     }
 }
