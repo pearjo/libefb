@@ -13,17 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::collections::HashMap;
+
 use efb::aircraft::*;
 use efb::fms::*;
 use efb::fp::*;
 use efb::measurements::*;
-use efb::nd::InputFormat;
+use efb::nd::{InputFormat, RunwayConditionCode, RunwaySurface};
 use efb::*;
 
 const ARINC_424_RECORDS: &'static str = r#"SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
+SEURP EDDHEDGRW05    0106630500 N53371100E009580180                          151                                           124362502
+SEURP EDDHEDGRW23    0106632300 N53380900E009595876                          151                                           124362502
+SEURP EDDHEDGRW15    0120271530 N53391500E009583076                          151                                           124362502
+SEURP EDDHEDGRW33    0120273330 N53374300E009595081                          151                                           124362502
 SEURPCEDDHED N1    ED0    V     N53482105E010015451                                 WGE           NOVEMBER1                359892409
 SEURPCEDDHED N2    ED0    V     N53405701E010000576                                 WGE           NOVEMBER2                359902409
 SEURP EDHFEDA        0        N N53593300E009343600E000000082                   P    MWGE    ITZEHOE/HUNGRIGER WOLF        320782409
+SEURP EDHFEDGRW02    0034120260 N53591751E009342331                          098                                           120792502
+SEURP EDHFEDGRW20    0034122060 N53594752E009344856                          098                                           120792502
+SEURP EDHFEDGRW09    0023230910 N53592877E009335932                          131                                           120792502
+SEURP EDHFEDGRW27    0023232710 N53592838E009344247                          131                                           120792502
 "#;
 
 fn main() {
@@ -51,6 +61,59 @@ fn main() {
         // with more values.
         VerticalDistance::Altitude(10000),
     );
+
+    let takeoff_perf = TakeoffLandingPerformance {
+        table: vec![
+            (
+                VerticalDistance::PressureAltitude(0),
+                Temperature::celsius(0.0),
+                Length::ft(845.0),
+                Length::ft(1510.0),
+            ),
+            (
+                VerticalDistance::PressureAltitude(0),
+                Temperature::celsius(10.0),
+                Length::ft(910.0),
+                Length::ft(1625.0),
+            ),
+            (
+                VerticalDistance::PressureAltitude(0),
+                Temperature::celsius(20.0),
+                Length::ft(980.0),
+                Length::ft(1745.0),
+            ),
+            (
+                VerticalDistance::PressureAltitude(0),
+                Temperature::celsius(30.0),
+                Length::ft(1055.0),
+                Length::ft(1875.0),
+            ),
+            (
+                VerticalDistance::PressureAltitude(0),
+                Temperature::celsius(40.0),
+                Length::ft(1135.0),
+                Length::ft(2015.0),
+            ),
+        ],
+        factors: Some(AlteringFactors::new(&vec![
+            // Decrease distances 10% for each 9 knots headwind. For operation
+            // with tail winds up to 10 knots, increase distances by 10% for
+            // each 2 knots.
+            AlteringFactor::DecreaseHeadwind(FactorOfEffect::Rate {
+                numerator: 0.1,
+                denominator: Speed::kt(9.0),
+            }),
+            AlteringFactor::IncreaseTailwind(FactorOfEffect::Rate {
+                numerator: 0.1,
+                denominator: Speed::kt(2.0),
+            }),
+            // For operation on dry, grass runway, increase distances by 15% of
+            // the "ground roll" figure.
+            AlteringFactor::IncreaseRWYCC(HashMap::from([
+                ((None, Some(RunwaySurface::Grass)), 0.15), // we'll add 15% on any grass
+            ])),
+        ])),
+    };
 
     let aircraft = Aircraft {
         registration: String::from("N12345"),
@@ -110,8 +173,9 @@ fn main() {
     let _ = fms.nd().read(ARINC_424_RECORDS, InputFormat::Arinc424);
 
     // decode a route from EDDH to EDHF with winds at 20 kt from 290° and
-    // cruising speed of 107 kt and an altitude of 2500 ft.
-    let _ = fms.decode("29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF");
+    // cruising speed of 107 kt and an altitude of 2500 ft. Takeoff runway in
+    // EDDH is runway 33 and landing runway in EDHF is 20.
+    let _ = fms.decode("29020KT N0107 A0250 EDDH RWY33 DHN2 DHN1 EDHF RWY20");
 
     // Now we can enter some data into the flight planning to get a fuel planning
     // and mass & balance calculation.
@@ -130,9 +194,13 @@ fn main() {
         .set_policy(FuelPolicy::ManualFuel(diesel!(Volume::l(80.0))))
         .set_taxi(diesel!(Volume::l(10.0)))
         .set_reserve(Reserve::Manual(Duration::s(1800))) // 30 min
-        .set_perf(perf);
+        .set_perf(perf)
+        .set_takeoff_perf(takeoff_perf)
+        // we use the route's wind so no need to specify it here
+        .set_origin_rwycc(RunwayConditionCode::Six)
+        .set_origin_temperature(Temperature::celsius(20.0));
 
     let _ = fms.build_flight_planning(&builder);
 
-    println!("{}", fms.print(40))
+    println!("{}", fms.print(40));
 }
