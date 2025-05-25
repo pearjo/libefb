@@ -17,9 +17,10 @@
 use crate::aircraft::Aircraft;
 use crate::error::Error;
 use crate::fp::*;
-use crate::measurements::Mass;
+use crate::measurements::{Mass, Temperature};
+use crate::nd::RunwayConditionCode;
 use crate::route::Route;
-use crate::Fuel;
+use crate::{Fuel, Wind};
 
 use super::{SubSystem, SubSystemBuilder};
 
@@ -31,6 +32,16 @@ pub struct FlightPlanningBuilder {
     taxi: Option<Fuel>,
     reserve: Option<Reserve>,
     perf: Option<Performance>,
+    takeoff_perf: Option<TakeoffLandingPerformance>,
+    takeoff_factors: Option<AlteringFactors>,
+    origin_rwycc: Option<RunwayConditionCode>,
+    origin_wind: Option<Wind>,
+    origin_temperature: Option<Temperature>,
+    landing_perf: Option<TakeoffLandingPerformance>,
+    landing_factors: Option<AlteringFactors>,
+    destination_rwycc: Option<RunwayConditionCode>,
+    destination_wind: Option<Wind>,
+    destination_temperature: Option<Temperature>,
 }
 
 impl FlightPlanningBuilder {
@@ -42,6 +53,16 @@ impl FlightPlanningBuilder {
             taxi: None,
             reserve: None,
             perf: None,
+            takeoff_perf: None,
+            takeoff_factors: None,
+            origin_rwycc: None,
+            origin_wind: None,
+            origin_temperature: None,
+            landing_perf: None,
+            landing_factors: None,
+            destination_rwycc: None,
+            destination_wind: None,
+            destination_temperature: None,
         }
     }
 
@@ -98,6 +119,111 @@ impl FlightPlanningBuilder {
         self.perf = Some(perf);
         self
     }
+
+    pub fn takeoff_perf(&self) -> Option<&TakeoffLandingPerformance> {
+        self.takeoff_perf.as_ref()
+    }
+
+    pub fn set_takeoff_perf(
+        &mut self,
+        perf: TakeoffLandingPerformance,
+    ) -> &mut FlightPlanningBuilder {
+        self.takeoff_perf = Some(perf);
+        self
+    }
+
+    pub fn takeoff_factors(&self) -> Option<&AlteringFactors> {
+        self.takeoff_factors.as_ref()
+    }
+
+    pub fn set_takeoff_factors(&mut self, factors: AlteringFactors) -> &mut FlightPlanningBuilder {
+        self.takeoff_factors = Some(factors);
+        self
+    }
+
+    pub fn origin_rwycc(&self) -> Option<&RunwayConditionCode> {
+        self.origin_rwycc.as_ref()
+    }
+
+    pub fn set_origin_rwycc(&mut self, rwycc: RunwayConditionCode) -> &mut FlightPlanningBuilder {
+        self.origin_rwycc = Some(rwycc);
+        self
+    }
+
+    pub fn origin_wind(&self) -> Option<&Wind> {
+        self.origin_wind.as_ref()
+    }
+
+    pub fn set_origin_wind(&mut self, wind: Wind) -> &mut FlightPlanningBuilder {
+        self.origin_wind = Some(wind);
+        self
+    }
+
+    pub fn origin_temperature(&self) -> Option<&Temperature> {
+        self.origin_temperature.as_ref()
+    }
+
+    pub fn set_origin_temperature(
+        &mut self,
+        temperature: Temperature,
+    ) -> &mut FlightPlanningBuilder {
+        self.origin_temperature = Some(temperature);
+        self
+    }
+
+    pub fn landing_perf(&self) -> Option<&TakeoffLandingPerformance> {
+        self.landing_perf.as_ref()
+    }
+
+    pub fn set_landing_perf(
+        &mut self,
+        perf: TakeoffLandingPerformance,
+    ) -> &mut FlightPlanningBuilder {
+        self.landing_perf = Some(perf);
+        self
+    }
+
+    pub fn landing_factors(&self) -> Option<&AlteringFactors> {
+        self.landing_factors.as_ref()
+    }
+
+    pub fn set_landing_factors(&mut self, factors: AlteringFactors) -> &mut FlightPlanningBuilder {
+        self.landing_factors = Some(factors);
+        self
+    }
+
+    pub fn destination_rwycc(&self) -> Option<&RunwayConditionCode> {
+        self.destination_rwycc.as_ref()
+    }
+
+    pub fn set_destination_rwycc(
+        &mut self,
+        rwycc: RunwayConditionCode,
+    ) -> &mut FlightPlanningBuilder {
+        self.destination_rwycc = Some(rwycc);
+        self
+    }
+
+    pub fn destination_wind(&self) -> Option<&Wind> {
+        self.destination_wind.as_ref()
+    }
+
+    pub fn set_destination_wind(&mut self, wind: Wind) -> &mut FlightPlanningBuilder {
+        self.destination_wind = Some(wind);
+        self
+    }
+
+    pub fn destination_temperature(&self) -> Option<&Temperature> {
+        self.destination_temperature.as_ref()
+    }
+
+    pub fn set_destination_temperature(
+        &mut self,
+        temperature: Temperature,
+    ) -> &mut FlightPlanningBuilder {
+        self.destination_temperature = Some(temperature);
+        self
+    }
 }
 
 impl SubSystemBuilder for FlightPlanningBuilder {
@@ -128,10 +254,60 @@ impl SubSystemBuilder for FlightPlanningBuilder {
             _ => None,
         };
 
+        let takeoff_rwy_analysis: Option<RunwayAnalysis> = match (
+            &route.takeoff_rwy(),
+            self.origin_rwycc,
+            &self
+                .origin_wind
+                .or(route.legs().first().and_then(|leg| leg.wind()).cloned()),
+            self.origin_temperature,
+            &mb,
+            &self.takeoff_perf,
+        ) {
+            (Some(rwy), Some(rwycc), Some(wind), Some(temperature), Some(mb), Some(perf)) => {
+                Some(RunwayAnalysis::takeoff(
+                    rwy,
+                    rwycc,
+                    wind,
+                    temperature,
+                    mb,
+                    perf,
+                    self.takeoff_factors.as_ref(),
+                ))
+            }
+            _ => None,
+        };
+
+        let landing_rwy_analysis: Option<RunwayAnalysis> = match (
+            &route.landing_rwy(),
+            self.destination_rwycc,
+            &self
+                .destination_wind
+                .or(route.legs().last().and_then(|leg| leg.wind()).cloned()),
+            self.destination_temperature,
+            &mb,
+            &self.landing_perf,
+        ) {
+            (Some(rwy), Some(rwycc), Some(wind), Some(temperature), Some(mb), Some(perf)) => {
+                Some(RunwayAnalysis::landing(
+                    rwy,
+                    rwycc,
+                    wind,
+                    temperature,
+                    mb,
+                    perf,
+                    self.landing_factors.as_ref(),
+                ))
+            }
+            _ => None,
+        };
+
         Ok(FlightPlanning {
             aircraft: self.aircraft.clone(),
             fuel_planning,
             mb,
+            takeoff_rwy_analysis,
+            landing_rwy_analysis,
         })
     }
 }
@@ -141,6 +317,8 @@ pub struct FlightPlanning {
     aircraft: Option<Aircraft>,
     fuel_planning: Option<FuelPlanning>,
     mb: Option<MassAndBalance>,
+    takeoff_rwy_analysis: Option<RunwayAnalysis>,
+    landing_rwy_analysis: Option<RunwayAnalysis>,
 }
 
 impl FlightPlanning {
@@ -157,6 +335,14 @@ impl FlightPlanning {
             (Some(ac), Some(mb)) => Some(ac.is_balanced(mb)),
             _ => None,
         }
+    }
+
+    pub fn takeoff_rwy_analysis(&self) -> Option<&RunwayAnalysis> {
+        self.takeoff_rwy_analysis.as_ref()
+    }
+
+    pub fn landing_rwy_analysis(&self) -> Option<&RunwayAnalysis> {
+        self.landing_rwy_analysis.as_ref()
     }
 }
 
