@@ -47,6 +47,7 @@ typedef enum {
   Meters,
   NauticalMiles,
   Inches,
+  Feet,
 } EfbLengthUnit;
 
 /// Mass unit with _kg_ as SI unit.
@@ -70,6 +71,7 @@ typedef enum {
 
 typedef struct EfbAircraftBuilder EfbAircraftBuilder;
 
+/// A point that spawns the CG envelope.
 typedef struct EfbCGLimit EfbCGLimit;
 
 /// The Flight Management System (FMS).
@@ -111,8 +113,8 @@ typedef struct EfbLeg EfbLeg;
 /// loaded on the aircraft. The mass is computed as sum of all station's mass
 /// and the balance is the sum of all moment divided by the total mass.
 ///
-/// [`Aircraft`]: super::Aircraft
-/// [`Station`]: super::Station
+/// [`Aircraft`]: crate::aircraft::Aircraft
+/// [`Station`]: crate::aircraft::Station
 typedef struct EfbMassAndBalance EfbMassAndBalance;
 
 typedef struct EfbPerformanceTable EfbPerformanceTable;
@@ -201,7 +203,31 @@ typedef struct {
 
 typedef EfbMeasurementf32SpeedUnit EfbSpeed;
 
-/// The wind with a speed and direction
+/// The wind with a speed and direction.
+///
+/// The wind can be split into headwind (or tailwind) and crosswind components
+/// for a direction. This provides e.g. information of the crosswind component
+/// on landing.
+///
+/// # Examples
+///
+/// ```
+/// # use std::str::FromStr;
+/// # use efb::error::Error;
+/// # use efb::measurements::{Angle, Speed};
+/// # use efb::Wind;
+/// #
+/// # fn main() -> Result<(), Error> {
+/// // the wind as reported from our destinations METAR
+/// // blowing from the south
+/// let wind = Wind::from_str("00010KT")?;
+///
+/// // we land on runway 09 pointing to the east so we have full 10 knots
+/// // crosswind from the right
+/// assert_eq!(wind.crosswind(&Angle::t(90.0)), Speed::kt(-10.0));
+/// #     Ok(())
+/// # }
+/// ```
 typedef struct {
   /// The direction from which the wind comes.
   EfbAngle direction;
@@ -233,6 +259,8 @@ typedef enum {
   Agl,
   /// Altitude in feet with reference to a local air pressure.
   Altitude,
+  /// Pressure altitude in feet.
+  PressureAltitude,
   /// Flight level in hundreds of feet as altitude at standard air pressure.
   Fl,
   /// Ground level.
@@ -251,6 +279,9 @@ typedef struct {
     };
     struct {
       uint16_t altitude;
+    };
+    struct {
+      int16_t pressure_altitude;
     };
     struct {
       uint16_t fl;
@@ -392,6 +423,10 @@ efb_angle_magnetic_north(float radians);
 /// Returns a length in meter.
 EfbLength
 efb_length_m(float m);
+
+/// Returns a length in feet.
+EfbLength
+efb_length_ft(float ft);
 
 /// Returns a length in nautical miles.
 EfbLength

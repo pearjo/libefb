@@ -16,7 +16,7 @@
 use crate::fc;
 use crate::geom::Coordinate;
 use crate::nd::*;
-use crate::MagneticVariation;
+use crate::{MagneticVariation, VerticalDistance};
 
 use arinc424;
 
@@ -85,6 +85,9 @@ impl From<arinc424::Airport> for Airport {
             name: String::from(""),
             coordinate: (aprt.latitude, aprt.longitude).into(),
             mag_var: aprt.mag_var.into(),
+            // TODO: Parse elevation and runways.
+            elevation: VerticalDistance::Gnd,
+            runways: Vec::new(),
             cycle: aprt.cycle.into(),
         }
     }

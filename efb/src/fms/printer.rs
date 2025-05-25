@@ -15,8 +15,8 @@
 
 use std::fmt::{Error, Write as _};
 
-use super::{FlightPlanning, FMS};
-use crate::fp::FuelPlanning;
+use super::{FMS, FlightPlanning};
+use crate::fp::{FuelPlanning, RunwayAnalysis};
 use crate::measurements::LengthUnit;
 use crate::nd::*;
 use crate::route::Route;
@@ -44,6 +44,14 @@ impl Printer {
             }
 
             self.write_mb(&mut buffer, flight_planning)?;
+
+            if let Some(rwy_analysis) = flight_planning.takeoff_rwy_analysis() {
+                self.write_takeoff_landing_rwy_analysis(&mut buffer, "TAKEOFF RWY", rwy_analysis)?;
+            }
+
+            if let Some(rwy_analysis) = flight_planning.landing_rwy_analysis() {
+                self.write_takeoff_landing_rwy_analysis(&mut buffer, "LANDING RWY", rwy_analysis)?;
+            }
         }
 
         Ok(buffer)
@@ -198,6 +206,55 @@ impl Printer {
 
         writeln!(buffer)?;
         writeln!(buffer, "BALANCED {:>1$}", balanced, self.line_length - 9)?;
+        writeln!(buffer)?;
+
+        Ok(())
+    }
+
+    fn write_takeoff_landing_rwy_analysis(
+        &self,
+        buffer: &mut String,
+        section: &str,
+        rwy_analysis: &RunwayAnalysis,
+    ) -> Result<(), Error> {
+        self.write_section(buffer, section)?;
+
+        writeln!(
+            buffer,
+            "HEADWIND {:>1$.0}",
+            rwy_analysis.headwind(),
+            self.line_length - 9
+        )?;
+
+        writeln!(
+            buffer,
+            "CROSSWIND {:>1$.0}",
+            rwy_analysis.crosswind(),
+            self.line_length - 10
+        )?;
+
+        writeln!(
+            buffer,
+            "GROUND ROLL {:>1$.0}",
+            rwy_analysis.ground_roll(),
+            self.line_length - 12
+        )?;
+
+        writeln!(
+            buffer,
+            "MARGIN {:>1$.0}",
+            rwy_analysis.margin(),
+            self.line_length - 7
+        )?;
+
+        writeln!(
+            buffer,
+            "MARGIN in % {:>1$.2}",
+            rwy_analysis.pct_margin(),
+            self.line_length - 12
+        )?;
+
+        writeln!(buffer)?;
 
         Ok(())
     }

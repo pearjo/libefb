@@ -13,8 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod cg_envelope;
-pub mod station;
+//! An aircraft to plan and fly with.
+
+mod cg_envelope;
+mod station;
 
 use crate::error::Error;
 use crate::fp::MassAndBalance;
@@ -165,7 +167,7 @@ impl Aircraft {
             .reduce(|acc, fuel| acc + fuel)
     }
 
-    /// Tests if the mass & balance is within the aircraft's [`cg_envelope`].
+    /// Tests if the mass & balance is within the aircraft's [`CGEnvelope`].
     pub fn is_balanced(&self, mb: &MassAndBalance) -> bool {
         self.cg_envelope.contains(mb)
     }

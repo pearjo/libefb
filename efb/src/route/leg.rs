@@ -172,9 +172,7 @@ fn wind_correction_angle(wind: &Wind, tas: &Speed, bearing: &Angle) -> Angle {
     //
     // from which we get the wca as following:
     Angle::from_si(
-        (wind.speed / *tas * wind_angle.to_si().sin())
-            .to_si()
-            .asin(),
+        (wind.speed / *tas * wind_angle.to_si().sin()).asin(),
         AngleUnit::TrueNorth,
     )
 }

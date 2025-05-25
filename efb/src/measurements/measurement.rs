@@ -185,10 +185,10 @@ where
     T: Div<Output = T>,
     U: UnitOfMeasure<T>,
 {
-    type Output = Self;
+    type Output = T;
 
     fn div(self, rhs: Self) -> Self::Output {
-        Self::from_si(self.to_si() / rhs.to_si(), self.unit)
+        self.to_si() / rhs.to_si()
     }
 }
 
@@ -201,5 +201,15 @@ where
 
     fn div(self, rhs: T) -> Self::Output {
         Self::from_si(self.to_si() / rhs, self.unit)
+    }
+}
+
+impl<T, U> From<Measurement<T, U>> for f32
+where
+    T: Into<f32>,
+    U: UnitOfMeasure<T>,
+{
+    fn from(value: Measurement<T, U>) -> Self {
+        value.to_si().into()
     }
 }

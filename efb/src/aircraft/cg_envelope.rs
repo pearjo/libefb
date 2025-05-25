@@ -17,6 +17,7 @@ use crate::algorithm;
 use crate::fp::MassAndBalance;
 use crate::measurements::{Length, Mass};
 
+/// A point that spawns the CG envelope.
 #[derive(Clone, Debug)]
 pub struct CGLimit {
     pub mass: Mass,
