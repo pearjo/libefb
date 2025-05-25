@@ -46,7 +46,7 @@
 //! // Now we can decode a Route from EDDH to EDHF with takeoff runway 33 and
 //! // landing runway 20. Cruise speed is 107kt at an cruise altitude of 2500ft.
 //! // The wind is 20kt from 290°.
-//! fms.decode("29020KT N0107 A0250 EDDH RWY33 DHN2 DHN1 EDHF RWY20")?;
+//! fms.decode("29020KT N0107 A0250 EDDH RWY33 EDHF RWY20")?;
 //! #     Ok(())
 //! # }
 //! ```
