@@ -110,7 +110,7 @@ impl Add<MagneticVariation> for Angle {
         };
 
         match self.unit() {
-            AngleUnit::TrueNorth => Self::t(self.value + mag_var),
+            AngleUnit::TrueNorth => Self::m(self.value + mag_var),
             AngleUnit::MagneticNorth => panic!("Angle is already magnetic!"),
             AngleUnit::Radian => panic!("Magnetic variation can only be add to true north angles!"),
         }
@@ -128,6 +128,13 @@ mod tests {
             west,
             Angle::from_si(1.5 * std::f32::consts::PI, AngleUnit::TrueNorth)
         );
+    }
+
+    #[test]
+    fn add_magnetic_variation() {
+        let west = Angle::t(270.0);
+        let mag_var_east = MagneticVariation::East(3.0);
+        assert_eq!(west + mag_var_east, Angle::m(267.0));
     }
 
     #[test]
