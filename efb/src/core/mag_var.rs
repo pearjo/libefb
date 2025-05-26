@@ -13,10 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::geom::Coordinate;
 use std::fmt::{Display, Formatter, Result};
-use time::{Date, Month, OffsetDateTime, Time};
-use wmm::declination;
+
+use time::OffsetDateTime;
+use world_magnetic_model::GeomagneticField;
+use world_magnetic_model::uom::si::{
+    angle::degree, angle::radian, f32::Angle, f32::Length, length::meter,
+};
+
+use crate::geom::Coordinate;
 
 /// The magnetic variation (declination) of a point.
 ///
@@ -34,16 +39,13 @@ pub enum MagneticVariation {
 
 impl From<Coordinate> for MagneticVariation {
     fn from(value: Coordinate) -> Self {
-        // TODO Use a new WMM library which has the 2025 model implemented!
-        let date = OffsetDateTime::new_utc(
-            Date::from_calendar_date(2024, Month::December, 31).unwrap(),
-            Time::from_hms_nano(12, 59, 59, 500_000_000).unwrap(),
+        let mag_var = GeomagneticField::new(
+            Length::new::<meter>(0.0),
+            Angle::new::<radian>(value.latitude.to_radians()),
+            Angle::new::<radian>(value.longitude.to_radians()),
+            OffsetDateTime::now_utc().date(),
         )
-        .date();
-
-        // TODO write an own implementation of the WMM that returns the last
-        // known declination, even if the coefficients are outdated.
-        let mag_var = declination(date, value.latitude, value.longitude).unwrap();
+        .map_or(1.0, |field| field.declination().get::<degree>());
 
         if mag_var.is_sign_negative() {
             Self::West(mag_var.abs())

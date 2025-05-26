@@ -28,7 +28,7 @@ readme = "../README.md"
 [dependencies]
 arinc424 = { path = "../arinc424", version = "0.1.1" }
 time = "0.3.36"
-wmm = "0.2.3"
+world_magnetic_model = "0.2.0"
 
 [dev-dependencies]
 clap = { version = "4.5.18", features = ["derive"] }
