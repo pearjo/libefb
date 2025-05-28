@@ -40,6 +40,11 @@ impl<T, U> Measurement<T, U>
 where
     U: UnitOfMeasure<T>,
 {
+    /// Create new measurement from a value and unit.
+    pub fn new(value: T, unit: U) -> Self {
+        Self { value, unit }
+    }
+
     /// The measure's value.
     pub fn value(&self) -> &T {
         &self.value
