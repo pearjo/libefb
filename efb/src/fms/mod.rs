@@ -24,6 +24,7 @@ mod subs;
 pub use printer::*;
 pub use subs::*;
 
+#[derive(PartialEq, Debug)]
 pub struct FMS {
     nd: NavigationData,
     route: Route,

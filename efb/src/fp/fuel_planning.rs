@@ -20,7 +20,7 @@ use crate::route::Route;
 use crate::{Fuel, VerticalDistance};
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Reserve {
     Manual(Duration),
 }
@@ -33,8 +33,14 @@ impl Reserve {
     }
 }
 
+impl Default for Reserve {
+    fn default() -> Self {
+        Self::Manual(Duration::default())
+    }
+}
+
 #[repr(C)]
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum FuelPolicy {
     MinimumFuel,
     MaximumFuel,
@@ -43,7 +49,7 @@ pub enum FuelPolicy {
     ExtraFuel(Fuel),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct FuelPlanning {
     taxi: Fuel,
     climb: Option<Fuel>,

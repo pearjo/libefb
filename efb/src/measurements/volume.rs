@@ -26,6 +26,10 @@ pub enum VolumeUnit {
 }
 
 impl UnitOfMeasure<f32> for VolumeUnit {
+    fn si() -> Self {
+        Self::CubicMeters
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::CubicMeters => "m³",

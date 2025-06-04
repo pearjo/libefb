@@ -29,6 +29,10 @@ pub enum LengthUnit {
 }
 
 impl UnitOfMeasure<f32> for LengthUnit {
+    fn si() -> Self {
+        Self::Meters
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::Meters => "m",

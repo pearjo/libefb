@@ -18,7 +18,7 @@ use crate::{FuelFlow, VerticalDistance};
 
 /// A row of the performance table presenting a performance up to a specific
 /// level.
-#[derive(Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct PerformanceTableRow {
     pub level: VerticalDistance,
     pub tas: Speed,
@@ -30,7 +30,7 @@ pub type PerformanceTable = Vec<PerformanceTableRow>;
 
 /// Used to provide [Speed] or [FuelFlow] for a defined performance setting at
 /// different level.
-#[derive(Clone)]
+#[derive(Clone, Eq, PartialEq, Debug, Default)]
 pub struct Performance {
     table: PerformanceTable,
 }

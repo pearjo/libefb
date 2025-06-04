@@ -45,7 +45,7 @@ use crate::measurements::{Angle, Speed, SpeedUnit};
 /// # }
 /// ```
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
 pub struct Wind {
     /// The direction from which the wind comes.
     pub direction: Angle,

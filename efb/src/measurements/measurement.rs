@@ -83,6 +83,16 @@ where
     }
 }
 
+impl<T, U> Default for Measurement<T, U>
+where
+    T: Default,
+    U: UnitOfMeasure<T>,
+{
+    fn default() -> Self {
+        Self::new(T::default(), U::si())
+    }
+}
+
 impl<T, U> fmt::Display for Measurement<T, U>
 where
     T: std::fmt::Display,

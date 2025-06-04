@@ -46,7 +46,7 @@ use super::Influences;
 /// // for 18kt we get a factor of 20%
 /// assert_eq!(factor.factor(Speed::kt(18.0)), 0.2);
 /// ```
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum FactorOfEffect<T>
 where
     T: Into<f32>,
@@ -86,7 +86,7 @@ where
 ///
 /// The factor is applied to the ground roll and distance to clear a 50ft
 /// obstacle depending on the influences affecting the takeoff or landing.
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum AlteringFactor {
     DecreaseHeadwind(FactorOfEffect<Speed>),
     IncreaseTailwind(FactorOfEffect<Speed>),
@@ -148,7 +148,7 @@ impl AlteringFactor {
 }
 
 /// The product of all takeoff or landing altering factors.
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug, Default)]
 pub struct AlteringFactors {
     factors: Vec<AlteringFactor>,
 }

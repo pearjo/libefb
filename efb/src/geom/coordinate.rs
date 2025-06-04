@@ -24,7 +24,7 @@ mod constants {
 
 /// Coordinate value.
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, PartialEq, PartialOrd, Debug, Default)]
 pub struct Coordinate {
     /// Latitude in the range from -180° east to 180° west.
     pub latitude: f32,

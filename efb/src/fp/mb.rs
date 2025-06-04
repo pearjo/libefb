@@ -24,7 +24,7 @@ use crate::measurements::{Length, LengthUnit, Mass};
 ///
 /// [`Aircraft`]: crate::aircraft::Aircraft
 /// [`Station`]: crate::aircraft::Station
-#[derive(Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
 pub struct MassAndBalance {
     on_ramp: Mass,
     after_landing: Mass,

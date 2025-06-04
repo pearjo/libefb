@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::geom::Coordinate;
 use crate::MagneticVariation;
+use crate::geom::Coordinate;
 
 /// A fix location with coordinates.
 pub trait Fix: Sized {

@@ -19,7 +19,7 @@ use crate::VerticalDistance;
 
 use super::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Airport {
     pub icao_ident: String,
     pub iata_designator: String,

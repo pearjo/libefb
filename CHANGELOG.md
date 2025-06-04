@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Improve interoperability by deriving common traits
+
 ## [0.3.0] - 2025-05-25
 
 ### Added

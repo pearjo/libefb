@@ -31,6 +31,10 @@
 ///
 /// // the length's value is a float
 /// impl UnitOfMeasure<f32> for LengthUnit {
+///     fn si() -> Self {
+///         Self::Meters
+///     }
+///
 ///     fn symbol(&self) -> &'static str {
 ///         match self {
 ///             Self::Meters => "m",
@@ -52,6 +56,9 @@
 /// ```
 /// [`Measurement`]: super::Measurement
 pub trait UnitOfMeasure<T> {
+    /// Returns the SI unit.
+    fn si() -> Self;
+
     /// The unit's symbol e.g. `m` for meters.
     fn symbol(&self) -> &str;
 

@@ -27,7 +27,7 @@ pub use cg_envelope::{CGEnvelope, CGLimit};
 pub use station::{LoadedStation, Station};
 
 /// An aircraft's fuel tank.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
 pub struct FuelTank {
     /// The tank's capacity.
     pub capacity: Volume,
@@ -123,7 +123,7 @@ pub struct FuelTank {
 /// // finally we can check if the aircraft is balanced throughout the flight
 /// assert!(ac.is_balanced(&mb.unwrap()));
 /// ```
-#[derive(Clone, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug)]
 pub struct Aircraft {
     /// The unique registration code of the aircraft aka tail number.
     pub registration: String, // TODO: Add a Registration type with country and validation.

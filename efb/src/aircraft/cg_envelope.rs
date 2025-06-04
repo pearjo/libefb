@@ -18,7 +18,7 @@ use crate::fp::MassAndBalance;
 use crate::measurements::{Length, Mass};
 
 /// A point that spawns the CG envelope.
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
 pub struct CGLimit {
     pub mass: Mass,
     pub distance: Length,
@@ -75,7 +75,7 @@ pub struct CGLimit {
 /// // finally we can check if our CG is within the envelope
 /// assert!(cg_envelope.contains(&mb));
 /// ```
-#[derive(Clone, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug, Default)]
 pub struct CGEnvelope {
     limits: Vec<CGLimit>,
 }

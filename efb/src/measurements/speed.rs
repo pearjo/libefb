@@ -29,6 +29,10 @@ pub enum SpeedUnit {
 }
 
 impl UnitOfMeasure<f32> for SpeedUnit {
+    fn si() -> Self {
+        Self::MetersPerSecond
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::MetersPerSecond => "mps",

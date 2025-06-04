@@ -26,6 +26,10 @@ pub enum MassUnit {
 }
 
 impl UnitOfMeasure<f32> for MassUnit {
+    fn si() -> Self {
+        Self::Kilograms
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::Kilograms => "kg",

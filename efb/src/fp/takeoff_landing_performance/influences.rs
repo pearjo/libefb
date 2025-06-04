@@ -18,6 +18,7 @@ use crate::nd::{Runway, RunwayConditionCode, RunwaySurface};
 use crate::{VerticalDistance, Wind};
 
 /// Influences affecting the takeoff or landing performance.
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Influences {
     mass: Mass,
     headwind: Speed,

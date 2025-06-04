@@ -24,7 +24,7 @@ use crate::{Fuel, Wind};
 
 use super::{SubSystem, SubSystemBuilder};
 
-#[derive(Clone, Default)]
+#[derive(Clone, PartialEq, Debug, Default)]
 pub struct FlightPlanningBuilder {
     aircraft: Option<Aircraft>,
     mass: Option<Vec<Mass>>,
@@ -312,7 +312,7 @@ impl SubSystemBuilder for FlightPlanningBuilder {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct FlightPlanning {
     aircraft: Option<Aircraft>,
     fuel_planning: Option<FuelPlanning>,

@@ -26,6 +26,7 @@ use crate::route::Route;
 /// The printer can [`print`] the route and if available the fuel and mass & balance
 /// of the FMS to a String with a defined line length. The result can be used to
 /// print it to a physical sheet of paper as a hard copy of the planning.
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 pub struct Printer {
     /// The line length of the printers output.
     pub(super) line_length: usize,

@@ -16,7 +16,7 @@
 //! Algorithms.
 
 /// A point within a cartesian coordinate system.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, PartialOrd, Debug, Default)]
 pub struct Point {
     /// The x coordinate.
     pub x: f32,

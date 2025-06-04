@@ -19,7 +19,7 @@ use super::Coordinate;
 use crate::algorithm;
 
 /// A polygon spawned by coordinates.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, PartialEq, PartialOrd, Debug, Default)]
 pub struct Polygon {
     coords: Vec<Coordinate>,
 }
@@ -27,7 +27,7 @@ pub struct Polygon {
 impl Polygon {
     /// Constructs a new, empty Polygon.
     pub fn new() -> Self {
-        Polygon { coords: Vec::new() }
+        Self::default()
     }
 
     /// Appends a coordinate to the back of the coordinates.
@@ -56,12 +56,6 @@ impl Polygon {
     /// Consumes the Polygon, returning its inner vector of coordinates.
     pub fn into_inner(self) -> Vec<Coordinate> {
         self.coords
-    }
-}
-
-impl Default for Polygon {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

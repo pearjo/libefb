@@ -29,6 +29,10 @@ pub enum PressureUnit {
 }
 
 impl UnitOfMeasure<f32> for PressureUnit {
+    fn si() -> Self {
+        Self::Pascal
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::InchesOfMercury => "inHg",

@@ -25,7 +25,7 @@ use crate::measurements::{Duration, Length, Speed};
 use crate::nd::*;
 use crate::{Fuel, VerticalDistance, Wind};
 
-#[derive(Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum RouteElement {
     Speed(Speed),
     Level(VerticalDistance),
@@ -65,7 +65,7 @@ pub enum RouteElement {
 ///
 /// [`leg`]: Leg
 /// [`fixes`]: crate::nd::Fix
-#[derive(Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Route {
     elements: Vec<RouteElement>,
     legs: Vec<Leg>,

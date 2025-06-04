@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::cmp::{Ordering, PartialOrd};
+
 use crate::Wind;
 use crate::measurements::{Length, Speed, Temperature};
 use crate::nd::{Runway, RunwayConditionCode};
@@ -27,7 +29,7 @@ use super::{AlteringFactors, Influences, MassAndBalance, TakeoffLandingPerforman
 ///
 /// [`takeoff`]: RunwayAnalysis::takeoff
 /// [`landing`]: RunwayAnalysis::landing
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct RunwayAnalysis {
     headwind: Speed,
     crosswind: Speed,
@@ -130,5 +132,12 @@ impl RunwayAnalysis {
     /// Returns the margin in percent.
     pub fn pct_margin(&self) -> &f32 {
         &self.pct_margin
+    }
+}
+
+impl PartialOrd for RunwayAnalysis {
+    /// Order runway analysis by margin.
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.margin.partial_cmp(&other.margin)
     }
 }

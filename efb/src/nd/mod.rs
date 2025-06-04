@@ -15,13 +15,14 @@
 
 //! Navigation Data.
 
+use std::fmt;
 use std::fs;
 use std::path::Path;
 use std::rc::Rc;
 
+use crate::MagneticVariation;
 use crate::error::Error;
 use crate::geom::Coordinate;
-use crate::MagneticVariation;
 
 mod airac_cycle;
 mod airport;
@@ -40,7 +41,7 @@ pub use runway::*;
 pub use waypoint::*;
 
 #[repr(C)]
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum NavAid {
     Airport(Rc<Airport>),
     Waypoint(Rc<Waypoint>),
@@ -69,14 +70,20 @@ impl Fix for NavAid {
     }
 }
 
+impl fmt::Display for NavAid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.ident())
+    }
+}
+
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub enum InputFormat {
     Arinc424,
     OpenAir,
 }
 
-#[derive(Default, Debug)]
+#[derive(Clone, PartialEq, Debug, Default)]
 pub struct NavigationData {
     pub airports: Vec<Rc<Airport>>,
     pub airspaces: Airspaces,
@@ -142,8 +149,8 @@ impl NavigationData {
 
 #[cfg(test)]
 mod tests {
-    use crate::geom::Polygon;
     use crate::VerticalDistance;
+    use crate::geom::Polygon;
 
     use super::*;
 

@@ -15,8 +15,8 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-use crate::geom::Polygon;
 use crate::VerticalDistance;
+use crate::geom::Polygon;
 
 pub type Airspaces = Vec<Airspace>;
 
@@ -25,7 +25,7 @@ pub type Airspaces = Vec<Airspace>;
 /// The airspace is classified by the `class` and enclosed by the `polygon`.
 /// It ranges from the `floor` to `ceiling` in vertical direction.
 #[repr(C)]
-#[derive(Debug, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Airspace {
     pub name: String,
     pub class: AirspaceClass,
@@ -35,7 +35,7 @@ pub struct Airspace {
 }
 
 #[repr(C)]
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum AirspaceClass {
     A,
     B,

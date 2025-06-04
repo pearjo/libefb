@@ -29,6 +29,10 @@ pub enum AngleUnit {
 }
 
 impl UnitOfMeasure<f32> for AngleUnit {
+    fn si() -> Self {
+        AngleUnit::Radian
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::TrueNorth => "°T",

@@ -27,7 +27,7 @@ use crate::geom::Coordinate;
 ///
 /// Any [Coordinate] can be converted into a declination.
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum MagneticVariation {
     /// The declination is towards the east.
     East(f32),

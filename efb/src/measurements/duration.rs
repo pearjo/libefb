@@ -23,6 +23,10 @@ pub enum DurationUnit {
 }
 
 impl UnitOfMeasure<u32> for DurationUnit {
+    fn si() -> Self {
+        Self::Seconds
+    }
+
     fn symbol(&self) -> &'static str {
         "s"
     }

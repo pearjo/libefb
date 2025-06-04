@@ -22,7 +22,7 @@ mod influences;
 pub use altering_factors::*;
 pub use influences::*;
 
-#[derive(Clone, Eq, PartialEq, PartialOrd, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, PartialOrd, Debug, Default)]
 pub struct TakeoffLandingDistance {
     ground_roll: Length,
     clear_obstacle: Length,
@@ -43,7 +43,7 @@ impl TakeoffLandingDistance {
 /// This takeoff or landing performance provides the minimal estimated ground
 /// roll or distance to clear a 50ft obstacle. The performance is returned based
 /// on some [`Influences`] affecting the takeoff or landing.
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug, Default)]
 pub struct TakeoffLandingPerformance {
     pub table: Vec<(VerticalDistance, Temperature, Length, Length)>,
     pub factors: Option<AlteringFactors>,

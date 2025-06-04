@@ -19,7 +19,7 @@ use crate::geom::Coordinate;
 pub type Waypoints = Vec<Waypoint>;
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub enum WaypointUsage {
     VFROnly,
     Unknown,
@@ -28,7 +28,7 @@ pub enum WaypointUsage {
 /// The region where the waypoint is located. This can be either a terminal area
 /// or enroute if the holding fix is an enroute waypoint or enroute Navaid.
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub enum Region {
     /// An enroute fix or Navaid.
     Enroute,
@@ -38,7 +38,7 @@ pub enum Region {
 }
 
 #[repr(C)]
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Waypoint {
     pub fix_ident: String,
     pub desc: String,

@@ -24,6 +24,10 @@ pub enum DensityUnit {
 }
 
 impl UnitOfMeasure<f32> for DensityUnit {
+    fn si() -> Self {
+        Self::KilogramPerCubicMeter
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::KilogramPerCubicMeter => "kg/m³",

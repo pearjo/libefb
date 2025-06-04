@@ -26,7 +26,7 @@ mod constants {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum FuelType {
     Diesel,
     JetA,
@@ -42,7 +42,7 @@ impl FuelType {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct Fuel {
     pub fuel_type: FuelType,
     pub mass: Mass,
@@ -140,7 +140,7 @@ macro_rules! div_impl {
 div_impl! { usize f32 }
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum FuelFlow {
     PerHour(Fuel),
 }

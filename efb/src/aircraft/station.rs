@@ -23,7 +23,7 @@ use crate::measurements::{Length, Mass};
 /// actual payload.
 ///
 /// [`Aircraft`]: crate::fp::Aircraft
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Eq, PartialEq, Debug, Default)]
 pub struct Station {
     /// The lever's arm from the reference datum.
     pub arm: Length,
@@ -38,7 +38,7 @@ pub struct Station {
 /// skydiver).
 ///
 /// [`Aircraft`]: crate::fp::Aircraft
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Eq, PartialEq, Debug, Default)]
 pub struct LoadedStation {
     /// The station that is being loaded.
     pub station: Station,

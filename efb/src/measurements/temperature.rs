@@ -26,6 +26,10 @@ pub enum TemperatureUnit {
 }
 
 impl UnitOfMeasure<f64> for TemperatureUnit {
+    fn si() -> Self {
+        Self::Kelvin
+    }
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::Kelvin => "K",

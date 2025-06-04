@@ -19,7 +19,7 @@ use crate::nd::{Fix, NavAid};
 use crate::{Fuel, VerticalDistance, Wind};
 
 /// A leg `from` one point `to` another.
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Leg {
     from: NavAid,
     to: NavAid,
