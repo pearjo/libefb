@@ -51,4 +51,15 @@ pub enum Error {
 
     /// The planned fuel after landing exceeds the tank's capacity.
     ExceededFuelCapacityAfterLanding,
+
+    // Errors that can occur while building an aircraft:
+    //
+    /// The aircraft's registration is not set.
+    ExpectedRegistration,
+    /// The aircraft's empty mass is not set.
+    ExpectedEmptyMass,
+    /// The aircraft's empty balance is not set.
+    ExpectedEmptyBalance,
+    /// The aircraft's fuel type is not set.
+    ExpectedFuelType,
 }

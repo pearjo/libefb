@@ -115,9 +115,11 @@ fn main() {
         ])),
     };
 
-    let aircraft = Aircraft {
-        registration: String::from("N12345"),
-        stations: vec![
+    let builder = Aircraft::builder();
+
+    let aircraft = builder
+        .registration("N12345".to_string())
+        .stations(vec![
             Station {
                 arm: Length::m(0.94),
                 description: Some(String::from("front seats")),
@@ -134,15 +136,15 @@ fn main() {
                 arm: Length::m(3.12),
                 description: Some(String::from("second cargo compartment")),
             },
-        ],
-        empty_mass: Mass::kg(807.0),
-        empty_balance: Length::m(1.0),
-        fuel_type: FuelType::Diesel,
-        tanks: vec![FuelTank {
+        ])
+        .empty_mass(Mass::kg(807.0))
+        .empty_balance(Length::m(1.0))
+        .fuel_type(FuelType::Diesel)
+        .tanks(vec![FuelTank {
             capacity: Volume::l(168.8),
             arm: Length::m(1.22),
-        }],
-        cg_envelope: CGEnvelope::new(vec![
+        }])
+        .cg_envelope(vec![
             CGLimit {
                 mass: Mass::kg(0.0),
                 distance: Length::m(0.89),
@@ -163,9 +165,9 @@ fn main() {
                 mass: Mass::kg(0.0),
                 distance: Length::m(1.20),
             },
-        ]),
-        notes: None,
-    };
+        ])
+        .build()
+        .expect("all required aircraft parameter should be configured");
 
     let mut fms = FMS::new();
 

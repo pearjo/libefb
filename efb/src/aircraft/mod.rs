@@ -15,6 +15,7 @@
 
 //! An aircraft to plan and fly with.
 
+mod builder;
 mod cg_envelope;
 mod station;
 
@@ -23,6 +24,7 @@ use crate::fp::MassAndBalance;
 use crate::measurements::{Length, Mass, Volume};
 use crate::{Fuel, FuelType};
 
+pub use builder::AircraftBuilder;
 pub use cg_envelope::{CGEnvelope, CGLimit};
 pub use station::{LoadedStation, Station};
 
@@ -63,9 +65,10 @@ pub struct FuelTank {
 /// # use efb::measurements::{Length, Mass, Volume};
 /// # use efb::{diesel, Fuel, FuelType};
 /// #
-/// let ac = Aircraft {
-///     registration: String::from("N12345"),
-///     stations: vec![
+/// let builder = Aircraft::builder();
+/// let ac = builder
+///     .registration("N12345".to_string())
+///     .stations(vec![
 ///         Station {
 ///             arm: Length::m(0.94),
 ///             description: Some(String::from("front seats")),
@@ -82,25 +85,25 @@ pub struct FuelTank {
 ///             arm: Length::m(3.12),
 ///             description: Some(String::from("second cargo compartment")),
 ///         },
-///     ],
-///     empty_mass: Mass::kg(807.0),
-///     empty_balance: Length::m(1.0),
-///     fuel_type: FuelType::Diesel,
-///     tanks: vec![
+///     ])
+///     .empty_mass(Mass::kg(807.0))
+///     .empty_balance(Length::m(1.0))
+///     .fuel_type(FuelType::Diesel)
+///     .tanks(vec![
 ///         FuelTank {
 ///             capacity: Volume::l(168.8),
 ///             arm: Length::m(1.22),
 ///         },
-///     ],
-///     cg_envelope: CGEnvelope::new(vec![
+///     ])
+///     .cg_envelope(vec![
 ///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(0.89) },
 ///         CGLimit { mass: Mass::kg(885.0), distance: Length::m(0.89) },
 ///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.02) },
 ///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.20) },
 ///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(1.20) },
-///     ]),
-///     notes: None,
-/// };
+///     ])
+///     .build()
+///     .unwrap();
 ///
 /// // now we can calculate the mass & balance for a flight with one pilot on
 /// // board and 20 Liter fuel consumption that is distributed equally across
@@ -156,6 +159,11 @@ pub struct Aircraft {
 }
 
 impl Aircraft {
+    /// Returns a builder to build an aircraft.
+    pub fn builder() -> AircraftBuilder {
+        AircraftBuilder::new()
+    }
+
     /// Returns the usable fuel.
     ///
     /// The usable fuel is the sum of all tank capacities with the aircraft's
