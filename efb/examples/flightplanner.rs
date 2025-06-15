@@ -115,9 +115,7 @@ fn main() {
         ])),
     };
 
-    let builder = Aircraft::builder();
-
-    let aircraft = builder
+    let aircraft = Aircraft::builder()
         .registration("N12345".to_string())
         .stations(vec![
             Station {

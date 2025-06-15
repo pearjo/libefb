@@ -65,7 +65,7 @@ pub struct FuelTank {
 /// # use efb::measurements::{Length, Mass, Volume};
 /// # use efb::{diesel, Fuel, FuelType};
 /// #
-/// let builder = Aircraft::builder();
+/// let mut builder = Aircraft::builder();
 /// let ac = builder
 ///     .registration("N12345".to_string())
 ///     .stations(vec![

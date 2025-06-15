@@ -26,7 +26,7 @@ use crate::measurements::{Length, Mass};
 /// # use efb::measurements::{Mass, Length};
 /// use efb::aircraft::Aircraft;
 ///
-/// let builder = Aircraft::builder();
+/// let mut builder = Aircraft::builder();
 ///
 /// // this is a very impractical aircraft since it has no stations nor tanks
 /// let aircraft = builder
@@ -56,42 +56,42 @@ impl AircraftBuilder {
         Self::default()
     }
 
-    pub fn registration(mut self, registration: String) -> Self {
+    pub fn registration(&mut self, registration: String) -> &mut Self {
         self.registration = Some(registration);
         self
     }
 
-    pub fn stations(mut self, stations: Vec<Station>) -> Self {
+    pub fn stations(&mut self, stations: Vec<Station>) -> &mut Self {
         self.stations = stations;
         self
     }
 
-    pub fn empty_mass(mut self, empty_mass: Mass) -> Self {
+    pub fn empty_mass(&mut self, empty_mass: Mass) -> &mut Self {
         self.empty_mass = Some(empty_mass);
         self
     }
 
-    pub fn empty_balance(mut self, empty_balance: Length) -> Self {
+    pub fn empty_balance(&mut self, empty_balance: Length) -> &mut Self {
         self.empty_balance = Some(empty_balance);
         self
     }
 
-    pub fn fuel_type(mut self, fuel_type: FuelType) -> Self {
+    pub fn fuel_type(&mut self, fuel_type: FuelType) -> &mut Self {
         self.fuel_type = Some(fuel_type);
         self
     }
 
-    pub fn tanks(mut self, tanks: Vec<FuelTank>) -> Self {
+    pub fn tanks(&mut self, tanks: Vec<FuelTank>) -> &mut Self {
         self.tanks = tanks;
         self
     }
 
-    pub fn cg_envelope(mut self, cg_envelope: Vec<CGLimit>) -> Self {
+    pub fn cg_envelope(&mut self, cg_envelope: Vec<CGLimit>) -> &mut Self {
         self.cg_envelope = cg_envelope;
         self
     }
 
-    pub fn notes(mut self, notes: String) -> Self {
+    pub fn notes(&mut self, notes: String) -> &mut Self {
         self.notes = Some(notes);
         self
     }
