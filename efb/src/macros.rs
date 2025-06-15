@@ -13,6 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// Creates AvGas [`Fuel`] from the [`Volume`] at ISA conditions.
+///
+/// [`Fuel`]: crate::Fuel
+/// [`Volume`]: crate::measurements::Volume
+#[macro_export]
+macro_rules! avgas {
+    ($volume:expr) => {
+        Fuel::from_volume($volume, &FuelType::AvGas)
+    };
+}
+
 /// Creates Diesel [`Fuel`] from the [`Volume`] at ISA conditions.
 ///
 /// [`Fuel`]: crate::Fuel
@@ -20,10 +31,7 @@
 #[macro_export]
 macro_rules! diesel {
     ($volume:expr) => {
-        Fuel {
-            fuel_type: FuelType::Diesel,
-            mass: $volume * FuelType::Diesel.density(),
-        }
+        Fuel::from_volume($volume, &FuelType::Diesel)
     };
 }
 
@@ -34,10 +42,7 @@ macro_rules! diesel {
 #[macro_export]
 macro_rules! jet_a {
     ($volume:expr) => {
-        Fuel {
-            fuel_type: FuelType::JetA,
-            mass: $volume * FuelType::Diesel.density(),
-        }
+        Fuel::from_volume($volume, &FuelType::JetA)
     };
 }
 

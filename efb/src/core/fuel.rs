@@ -24,6 +24,7 @@ use crate::measurements::{Density, Duration, Mass, Volume};
 mod constants {
     use super::Density;
 
+    pub const AVGAS_AT_ISA: Density = Density::kg_per_l(0.75);
     pub const DIESEL_AT_ISA: Density = Density::kg_per_l(0.838);
     pub const JET_A_AT_ISA: Density = Density::kg_per_l(0.8);
 }
@@ -32,6 +33,7 @@ mod constants {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub enum FuelType {
+    AvGas,
     Diesel,
     JetA,
 }
@@ -39,6 +41,7 @@ pub enum FuelType {
 impl FuelType {
     pub fn density(&self) -> Density {
         match self {
+            Self::AvGas => constants::AVGAS_AT_ISA,
             Self::Diesel => constants::DIESEL_AT_ISA,
             Self::JetA => constants::JET_A_AT_ISA,
         }

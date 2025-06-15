@@ -33,6 +33,7 @@ typedef enum {
 } EfbDurationUnit;
 
 typedef enum {
+  AvGas,
   Diesel,
   JetA,
 } EfbFuelType;
