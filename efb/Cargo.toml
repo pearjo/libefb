@@ -31,8 +31,5 @@ serde = { version = "1.0.219", features = ["derive", "rc"], optional = true  }
 time = "0.3.36"
 world_magnetic_model = "0.2.0"
 
-[dev-dependencies]
-clap = { version = "4.5.18", features = ["derive"] }
-
 [features]
 serde = ["dep:serde"]
