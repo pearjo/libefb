@@ -173,7 +173,7 @@ fn product_of_factors() {
         RunwayConditionCode::Six,
     );
 
-    let factors = AlteringFactors::new(&vec![
+    let factors = AlteringFactors::new(vec![
         // Decrease distances 10% for each 9 knots headwind. For operation
         // with tail winds up to 10 knots, increase distances by 10% for
         // each 2 knots.

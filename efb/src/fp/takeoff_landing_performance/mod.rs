@@ -17,9 +17,11 @@ use crate::VerticalDistance;
 use crate::measurements::{Length, Temperature};
 
 mod altering_factors;
+mod builder;
 mod influences;
 
 pub use altering_factors::*;
+pub use builder::*;
 pub use influences::*;
 
 #[derive(Copy, Clone, Eq, PartialEq, PartialOrd, Debug, Default)]
@@ -47,18 +49,30 @@ impl TakeoffLandingDistance {
 pub struct TakeoffLandingPerformance {
     table: Vec<(VerticalDistance, Temperature, Length, Length)>,
     factors: Option<AlteringFactors>,
+    notes: Option<String>,
 }
 
 impl TakeoffLandingPerformance {
     pub fn new(
         table: Vec<(VerticalDistance, Temperature, Length, Length)>,
         factors: Option<AlteringFactors>,
+        notes: Option<String>,
     ) -> Self {
         Self {
             table,
             factors,
+            notes,
         }
     }
+
+    /// Returns a builder to construct the performance.
+    pub fn builder<I>(table: I) -> TakeoffLandingPerformanceBuilder
+    where
+        I: IntoIterator<Item = (VerticalDistance, Temperature, Length, Length)>,
+    {
+        TakeoffLandingPerformanceBuilder::new(table)
+    }
+
     /// Minimal predicted takeoff or landing distance.
     pub fn min_distance(&self, influences: &Influences) -> TakeoffLandingDistance {
         let distance = self.distance(influences.temperature(), influences.level());
@@ -125,6 +139,14 @@ impl TakeoffLandingPerformance {
             clear_obstacle: closest.3,
         }
     }
+
+    /// Notes regarding the performance.
+    ///
+    /// Use the notes to e.g. keep track of any specific conditions for which
+    /// the performance might only be valid.
+    pub fn notes(&self) -> Option<&String> {
+        self.notes.as_ref()
+    }
 }
 
 #[cfg(test)]
@@ -160,6 +182,7 @@ mod tests {
                     Length::ft(4800.0),
                 ),
             ],
+            None,
             None,
         );
 

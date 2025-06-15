@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add takeoff/landing performance builder
 - Add AvGas to fuels
 - Add serialization support feature
 - Add an aircraft builder

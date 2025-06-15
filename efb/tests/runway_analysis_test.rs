@@ -18,8 +18,7 @@ use std::str::FromStr;
 
 use efb::aircraft::{LoadedStation, Station};
 use efb::fp::{
-    AlteringFactor, AlteringFactors, FactorOfEffect, MassAndBalance, RunwayAnalysis,
-    TakeoffLandingPerformance,
+    AlteringFactor, FactorOfEffect, MassAndBalance, RunwayAnalysis, TakeoffLandingPerformance,
 };
 use efb::nd::{Runway, RunwayConditionCode, RunwaySurface};
 use efb::{VerticalDistance, Wind};
@@ -58,58 +57,57 @@ use efb::measurements::*;
 /// With a TORA of 2900ft we have a margin of 1898.2223ft which is 65% of the
 /// available length.
 fn rwy_analysis() -> RunwayAnalysis {
-    let perf = TakeoffLandingPerformance {
-        table: vec![
-            (
-                VerticalDistance::PressureAltitude(0),
-                Temperature::c(0.0),
-                Length::ft(845.0),
-                Length::ft(1510.0),
-            ),
-            (
-                VerticalDistance::PressureAltitude(0),
-                Temperature::c(10.0),
-                Length::ft(910.0),
-                Length::ft(1625.0),
-            ),
-            (
-                VerticalDistance::PressureAltitude(0),
-                Temperature::c(20.0),
-                Length::ft(980.0),
-                Length::ft(1745.0),
-            ),
-            (
-                VerticalDistance::PressureAltitude(0),
-                Temperature::c(30.0),
-                Length::ft(1055.0),
-                Length::ft(1875.0),
-            ),
-            (
-                VerticalDistance::PressureAltitude(0),
-                Temperature::c(40.0),
-                Length::ft(1135.0),
-                Length::ft(2015.0),
-            ),
-        ],
-        factors: Some(AlteringFactors::new(&vec![
-            // Decrease distances 10% for each 9 knots headwind. For operation
-            // with tail winds up to 10 knots, increase distances by 10% for
-            // each 2 knots.
-            AlteringFactor::DecreaseHeadwind(FactorOfEffect::Rate {
-                numerator: 0.1,
-                denominator: Speed::kt(9.0),
-            }),
-            AlteringFactor::IncreaseTailwind(FactorOfEffect::Rate {
-                numerator: 0.1,
-                denominator: Speed::kt(2.0),
-            }),
-            // For operation on dry, grass runway, increase distances by 15% of
-            // the "ground roll" figure.
-            AlteringFactor::IncreaseRWYCC(HashMap::from([
-                ((None, Some(RunwaySurface::Grass)), 0.15), // we'll add 15% on any grass
-            ])),
+    let perf = TakeoffLandingPerformance::builder(vec![
+        (
+            VerticalDistance::PressureAltitude(0),
+            Temperature::c(0.0),
+            Length::ft(845.0),
+            Length::ft(1510.0),
+        ),
+        (
+            VerticalDistance::PressureAltitude(0),
+            Temperature::c(10.0),
+            Length::ft(910.0),
+            Length::ft(1625.0),
+        ),
+        (
+            VerticalDistance::PressureAltitude(0),
+            Temperature::c(20.0),
+            Length::ft(980.0),
+            Length::ft(1745.0),
+        ),
+        (
+            VerticalDistance::PressureAltitude(0),
+            Temperature::c(30.0),
+            Length::ft(1055.0),
+            Length::ft(1875.0),
+        ),
+        (
+            VerticalDistance::PressureAltitude(0),
+            Temperature::c(40.0),
+            Length::ft(1135.0),
+            Length::ft(2015.0),
+        ),
+    ])
+    .factors(vec![
+        // Decrease distances 10% for each 9 knots headwind. For operation
+        // with tail winds up to 10 knots, increase distances by 10% for
+        // each 2 knots.
+        AlteringFactor::DecreaseHeadwind(FactorOfEffect::Rate {
+            numerator: 0.1,
+            denominator: Speed::kt(9.0),
+        }),
+        AlteringFactor::IncreaseTailwind(FactorOfEffect::Rate {
+            numerator: 0.1,
+            denominator: Speed::kt(2.0),
+        }),
+        // For operation on dry, grass runway, increase distances by 15% of
+        // the "ground roll" figure.
+        AlteringFactor::IncreaseRWYCC(HashMap::from([
+            ((None, Some(RunwaySurface::Grass)), 0.15), // we'll add 15% on any grass
         ])),
-    };
+    ])
+    .build();
 
     let west_grass_rwy = Runway {
         designator: String::from("27"),

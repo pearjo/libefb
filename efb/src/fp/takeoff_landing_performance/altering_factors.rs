@@ -155,9 +155,12 @@ pub struct AlteringFactors {
 
 impl AlteringFactors {
     /// Creates a new product of altering factors.
-    pub fn new(factors: &[AlteringFactor]) -> Self {
+    pub fn new<I>(factors: I) -> Self
+    where
+        I: IntoIterator<Item = AlteringFactor>,
+    {
         Self {
-            factors: Vec::from(factors),
+            factors: factors.into_iter().collect(),
         }
     }
 
