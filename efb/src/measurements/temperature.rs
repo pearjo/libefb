@@ -62,21 +62,21 @@ impl UnitOfMeasure<f64> for TemperatureUnit {
 pub type Temperature = Measurement<f64, TemperatureUnit>;
 
 impl Temperature {
-    pub fn kelvin(value: f64) -> Self {
+    pub fn k(value: f64) -> Self {
         Measurement {
             value,
             unit: TemperatureUnit::Kelvin,
         }
     }
 
-    pub fn celsius(value: f64) -> Self {
+    pub fn c(value: f64) -> Self {
         Measurement {
             value,
             unit: TemperatureUnit::Kelvin,
         }
     }
 
-    pub fn fahrenheit(value: f64) -> Self {
+    pub fn f(value: f64) -> Self {
         Measurement {
             value,
             unit: TemperatureUnit::Kelvin,

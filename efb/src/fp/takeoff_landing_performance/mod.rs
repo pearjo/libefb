@@ -130,25 +130,25 @@ mod tests {
             table: vec![
                 (
                     VerticalDistance::PressureAltitude(0),
-                    Temperature::celsius(0.0),
+                    Temperature::c(0.0),
                     Length::ft(800.0),
                     Length::ft(1500.0),
                 ),
                 (
                     VerticalDistance::PressureAltitude(0),
-                    Temperature::celsius(40.0),
+                    Temperature::c(40.0),
                     Length::ft(1000.0),
                     Length::ft(2000.0),
                 ),
                 (
                     VerticalDistance::PressureAltitude(8000),
-                    Temperature::celsius(0.0),
+                    Temperature::c(0.0),
                     Length::ft(1800.0),
                     Length::ft(3600.0),
                 ),
                 (
                     VerticalDistance::PressureAltitude(8000),
-                    Temperature::celsius(30.0),
+                    Temperature::c(30.0),
                     Length::ft(2300.0),
                     Length::ft(4800.0),
                 ),
@@ -157,14 +157,14 @@ mod tests {
         };
 
         assert_eq!(
-            perf.distance(&Temperature::celsius(-10.0), &VerticalDistance::Gnd)
+            perf.distance(&Temperature::c(-10.0), &VerticalDistance::Gnd)
                 .ground_roll,
             Length::ft(800.0)
         );
 
         assert_eq!(
             perf.distance(
-                &Temperature::celsius(20.0),
+                &Temperature::c(20.0),
                 &VerticalDistance::PressureAltitude(1000)
             )
             .ground_roll,

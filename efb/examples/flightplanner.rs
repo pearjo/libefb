@@ -66,31 +66,31 @@ fn main() {
         table: vec![
             (
                 VerticalDistance::PressureAltitude(0),
-                Temperature::celsius(0.0),
+                Temperature::c(0.0),
                 Length::ft(845.0),
                 Length::ft(1510.0),
             ),
             (
                 VerticalDistance::PressureAltitude(0),
-                Temperature::celsius(10.0),
+                Temperature::c(10.0),
                 Length::ft(910.0),
                 Length::ft(1625.0),
             ),
             (
                 VerticalDistance::PressureAltitude(0),
-                Temperature::celsius(20.0),
+                Temperature::c(20.0),
                 Length::ft(980.0),
                 Length::ft(1745.0),
             ),
             (
                 VerticalDistance::PressureAltitude(0),
-                Temperature::celsius(30.0),
+                Temperature::c(30.0),
                 Length::ft(1055.0),
                 Length::ft(1875.0),
             ),
             (
                 VerticalDistance::PressureAltitude(0),
-                Temperature::celsius(40.0),
+                Temperature::c(40.0),
                 Length::ft(1135.0),
                 Length::ft(2015.0),
             ),
@@ -200,7 +200,7 @@ fn main() {
         .set_takeoff_perf(takeoff_perf)
         // we use the route's wind so no need to specify it here
         .set_origin_rwycc(RunwayConditionCode::Six)
-        .set_origin_temperature(Temperature::celsius(20.0));
+        .set_origin_temperature(Temperature::c(20.0));
 
     let _ = fms.build_flight_planning(&builder);
 

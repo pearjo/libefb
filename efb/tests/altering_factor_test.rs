@@ -42,7 +42,7 @@ fn factor_for_winds() {
             Mass::kg(0.0),
             &west_grass_rwy(VerticalDistance::Gnd),
             &Wind::from_str(wind).unwrap(),
-            Temperature::celsius(15.0),
+            Temperature::c(15.0),
             RunwayConditionCode::Six,
         )
     }
@@ -77,7 +77,7 @@ fn factor_for_rwycc_and_surface() {
             Mass::kg(0.0),
             &west_grass_rwy(VerticalDistance::Gnd),
             &Wind::from_str("00000KT").unwrap(),
-            Temperature::celsius(15.0),
+            Temperature::c(15.0),
             rwycc,
         )
     }
@@ -127,7 +127,7 @@ fn factor_for_pressure_altitude() {
             Mass::kg(0.0),
             &west_grass_rwy(elev),
             &Wind::from_str("00000KT").unwrap(),
-            Temperature::celsius(15.0),
+            Temperature::c(15.0),
             RunwayConditionCode::Six,
         )
     }
@@ -169,7 +169,7 @@ fn product_of_factors() {
         Mass::kg(0.0),
         &west_grass_rwy(VerticalDistance::Gnd),
         &Wind::from_str("27010KT").unwrap(),
-        Temperature::celsius(15.0),
+        Temperature::c(15.0),
         RunwayConditionCode::Six,
     );
 
