@@ -46,9 +46,9 @@ impl MassAndBalance {
         for loaded_station in loaded_stations {
             on_ramp = on_ramp + loaded_station.on_ramp;
             after_landing = after_landing + loaded_station.after_landing;
-            moment_on_ramp += loaded_station.on_ramp.to_si() * loaded_station.station.arm.to_si();
+            moment_on_ramp += loaded_station.on_ramp.to_si() * loaded_station.station.arm().to_si();
             moment_after_landing +=
-                loaded_station.after_landing.to_si() * loaded_station.station.arm.to_si();
+                loaded_station.after_landing.to_si() * loaded_station.station.arm().to_si();
         }
 
         Self {
@@ -87,19 +87,13 @@ mod tests {
     fn test_stations() -> Vec<LoadedStation> {
         vec![
             LoadedStation {
-                station: Station {
-                    arm: Length::m(1.0),
-                    description: None,
-                },
+                station: Station::new(Length::m(1.0), None),
                 on_ramp: Mass::kg(80.0),
                 after_landing: Mass::kg(80.0),
             },
             // we have a skydiver in the back that jumps out during the flight
             LoadedStation {
-                station: Station {
-                    arm: Length::m(2.0),
-                    description: None,
-                },
+                station: Station::new(Length::m(2.0), None),
                 on_ramp: Mass::kg(80.0),
                 after_landing: Mass::kg(0.0),
             },

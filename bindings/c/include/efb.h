@@ -515,36 +515,21 @@ efb_volume_l(float l);
 const EfbMass *
 efb_cg_limit_mass(const EfbCGLimit *limit);
 
-void
-efb_cg_limit_set_mass(EfbCGLimit *limit, EfbMass mass);
-
 /// Returns the limit's distance in reference to the aircraft's datum.
 const EfbLength *
 efb_cg_limit_distance(const EfbCGLimit *limit);
-
-void
-efb_cg_limit_set_distance(EfbCGLimit *limit, EfbLength distance);
 
 /// Returns the tanks arm in reference to the aircraft's datum.
 const EfbLength *
 efb_fuel_tank_arm(const EfbFuelTank *tank);
 
-void
-efb_fuel_tank_set_arm(EfbFuelTank *tank, EfbLength arm);
-
 /// Returns the tanks capacity.
 const EfbVolume *
 efb_fuel_tank_capacity(const EfbFuelTank *tank);
 
-void
-efb_fuel_tank_set_capacity(EfbFuelTank *tank, EfbVolume capacity);
-
 /// Returns the stations arm in reference to the aircraft's datum.
 const EfbLength *
 efb_station_arm(const EfbStation *station);
-
-void
-efb_station_set_arm(EfbStation *station, EfbLength arm);
 
 /// Returns the stations description or null if undefined.
 ///
@@ -553,9 +538,6 @@ efb_station_set_arm(EfbStation *station, EfbLength arm);
 /// The returned value, if not null, needs to be freed by [`efb_string_free`].
 char *
 efb_station_description(const EfbStation *station);
-
-void
-efb_station_set_description(EfbStation *station, const char *description);
 
 /// Creates and returns a new FMS.
 ///

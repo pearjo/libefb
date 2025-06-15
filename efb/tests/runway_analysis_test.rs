@@ -126,10 +126,7 @@ fn rwy_analysis() -> RunwayAnalysis {
     // the mass and balance is irrelevant for this test since we don't have any
     // mass factors
     let mb = MassAndBalance::new(&vec![LoadedStation {
-        station: Station {
-            arm: Length::m(1.0),
-            description: None,
-        },
+        station: Station::new(Length::m(1.0), None),
         on_ramp: Mass::kg(1111.0),
         after_landing: Mass::kg(1111.0),
     }]);

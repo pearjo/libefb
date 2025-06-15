@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::ffi::{c_char, CStr, CString};
+use std::ffi::{CString, c_char};
 use std::ptr::null_mut;
 
 use efb::aircraft::Station;
@@ -22,12 +22,7 @@ use efb::measurements::Length;
 /// Returns the stations arm in reference to the aircraft's datum.
 #[no_mangle]
 pub extern "C" fn efb_station_arm(station: &Station) -> &Length {
-    &station.arm
-}
-
-#[no_mangle]
-pub extern "C" fn efb_station_set_arm(station: &mut Station, arm: Length) {
-    station.arm = arm
+    station.arm()
 }
 
 /// Returns the stations description or null if undefined.
@@ -37,17 +32,10 @@ pub extern "C" fn efb_station_set_arm(station: &mut Station, arm: Length) {
 /// The returned value, if not null, needs to be freed by [`efb_string_free`].
 #[no_mangle]
 pub extern "C" fn efb_station_description(station: &Station) -> *mut c_char {
-    match &station.description {
+    match station.description() {
         Some(description) => CString::new(description.clone())
             .expect("Invalid station description!")
             .into_raw(),
         None => null_mut::<c_char>(),
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn efb_station_set_description(station: &mut Station, description: *const c_char) {
-    if let Ok(description) = unsafe { CStr::from_ptr(description).to_str() } {
-        let _ = station.description.insert(String::from(description));
     }
 }

@@ -45,11 +45,20 @@ impl TakeoffLandingDistance {
 /// on some [`Influences`] affecting the takeoff or landing.
 #[derive(Clone, PartialEq, Debug, Default)]
 pub struct TakeoffLandingPerformance {
-    pub table: Vec<(VerticalDistance, Temperature, Length, Length)>,
-    pub factors: Option<AlteringFactors>,
+    table: Vec<(VerticalDistance, Temperature, Length, Length)>,
+    factors: Option<AlteringFactors>,
 }
 
 impl TakeoffLandingPerformance {
+    pub fn new(
+        table: Vec<(VerticalDistance, Temperature, Length, Length)>,
+        factors: Option<AlteringFactors>,
+    ) -> Self {
+        Self {
+            table,
+            factors,
+        }
+    }
     /// Minimal predicted takeoff or landing distance.
     pub fn min_distance(&self, influences: &Influences) -> TakeoffLandingDistance {
         let distance = self.distance(influences.temperature(), influences.level());
@@ -67,9 +76,7 @@ impl TakeoffLandingPerformance {
                     .map_or(1.0, |f| f.clear_obstacle_factor(influences)),
         }
     }
-}
 
-impl TakeoffLandingPerformance {
     pub fn distance(
         &self,
         temperature: &Temperature,
@@ -126,8 +133,8 @@ mod tests {
 
     #[test]
     fn get_closest_distance_from_table() {
-        let perf = TakeoffLandingPerformance {
-            table: vec![
+        let perf = TakeoffLandingPerformance::new(
+            vec![
                 (
                     VerticalDistance::PressureAltitude(0),
                     Temperature::c(0.0),
@@ -153,8 +160,8 @@ mod tests {
                     Length::ft(4800.0),
                 ),
             ],
-            factors: None,
-        };
+            None,
+        );
 
         assert_eq!(
             perf.distance(&Temperature::c(-10.0), &VerticalDistance::Gnd)

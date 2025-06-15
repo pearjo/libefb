@@ -118,51 +118,27 @@ fn main() {
     let aircraft = Aircraft::builder()
         .registration("N12345".to_string())
         .stations(vec![
-            Station {
-                arm: Length::m(0.94),
-                description: Some(String::from("front seats")),
-            },
-            Station {
-                arm: Length::m(1.85),
-                description: Some(String::from("back seats")),
-            },
-            Station {
-                arm: Length::m(2.41),
-                description: Some(String::from("first cargo compartment")),
-            },
-            Station {
-                arm: Length::m(3.12),
-                description: Some(String::from("second cargo compartment")),
-            },
+            Station::new(Length::m(0.94), Some(String::from("front seats"))),
+            Station::new(Length::m(1.85), Some(String::from("back seats"))),
+            Station::new(
+                Length::m(2.41),
+                Some(String::from("first cargo compartment")),
+            ),
+            Station::new(
+                Length::m(3.12),
+                Some(String::from("second cargo compartment")),
+            ),
         ])
         .empty_mass(Mass::kg(807.0))
         .empty_balance(Length::m(1.0))
         .fuel_type(FuelType::Diesel)
-        .tanks(vec![FuelTank {
-            capacity: Volume::l(168.8),
-            arm: Length::m(1.22),
-        }])
+        .tanks(vec![FuelTank::new(Volume::l(168.8), Length::m(1.22))])
         .cg_envelope(vec![
-            CGLimit {
-                mass: Mass::kg(0.0),
-                distance: Length::m(0.89),
-            },
-            CGLimit {
-                mass: Mass::kg(885.0),
-                distance: Length::m(0.89),
-            },
-            CGLimit {
-                mass: Mass::kg(1111.0),
-                distance: Length::m(1.02),
-            },
-            CGLimit {
-                mass: Mass::kg(1111.0),
-                distance: Length::m(1.20),
-            },
-            CGLimit {
-                mass: Mass::kg(0.0),
-                distance: Length::m(1.20),
-            },
+            CGLimit::new(Mass::kg(0.0), Length::m(0.89)),
+            CGLimit::new(Mass::kg(885.0), Length::m(0.89)),
+            CGLimit::new(Mass::kg(1111.0), Length::m(1.02)),
+            CGLimit::new(Mass::kg(1111.0), Length::m(1.20)),
+            CGLimit::new(Mass::kg(0.0), Length::m(1.20)),
         ])
         .build()
         .expect("all required aircraft parameter should be configured");

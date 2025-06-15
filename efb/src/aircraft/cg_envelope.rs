@@ -20,8 +20,22 @@ use crate::measurements::{Length, Mass};
 /// A point that spawns the CG envelope.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
 pub struct CGLimit {
-    pub mass: Mass,
-    pub distance: Length,
+    mass: Mass,
+    distance: Length,
+}
+
+impl CGLimit {
+    pub fn new(mass: Mass, distance: Length) -> Self {
+        Self { mass, distance }
+    }
+
+    pub fn mass(&self) -> &Mass {
+        &self.mass
+    }
+
+    pub fn distance(&self) -> &Length {
+        &self.distance
+    }
 }
 
 /// An aircraft's center of gravity (CG) envelope.
@@ -49,11 +63,11 @@ pub struct CGLimit {
 /// //
 /// //               Length
 /// let cg_envelope = CGEnvelope::new(vec![
-///     CGLimit { mass: Mass::kg(0.0), distance: Length::m(0.89) },    // 0
-///     CGLimit { mass: Mass::kg(885.0), distance: Length::m(0.89) },  // 1
-///     CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.02) }, // 2
-///     CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.20) }, // 3
-///     CGLimit { mass: Mass::kg(0.0), distance: Length::m(1.20) },    // 4
+///     CGLimit::new(Mass::kg(0.0), Length::m(0.89)),    // 0
+///     CGLimit::new(Mass::kg(885.0), Length::m(0.89)),  // 1
+///     CGLimit::new(Mass::kg(1111.0), Length::m(1.02)), // 2
+///     CGLimit::new(Mass::kg(1111.0), Length::m(1.20)), // 3
+///     CGLimit::new(Mass::kg(0.0), Length::m(1.20)),    // 4
 /// ]);
 ///
 /// // now we calculate the mass & balance which we want to check against our envelope
@@ -61,10 +75,7 @@ pub struct CGLimit {
 ///     // just for this example we simplify our aircraft as one station
 ///     LoadedStation {
 ///         // we and the fuel have an arm of 1.1 m from the reference datum
-///         station: Station {
-///             arm: Length::m(1.1),
-///             description: None,
-///         },
+///         station: Station::new(Length::m(1.1), None),
 ///         // we start our journey with the pilot and some fuel on board
 ///         on_ramp: Mass::kg(897.0),
 ///         // and we burned 10 kg on our little sight seeing trip
@@ -164,19 +175,13 @@ mod tests {
         ]);
 
         let balanced = MassAndBalance::new(&vec![LoadedStation {
-            station: Station {
-                arm: Length::m(0.5),
-                description: None,
-            },
+            station: Station::new(Length::m(0.5), None),
             on_ramp: Mass::kg(0.5),
             after_landing: Mass::kg(0.5),
         }]);
 
         let unbalanced = MassAndBalance::new(&vec![LoadedStation {
-            station: Station {
-                arm: Length::m(0.0),
-                description: None,
-            },
+            station: Station::new(Length::m(0.0), None),
             on_ramp: Mass::kg(1.0),
             after_landing: Mass::kg(1.0),
         }]);

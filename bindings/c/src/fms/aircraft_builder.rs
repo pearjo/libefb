@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::ffi::{c_char, CStr};
+use std::ffi::{CStr, c_char};
 use std::slice::Iter;
 
+use efb::FuelType;
 use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
 use efb::measurements::{Length, Mass, Volume};
-use efb::FuelType;
 
 #[derive(Default)]
 pub struct AircraftBuilder<'a> {
@@ -90,10 +90,9 @@ pub extern "C" fn efb_aircraft_builder_stations_push<'a>(
 ) -> Option<&'a Station> {
     let description = unsafe { CStr::from_ptr(description).to_str() };
 
-    builder.stations.push(Station {
-        arm,
-        description: description.ok().map(String::from),
-    });
+    builder
+        .stations
+        .push(Station::new(arm, description.ok().map(String::from)));
     builder.stations.last()
 }
 
@@ -157,7 +156,7 @@ pub extern "C" fn efb_aircraft_builder_tanks_push<'a>(
     capacity: Volume,
     arm: Length,
 ) -> Option<&'a FuelTank> {
-    builder.tanks.push(FuelTank { capacity, arm });
+    builder.tanks.push(FuelTank::new(capacity, arm));
     builder.tanks.last()
 }
 
@@ -201,7 +200,7 @@ pub extern "C" fn efb_aircraft_builder_cg_envelope_push<'a>(
     mass: Mass,
     distance: Length,
 ) -> Option<&'a CGLimit> {
-    builder.cg_envelope.push(CGLimit { mass, distance });
+    builder.cg_envelope.push(CGLimit::new(mass, distance));
     builder.cg_envelope.last()
 }
 

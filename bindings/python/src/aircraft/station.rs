@@ -41,10 +41,7 @@ impl PyStation {
     #[pyo3(signature = (arm, description=None))]
     pub fn new(arm: PyLength, description: Option<String>) -> Self {
         Self {
-            station: Station {
-                arm: arm.into(),
-                description,
-            },
+            station: Station::new(arm.into(), description),
         }
     }
 }

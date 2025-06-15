@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Reduce public struct fields to stabilize API
 - Use symbols to create temperature
 - Improve interoperability by deriving common traits
 

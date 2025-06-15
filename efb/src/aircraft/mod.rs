@@ -31,11 +31,24 @@ pub use station::{LoadedStation, Station};
 /// An aircraft's fuel tank.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
 pub struct FuelTank {
+    capacity: Volume,
+    arm: Length,
+}
+
+impl FuelTank {
+    pub fn new(capacity: Volume, arm: Length) -> Self {
+        Self { capacity, arm }
+    }
+
     /// The tank's capacity.
-    pub capacity: Volume,
+    pub fn capacity(&self) -> &Volume {
+        &self.capacity
+    }
 
     /// The distance of the tank to the aircraft's reference datum.
-    pub arm: Length,
+    pub fn arm(&self) -> &Length {
+        &self.arm
+    }
 }
 
 /// The aircraft we're planning to fly with.
@@ -69,38 +82,23 @@ pub struct FuelTank {
 /// let ac = builder
 ///     .registration("N12345".to_string())
 ///     .stations(vec![
-///         Station {
-///             arm: Length::m(0.94),
-///             description: Some(String::from("front seats")),
-///         },
-///         Station {
-///             arm: Length::m(1.85),
-///             description: Some(String::from("back seats")),
-///         },
-///         Station {
-///             arm: Length::m(2.41),
-///             description: Some(String::from("first cargo compartment")),
-///         },
-///         Station {
-///             arm: Length::m(3.12),
-///             description: Some(String::from("second cargo compartment")),
-///         },
+///         Station::new(Length::m(0.94), Some(String::from("front seats"))),
+///         Station::new(Length::m(1.85), Some(String::from("back seats"))),
+///         Station::new(Length::m(2.41), Some(String::from("first cargo compartment"))),
+///         Station::new(Length::m(3.12), Some(String::from("second cargo compartment"))),
 ///     ])
 ///     .empty_mass(Mass::kg(807.0))
 ///     .empty_balance(Length::m(1.0))
 ///     .fuel_type(FuelType::Diesel)
 ///     .tanks(vec![
-///         FuelTank {
-///             capacity: Volume::l(168.8),
-///             arm: Length::m(1.22),
-///         },
+///         FuelTank::new(Volume::l(168.8), Length::m(1.22)),
 ///     ])
 ///     .cg_envelope(vec![
-///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(0.89) },
-///         CGLimit { mass: Mass::kg(885.0), distance: Length::m(0.89) },
-///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.02) },
-///         CGLimit { mass: Mass::kg(1111.0), distance: Length::m(1.20) },
-///         CGLimit { mass: Mass::kg(0.0), distance: Length::m(1.20) },
+///         CGLimit::new(Mass::kg(0.0), Length::m(0.89)),
+///         CGLimit::new(Mass::kg(885.0), Length::m(0.89)),
+///         CGLimit::new(Mass::kg(1111.0), Length::m(1.02)),
+///         CGLimit::new(Mass::kg(1111.0), Length::m(1.20)),
+///         CGLimit::new(Mass::kg(0.0), Length::m(1.20)),
 ///     ])
 ///     .build()
 ///     .unwrap();
@@ -235,10 +233,7 @@ impl Aircraft {
     /// Returns a station representing the empty aircraft.
     fn empty(&self) -> LoadedStation {
         LoadedStation {
-            station: Station {
-                arm: self.empty_balance,
-                description: Some(String::from("Empty Aircraft")),
-            },
+            station: Station::new(self.empty_balance, Some(String::from("Empty Aircraft"))),
             on_ramp: self.empty_mass,
             after_landing: self.empty_mass,
         }
@@ -301,10 +296,7 @@ impl Aircraft {
                 }
 
                 loaded_stations.push(LoadedStation {
-                    station: Station {
-                        arm: tank.arm,
-                        description: None,
-                    },
+                    station: Station::new(tank.arm, None),
                     on_ramp: fuel_on_ramp.mass,
                     after_landing: fuel_after_landing.mass,
                 });
@@ -354,14 +346,8 @@ mod tests {
         let ac = Aircraft {
             registration: String::from("N12345"),
             stations: vec![
-                Station {
-                    arm: Length::m(1.0),
-                    description: None,
-                },
-                Station {
-                    arm: Length::m(2.0),
-                    description: None,
-                },
+                Station::new(Length::m(1.0), None),
+                Station::new(Length::m(2.0), None),
             ],
             empty_mass: Mass::kg(0.0),
             empty_balance: Length::m(0.0),

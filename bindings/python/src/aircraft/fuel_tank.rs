@@ -40,10 +40,7 @@ impl PyFuelTank {
     #[new]
     pub fn new(capacity: PyVolume, arm: PyLength) -> Self {
         Self {
-            tank: FuelTank {
-                capacity: capacity.into(),
-                arm: arm.into(),
-            },
+            tank: FuelTank::new(capacity.into(), arm.into()),
         }
     }
 }

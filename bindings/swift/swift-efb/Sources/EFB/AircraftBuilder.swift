@@ -25,9 +25,6 @@ public struct Station: Identifiable {
         get {
             .init(efb_station_arm(station).pointee)
         }
-        set(newArm) {
-            efb_station_set_arm(station, EfbLength(length: newArm))
-        }
     }
 
     public var description: String {
@@ -39,9 +36,6 @@ public struct Station: Identifiable {
 
                 return String(cString: description)
             } ?? ""
-        }
-        set(newDescription) {
-            efb_station_set_description(station, newDescription)
         }
     }
 
@@ -59,17 +53,11 @@ public struct FuelTank: Identifiable {
         get {
             .init(efb_fuel_tank_arm(tank).pointee)
         }
-        set(newArm) {
-            efb_fuel_tank_set_arm(tank, EfbLength(length: newArm))
-        }
     }
 
     public var capacity: Measurement<UnitVolume> {
         get {
             .init(efb_fuel_tank_capacity(tank).pointee)
-        }
-        set(newCapacity) {
-            efb_fuel_tank_set_capacity(tank, EfbVolume(volume: newCapacity))
         }
     }
 
@@ -87,17 +75,11 @@ public struct CGLimit: Identifiable {
         get {
             .init(efb_cg_limit_mass(limit).pointee)
         }
-        set(newMass) {
-            efb_cg_limit_set_mass(limit, EfbMass(mass: newMass))
-        }
     }
 
     public var distance: Measurement<UnitLength> {
         get {
             .init(efb_cg_limit_distance(limit).pointee)
-        }
-        set(newDistance) {
-            efb_cg_limit_set_distance(limit, EfbLength(length: newDistance))
         }
     }
 

@@ -47,10 +47,7 @@ impl PyCGEnvelope {
             envelope: CGEnvelope::new(
                 limits
                     .into_iter()
-                    .map(|limit| CGLimit {
-                        mass: limit.0.into(),
-                        distance: limit.1.into(),
-                    })
+                    .map(|limit| CGLimit::new(limit.0.into(), limit.1.into()))
                     .collect(),
             ),
         }

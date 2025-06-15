@@ -19,21 +19,11 @@ use efb::measurements::{Length, Volume};
 /// Returns the tanks arm in reference to the aircraft's datum.
 #[no_mangle]
 pub extern "C" fn efb_fuel_tank_arm(tank: &FuelTank) -> &Length {
-    &tank.arm
-}
-
-#[no_mangle]
-pub extern "C" fn efb_fuel_tank_set_arm(tank: &mut FuelTank, arm: Length) {
-    tank.arm = arm
+    tank.arm()
 }
 
 /// Returns the tanks capacity.
 #[no_mangle]
 pub extern "C" fn efb_fuel_tank_capacity(tank: &FuelTank) -> &Volume {
-    &tank.capacity
-}
-
-#[no_mangle]
-pub extern "C" fn efb_fuel_tank_set_capacity(tank: &mut FuelTank, capacity: Volume) {
-    tank.capacity = capacity
+    tank.capacity()
 }

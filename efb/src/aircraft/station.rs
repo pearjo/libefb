@@ -29,11 +29,24 @@ use crate::measurements::{Length, Mass};
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Station {
+    arm: Length,
+    description: Option<String>,
+}
+
+impl Station {
+    pub fn new(arm: Length, description: Option<String>) -> Self {
+        Self { arm, description }
+    }
+
     /// The lever's arm from the reference datum.
-    pub arm: Length,
+    pub fn arm(&self) -> &Length {
+        &self.arm
+    }
 
     /// A description of the station.
-    pub description: Option<String>,
+    pub fn description(&self) -> Option<&String> {
+        self.description.as_ref()
+    }
 }
 
 /// A mass at a defined point within an aircraft.
