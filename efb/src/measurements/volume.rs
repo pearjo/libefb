@@ -15,10 +15,14 @@
 
 use std::ops::Mul;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::{Density, DensityUnit, Mass, MassUnit, Measurement, UnitOfMeasure};
 
 /// Volume with _m³_ as SI unit.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub enum VolumeUnit {
     CubicMeters,

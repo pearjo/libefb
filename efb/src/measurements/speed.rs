@@ -15,12 +15,16 @@
 
 use std::str::FromStr;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::constants;
 use super::{Measurement, UnitOfMeasure};
 use crate::error::Error;
 
 /// Speed unit with _m/s_ as SI unit.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub enum SpeedUnit {
     MetersPerSecond,

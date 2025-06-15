@@ -15,6 +15,9 @@
 
 use std::fmt::{Display, Formatter};
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::fc;
 use crate::measurements::{Angle, Length};
 
@@ -23,8 +26,9 @@ mod constants {
 }
 
 /// Coordinate value.
-#[repr(C)]
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub struct Coordinate {
     /// Latitude in the range from -180° east to 180° west.
     pub latitude: f32,

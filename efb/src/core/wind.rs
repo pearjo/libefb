@@ -16,6 +16,9 @@
 use std::fmt;
 use std::str::FromStr;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::error::Error;
 use crate::measurements::{Angle, Speed, SpeedUnit};
 
@@ -44,8 +47,9 @@ use crate::measurements::{Angle, Speed, SpeedUnit};
 /// #     Ok(())
 /// # }
 /// ```
-#[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub struct Wind {
     /// The direction from which the wind comes.
     pub direction: Angle,

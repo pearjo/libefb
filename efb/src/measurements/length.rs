@@ -15,11 +15,15 @@
 
 use std::ops::Div;
 
-use super::{constants, SpeedUnit};
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::{Duration, DurationUnit, Measurement, Speed, UnitOfMeasure};
+use super::{SpeedUnit, constants};
 
 /// Length unit with _m_ as SI unit.
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub enum LengthUnit {
     Meters,

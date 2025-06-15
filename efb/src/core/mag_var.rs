@@ -15,6 +15,9 @@
 
 use std::fmt::{Display, Formatter, Result};
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use time::OffsetDateTime;
 use world_magnetic_model::GeomagneticField;
 use world_magnetic_model::uom::si::{
@@ -26,8 +29,9 @@ use crate::geom::Coordinate;
 /// The magnetic variation (declination) of a point.
 ///
 /// Any [Coordinate] can be converted into a declination.
-#[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub enum MagneticVariation {
     /// The declination is towards the east.
     East(f32),

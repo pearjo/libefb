@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::measurements::{Length, Mass};
 
 /// A position within the aircraft that can be loaded with a payload.
@@ -24,6 +27,7 @@ use crate::measurements::{Length, Mass};
 ///
 /// [`Aircraft`]: crate::fp::Aircraft
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Station {
     /// The lever's arm from the reference datum.
     pub arm: Length,
@@ -39,6 +43,7 @@ pub struct Station {
 ///
 /// [`Aircraft`]: crate::fp::Aircraft
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct LoadedStation {
     /// The station that is being loaded.
     pub station: Station,

@@ -15,12 +15,16 @@
 
 use std::ops::Add;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::constants;
 use super::{Measurement, UnitOfMeasure};
 use crate::MagneticVariation;
 
 /// Angle unit with _rad_ as SI unit.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub enum AngleUnit {
     TrueNorth,

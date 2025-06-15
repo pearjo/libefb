@@ -16,6 +16,9 @@
 use std::fmt::{Display, Formatter, Result};
 use std::ops::{Add, Div, Mul, Sub};
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::measurements::{Density, Duration, Mass, Volume};
 
 mod constants {
@@ -25,8 +28,9 @@ mod constants {
     pub const JET_A_AT_ISA: Density = Density::kg_per_l(0.8);
 }
 
-#[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub enum FuelType {
     Diesel,
     JetA,
@@ -41,8 +45,9 @@ impl FuelType {
     }
 }
 
-#[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub struct Fuel {
     pub fuel_type: FuelType,
     pub mass: Mass,

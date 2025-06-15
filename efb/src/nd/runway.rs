@@ -15,10 +15,14 @@
 
 use std::fmt;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::VerticalDistance;
 use crate::measurements::{Angle, Length};
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum RunwaySurface {
     Asphalt,
     Concrete,
@@ -26,6 +30,7 @@ pub enum RunwaySurface {
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum RunwayConditionCode {
     /// Dry.
     Six,
@@ -52,6 +57,7 @@ pub enum RunwayConditionCode {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Runway {
     pub designator: String,
     pub bearing: Angle,

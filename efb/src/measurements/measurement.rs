@@ -17,6 +17,9 @@ use std::cmp::Ordering;
 use std::fmt;
 use std::ops::{Add, Div, Mul, Sub};
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::UnitOfMeasure;
 
 /// A measurement of a physical quantity.
@@ -27,6 +30,7 @@ use super::UnitOfMeasure;
 /// unit as result if divided or multiplied (e.g. length divided by duration is
 /// speed) can implement those operations.
 #[derive(Copy, Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub struct Measurement<T, U>
 where

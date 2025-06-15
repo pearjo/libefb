@@ -20,6 +20,9 @@ use std::fs;
 use std::path::Path;
 use std::rc::Rc;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::MagneticVariation;
 use crate::error::Error;
 use crate::geom::Coordinate;
@@ -40,8 +43,9 @@ use parser::*;
 pub use runway::*;
 pub use waypoint::*;
 
-#[repr(C)]
 #[derive(Clone, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub enum NavAid {
     Airport(Rc<Airport>),
     Waypoint(Rc<Waypoint>),

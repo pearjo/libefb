@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::{Measurement, UnitOfMeasure};
 
 mod constants {
@@ -21,6 +24,7 @@ mod constants {
 
 /// Pressure with _Pa_ as SI unit.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub enum PressureUnit {
     InchesOfMercury,

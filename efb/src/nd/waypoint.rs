@@ -13,13 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::*;
 use crate::geom::Coordinate;
 
 pub type Waypoints = Vec<Waypoint>;
 
-#[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub enum WaypointUsage {
     VFROnly,
     Unknown,
@@ -27,8 +31,9 @@ pub enum WaypointUsage {
 
 /// The region where the waypoint is located. This can be either a terminal area
 /// or enroute if the holding fix is an enroute waypoint or enroute Navaid.
-#[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub enum Region {
     /// An enroute fix or Navaid.
     Enroute,
@@ -37,8 +42,9 @@ pub enum Region {
     TerminalArea([u8; 4]),
 }
 
-#[repr(C)]
 #[derive(Clone, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub struct Waypoint {
     pub fix_ident: String,
     pub desc: String,

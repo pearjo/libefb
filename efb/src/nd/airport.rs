@@ -13,13 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::geom::Coordinate;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 use crate::VerticalDistance;
+use crate::geom::Coordinate;
 
 use super::*;
 
 #[derive(Clone, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Airport {
     pub icao_ident: String,
     pub iata_designator: String,

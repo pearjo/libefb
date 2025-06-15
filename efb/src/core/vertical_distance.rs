@@ -19,6 +19,9 @@ use std::fmt;
 use std::ops::Div;
 use std::str::FromStr;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::error::Error;
 use crate::measurements::Pressure;
 
@@ -30,8 +33,9 @@ mod constants {
 }
 
 /// A vertical distance.
-#[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[repr(C)]
 pub enum VerticalDistance {
     /// Absolute Altitude as distance above ground level in feet.
     Agl(u16),

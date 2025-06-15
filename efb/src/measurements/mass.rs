@@ -15,10 +15,14 @@
 
 use std::ops::Div;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::{Density, DensityUnit, Measurement, UnitOfMeasure, Volume, VolumeUnit};
 
 /// Mass unit with _kg_ as SI unit.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub enum MassUnit {
     Kilograms,

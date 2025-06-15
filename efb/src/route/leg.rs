@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::fp::Performance;
 use crate::measurements::{Angle, AngleUnit, Duration, Length, LengthUnit, Speed};
 use crate::nd::{Fix, NavAid};
@@ -20,6 +23,7 @@ use crate::{Fuel, VerticalDistance, Wind};
 
 /// A leg `from` one point `to` another.
 #[derive(Clone, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Leg {
     from: NavAid,
     to: NavAid,
