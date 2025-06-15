@@ -14,14 +14,14 @@
 // limitations under the License.
 
 use super::{Field, FieldError};
-use std::ops::Range;
+use std::ops::RangeInclusive;
 use std::str::FromStr;
 
 fn parse_numeric_field(
     s: &str,
     idx: usize,
     len: usize,
-    range: Range<u8>,
+    range: RangeInclusive<u8>,
 ) -> Result<u8, FieldError> {
     s[idx..idx + len]
         .parse()
@@ -65,10 +65,10 @@ impl<const I: usize> FromStr for Latitude<I> {
             )),
         }?;
 
-        let degree = parse_numeric_field(s, I + 1, 2, 0..90)?;
-        let minutes = parse_numeric_field(s, I + 3, 2, 0..60)?;
-        let seconds = parse_numeric_field(s, I + 5, 2, 0..60)?;
-        let centiseconds = parse_numeric_field(s, I + 7, 2, 0..99)?;
+        let degree = parse_numeric_field(s, I + 1, 2, 0..=90)?;
+        let minutes = parse_numeric_field(s, I + 3, 2, 0..=60)?;
+        let seconds = parse_numeric_field(s, I + 5, 2, 0..=60)?;
+        let centiseconds = parse_numeric_field(s, I + 7, 2, 0..=99)?;
 
         if degree == 90 && (minutes > 0 || seconds > 0 || centiseconds > 0) {
             Err(FieldError::NumberOutOfRange)
@@ -107,10 +107,10 @@ impl<const I: usize> FromStr for Longitude<I> {
             )),
         }?;
 
-        let degree = parse_numeric_field(s, I + 1, 3, 0..181)?;
-        let minutes = parse_numeric_field(s, I + 4, 2, 0..61)?;
-        let seconds = parse_numeric_field(s, I + 6, 2, 0..61)?;
-        let centiseconds = parse_numeric_field(s, I + 8, 2, 0..100)?;
+        let degree = parse_numeric_field(s, I + 1, 3, 0..=180)?;
+        let minutes = parse_numeric_field(s, I + 4, 2, 0..=60)?;
+        let seconds = parse_numeric_field(s, I + 6, 2, 0..=60)?;
+        let centiseconds = parse_numeric_field(s, I + 8, 2, 0..=99)?;
 
         if degree == 180 && (minutes > 0 || seconds > 0 || centiseconds > 0) {
             Err(FieldError::NumberOutOfRange)
