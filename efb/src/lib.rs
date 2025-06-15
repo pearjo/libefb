@@ -103,3 +103,14 @@ pub mod geom;
 pub mod measurements;
 pub mod nd;
 pub mod route;
+
+pub mod prelude {
+    pub use crate::aircraft::{Aircraft, AircraftBuilder, CGLimit, FuelTank, Station};
+    pub use crate::core::{Fuel, FuelFlow, FuelType, VerticalDistance};
+    pub use crate::fms::FMS;
+    pub use crate::fp::{
+        AlteringFactor, AlteringFactors, FactorOfEffect, Performance, TakeoffLandingPerformance,
+    };
+    pub use crate::measurements::*;
+    pub use crate::nd::InputFormat;
+}
