@@ -95,9 +95,9 @@ impl From<arinc424::Runway> for Runway {
             designator: rwy.runway_id.designator,
             bearing: rwy.rwy_brg.into(),
             length,
-            tora: length.clone(),
-            toda: length.clone(),
-            lda: length.clone(),
+            tora: length,
+            toda: length,
+            lda: length,
             // FIXME: Use proper surface!
             surface: RunwaySurface::Asphalt,
             slope: rwy.rwy_grad.degree,
