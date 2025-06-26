@@ -113,12 +113,9 @@ impl AircraftBuilder {
                 .clone()
                 .ok_or(Error::ExpectedRegistration)?,
             stations: self.stations.clone(),
-            empty_mass: self.empty_mass.clone().ok_or(Error::ExpectedEmptyMass)?,
-            empty_balance: self
-                .empty_balance
-                .clone()
-                .ok_or(Error::ExpectedEmptyBalance)?,
-            fuel_type: self.fuel_type.clone().ok_or(Error::ExpectedFuelType)?,
+            empty_mass: self.empty_mass.ok_or(Error::ExpectedEmptyMass)?,
+            empty_balance: self.empty_balance.ok_or(Error::ExpectedEmptyBalance)?,
+            fuel_type: self.fuel_type.ok_or(Error::ExpectedFuelType)?,
             tanks: self.tanks.clone(),
             cg_envelope: CGEnvelope::new(self.cg_envelope.clone()),
             notes: self.notes.clone(),

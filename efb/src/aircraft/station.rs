@@ -25,7 +25,7 @@ use crate::measurements::{Length, Mass};
 /// payload can be placed. The [`LoadedStation`] provides a station with it's
 /// actual payload.
 ///
-/// [`Aircraft`]: crate::fp::Aircraft
+/// [`Aircraft`]: super::Aircraft
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Station {
@@ -54,7 +54,7 @@ impl Station {
 /// The mass may differ from when on ramp to after landing (burned fuel or a
 /// skydiver).
 ///
-/// [`Aircraft`]: crate::fp::Aircraft
+/// [`Aircraft`]: super::Aircraft
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct LoadedStation {

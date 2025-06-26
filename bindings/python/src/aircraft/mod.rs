@@ -15,7 +15,7 @@
 
 use pyo3::prelude::*;
 
-use efb::aircraft::Aircraft;
+use efb::prelude::*;
 
 use crate::core::PyFuelType;
 use crate::measurements::{PyLength, PyMass};
@@ -35,7 +35,7 @@ use station::*;
 /// :param Distance empty_balance: The aircraft's empty balance.
 /// :param FuelType fuel_type:
 /// :param list[FuelTank] tanks:
-/// :param CGEnvelope cg_envelope:
+/// :param list[CGLimit] cg_envelope:
 /// :param str | None notes: Some notes to make about the aircraft.
 #[pyclass(module = "efb.aircraft", name = "Aircraft", frozen)]
 #[derive(Clone)]
@@ -60,26 +60,32 @@ impl PyAircraft {
         empty_balance: PyLength,
         fuel_type: PyFuelType,
         tanks: Vec<PyFuelTank>,
-        cg_envelope: PyCGEnvelope,
+        cg_envelope: Vec<PyCGLimit>,
         notes: Option<String>,
     ) -> Self {
+        let mut builder = Aircraft::builder();
+
+        builder
+            .registration(registration)
+            .stations(stations.into_iter().map(|station| station.into()).collect())
+            .empty_mass(empty_mass.into())
+            .empty_balance(empty_balance.into())
+            .fuel_type(fuel_type.into())
+            .tanks(tanks.into_iter().map(|tank| tank.into()).collect())
+            .cg_envelope(cg_envelope.into_iter().map(|limit| limit.into()).collect());
+
+        if let Some(notes) = notes {
+            builder.notes(notes);
+        }
+
         Self {
-            aircraft: Aircraft {
-                registration,
-                stations: stations.into_iter().map(|station| station.into()).collect(),
-                empty_mass: empty_mass.into(),
-                empty_balance: empty_balance.into(),
-                fuel_type: fuel_type.into(),
-                tanks: tanks.into_iter().map(|tank| tank.into()).collect(),
-                cg_envelope: cg_envelope.into(),
-                notes,
-            },
+            aircraft: builder.build().expect("aircraft should build"),
         }
     }
 }
 
 pub fn register_aircraft_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<PyCGEnvelope>()?;
+    m.add_class::<PyCGLimit>()?;
     m.add_class::<PyFuelTank>()?;
     m.add_class::<PyStation>()?;
     m.add_class::<PyAircraft>()?;

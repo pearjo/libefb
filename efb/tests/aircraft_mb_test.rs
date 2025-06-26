@@ -13,38 +13,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
+use efb::aircraft::{Aircraft, CGLimit, FuelTank, Station};
 use efb::measurements::{Length, Mass, Volume};
-use efb::{Fuel, FuelType, diesel};
+use efb::{diesel, Fuel, FuelType};
 
 /// Returns the an aircraft we use for the tests.
 fn aircraft() -> Aircraft {
-    Aircraft {
-        registration: String::from("N12345"),
-        stations: vec![
+    Aircraft::builder()
+        .registration(String::from("N12345"))
+        .stations(vec![
             Station::new(Length::m(1.0), None),
             Station::new(Length::m(2.0), None),
-        ],
-        empty_mass: Mass::kg(800.0),
-        empty_balance: Length::m(1.0),
-        fuel_type: FuelType::Diesel,
-        tanks: vec![
+        ])
+        .empty_mass(Mass::kg(800.0))
+        .empty_balance(Length::m(1.0))
+        .fuel_type(FuelType::Diesel)
+        .tanks(vec![
             // To spice things up, lets test with two tanks in the wings
             // configured as separate tanks and an additional tank in the
             // aft cargo compartment.
             FuelTank::new(Volume::l(50.0), Length::m(1.0)),
             FuelTank::new(Volume::l(50.0), Length::m(1.0)),
             FuelTank::new(Volume::l(20.0), Length::m(1.5)),
-        ],
-        cg_envelope: CGEnvelope::new(vec![
+        ])
+        .cg_envelope(vec![
             CGLimit::new(Mass::kg(0.0), Length::m(1.0)),
             CGLimit::new(Mass::kg(800.0), Length::m(1.0)),
             CGLimit::new(Mass::kg(1000.0), Length::m(1.0)),
             CGLimit::new(Mass::kg(1000.0), Length::m(1.5)),
             CGLimit::new(Mass::kg(0.0), Length::m(1.5)),
-        ]),
-        notes: None,
-    }
+        ])
+        .build()
+        .expect("aircraft should build")
 }
 
 #[test]

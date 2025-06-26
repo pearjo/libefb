@@ -78,14 +78,13 @@ impl FuelTank {
 /// # use efb::measurements::{Length, Mass, Volume};
 /// # use efb::{diesel, Fuel, FuelType};
 /// #
-/// let mut builder = Aircraft::builder();
-/// let ac = builder
+/// let ac = Aircraft::builder()
 ///     .registration("N12345".to_string())
 ///     .stations(vec![
-///         Station::new(Length::m(0.94), Some(String::from("front seats"))),
-///         Station::new(Length::m(1.85), Some(String::from("back seats"))),
-///         Station::new(Length::m(2.41), Some(String::from("first cargo compartment"))),
-///         Station::new(Length::m(3.12), Some(String::from("second cargo compartment"))),
+///         Station::new(Length::m(0.94), Some("front seats".to_string())),
+///         Station::new(Length::m(1.85), Some("back seats".to_string())),
+///         Station::new(Length::m(2.41), Some("first cargo compartment".to_string())),
+///         Station::new(Length::m(3.12), Some("second cargo compartment".to_string())),
 ///     ])
 ///     .empty_mass(Mass::kg(807.0))
 ///     .empty_balance(Length::m(1.0))
@@ -126,40 +125,65 @@ impl FuelTank {
 /// ```
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct Aircraft {
-    /// The unique registration code of the aircraft aka tail number.
-    pub registration: String, // TODO: Add a Registration type with country and validation.
-
-    /// The distances from a reference datum at which mass can be loaded
-    /// e.g. the position of a seat.
-    pub stations: Vec<Station>,
-
-    /// The mass of the empty aircraft taken from the last mass and balance
-    /// report.
-    pub empty_mass: Mass,
-
-    /// The center of gravity of the empty aircraft taken from the last mass and
-    /// balance report.
-    pub empty_balance: Length,
-
-    /// The aircraft's fuel type.
-    pub fuel_type: FuelType,
-
-    /// The fuel tanks with their usable capacity.
-    pub tanks: Vec<FuelTank>,
-
-    /// The center of gravity envelope which must contains the CG at a mass for
-    /// the aircraft to be balanced.
-    pub cg_envelope: CGEnvelope,
-
-    /// Notes regarding the aircraft e.g. when the empty mass and balance were
-    /// determined.
-    pub notes: Option<String>,
+    registration: String, // TODO: Add a Registration type with country and validation.
+    stations: Vec<Station>,
+    empty_mass: Mass,
+    empty_balance: Length,
+    fuel_type: FuelType,
+    tanks: Vec<FuelTank>,
+    cg_envelope: CGEnvelope,
+    notes: Option<String>,
 }
 
 impl Aircraft {
     /// Returns a builder to build an aircraft.
     pub fn builder() -> AircraftBuilder {
         AircraftBuilder::new()
+    }
+
+    /// The unique registration code of the aircraft aka tail number.
+    pub fn registration(&self) -> &str {
+        &self.registration
+    }
+
+    /// The distances from a reference datum at which mass can be loaded
+    /// e.g. the position of a seat.
+    pub fn stations(&self) -> &[Station] {
+        self.stations.as_slice()
+    }
+
+    /// The mass of the empty aircraft taken from the last mass and balance
+    /// report.
+    pub fn empty_mass(&self) -> &Mass {
+        &self.empty_mass
+    }
+
+    /// The center of gravity of the empty aircraft taken from the last mass and
+    /// balance report.
+    pub fn empty_balance(&self) -> &Length {
+        &self.empty_balance
+    }
+
+    /// The aircraft's fuel type.
+    pub fn fuel_type(&self) -> &FuelType {
+        &self.fuel_type
+    }
+
+    /// The fuel tanks with their usable capacity.
+    pub fn tanks(&self) -> &[FuelTank] {
+        self.tanks.as_slice()
+    }
+
+    /// The center of gravity envelope which must contains the CG at a mass for
+    /// the aircraft to be balanced.
+    pub fn cg_envelope(&self) -> &CGEnvelope {
+        &self.cg_envelope
+    }
+
+    /// Notes regarding the aircraft e.g. when the empty mass and balance were
+    /// determined.
+    pub fn notes(&self) -> Option<&str> {
+        self.notes.as_deref()
     }
 
     /// Returns the usable fuel.

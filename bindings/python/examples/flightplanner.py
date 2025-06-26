@@ -44,13 +44,13 @@ d_eabc = Aircraft(
     # the wing tanks are combined as one
     tanks=[FuelTank(Liter(168.8), Meter(1.22))],
     # this defines the limits of our Center of Gravity envelope
-    cg_envelope=CGEnvelope([
-        (Kilogram(0.0), Meter(0.89)),
-        (Kilogram(885.0), Meter(0.89)),
-        (Kilogram(1111.0), Meter(1.02)),
-        (Kilogram(1111.0), Meter(1.20)),
-        (Kilogram(0.0), Meter(1.20))
-    ]),
+    cg_envelope=[
+        CGLimit(Kilogram(0.0), Meter(0.89)),
+        CGLimit(Kilogram(885.0), Meter(0.89)),
+        CGLimit(Kilogram(1111.0), Meter(1.02)),
+        CGLimit(Kilogram(1111.0), Meter(1.20)),
+        CGLimit(Kilogram(0.0), Meter(1.20))
+    ],
     notes=""
 )
 

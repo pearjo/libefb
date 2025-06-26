@@ -13,12 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::ffi::{CStr, c_char};
+use std::ffi::{c_char, CStr};
 use std::slice::Iter;
 
-use efb::FuelType;
-use efb::aircraft::{Aircraft, CGEnvelope, CGLimit, FuelTank, Station};
-use efb::measurements::{Length, Mass, Volume};
+use efb::prelude::*;
 
 #[derive(Default)]
 pub struct AircraftBuilder<'a> {
@@ -37,16 +35,17 @@ pub struct AircraftBuilder<'a> {
 
 impl<'a> AircraftBuilder<'a> {
     pub(super) fn build(&self) -> Option<Aircraft> {
-        Some(Aircraft {
-            registration: self.registration.clone()?,
-            stations: self.stations.clone(),
-            empty_mass: self.empty_mass?,
-            empty_balance: self.empty_balance?,
-            fuel_type: self.fuel_type?,
-            tanks: self.tanks.clone(),
-            cg_envelope: CGEnvelope::new(self.cg_envelope.clone()),
-            notes: self.notes.clone(),
-        })
+        Aircraft::builder()
+            .registration(self.registration.clone()?)
+            .stations(self.stations.clone())
+            .empty_mass(self.empty_mass?)
+            .empty_balance(self.empty_balance?)
+            .fuel_type(self.fuel_type?)
+            .tanks(self.tanks.clone())
+            .cg_envelope(self.cg_envelope.clone())
+            .notes(self.notes.clone()?)
+            .build()
+            .ok()
     }
 }
 

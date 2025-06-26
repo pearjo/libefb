@@ -15,41 +15,33 @@
 
 use pyo3::prelude::*;
 
-use efb::aircraft::{CGEnvelope, CGLimit};
+use efb::prelude::*;
 
 use crate::measurements::{PyLength, PyMass};
 
-#[derive(FromPyObject)]
-pub struct PyCGLimit(PyMass, PyLength);
-
-/// A Center of Gravity (CG) envelope.
+/// A CGLimit that can be loaded with payload.
 ///
-/// :param limits: A list of mass and distance tuple pairs that define the
-///     limits of the envelope.
-/// :type limits: list[tuple(Mass, Distance)]
-#[pyclass(module = "efb.aircraft", name = "CGEnvelope", frozen)]
+/// :param Mass mass:
+/// :param Distance distance:
+#[pyclass(module = "efb.aircraft", name = "CGLimit", frozen)]
 #[derive(Clone)]
-pub struct PyCGEnvelope {
-    envelope: CGEnvelope,
+pub struct PyCGLimit {
+    limit: CGLimit,
 }
 
-impl From<PyCGEnvelope> for CGEnvelope {
-    fn from(envelope: PyCGEnvelope) -> Self {
-        envelope.envelope
+impl From<PyCGLimit> for CGLimit {
+    fn from(limit: PyCGLimit) -> Self {
+        limit.limit
     }
 }
 
 #[pymethods]
-impl PyCGEnvelope {
+impl PyCGLimit {
     #[new]
-    pub fn new(limits: Vec<PyCGLimit>) -> Self {
+    #[pyo3(signature = (mass, distance))]
+    pub fn new(mass: PyMass, distance: PyLength) -> Self {
         Self {
-            envelope: CGEnvelope::new(
-                limits
-                    .into_iter()
-                    .map(|limit| CGLimit::new(limit.0.into(), limit.1.into()))
-                    .collect(),
-            ),
+            limit: CGLimit::new(mass.into(), distance.into()),
         }
     }
 }

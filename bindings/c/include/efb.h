@@ -131,7 +131,7 @@ typedef struct EfbPerformanceTableRow EfbPerformanceTableRow;
 /// payload can be placed. The [`LoadedStation`] provides a station with it's
 /// actual payload.
 ///
-/// [`Aircraft`]: crate::fp::Aircraft
+/// [`Aircraft`]: super::Aircraft
 typedef struct EfbStation EfbStation;
 
 /// A measurement of a physical quantity.
