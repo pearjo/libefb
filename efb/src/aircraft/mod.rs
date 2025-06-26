@@ -15,6 +15,9 @@
 
 //! An aircraft to plan and fly with.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 mod builder;
 mod cg_envelope;
 mod station;
@@ -30,6 +33,7 @@ pub use station::{LoadedStation, Station};
 
 /// An aircraft's fuel tank.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct FuelTank {
     capacity: Volume,
     arm: Length,
@@ -125,6 +129,7 @@ impl FuelTank {
 /// assert!(ac.is_balanced(&mb.unwrap()));
 /// ```
 #[derive(Clone, Eq, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Aircraft {
     registration: String, // TODO: Add a Registration type with country and validation.
     icao_type: String,

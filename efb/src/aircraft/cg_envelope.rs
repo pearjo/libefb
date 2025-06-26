@@ -13,12 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::algorithm;
 use crate::fp::MassAndBalance;
 use crate::measurements::{Length, Mass};
 
 /// A point that spawns the CG envelope.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct CGLimit {
     mass: Mass,
     distance: Length,
@@ -87,6 +91,7 @@ impl CGLimit {
 /// assert!(cg_envelope.contains(&mb));
 /// ```
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct CGEnvelope {
     limits: Vec<CGLimit>,
 }
