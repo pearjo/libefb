@@ -41,6 +41,7 @@ use crate::measurements::{Length, Mass};
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
 pub struct AircraftBuilder {
     registration: Option<String>,
+    icao_type: Option<String>,
     stations: Vec<Station>,
     empty_mass: Option<Mass>,
     empty_balance: Option<Length>,
@@ -58,6 +59,11 @@ impl AircraftBuilder {
 
     pub fn registration(&mut self, registration: String) -> &mut Self {
         self.registration = Some(registration);
+        self
+    }
+
+    pub fn icao_type(&mut self, icao_type: String) -> &mut Self {
+        self.icao_type = Some(icao_type);
         self
     }
 
@@ -112,6 +118,8 @@ impl AircraftBuilder {
                 .registration
                 .clone()
                 .ok_or(Error::ExpectedRegistration)?,
+            // TODO: Do we wan't the unassigned type as default?
+            icao_type: self.icao_type.clone().unwrap_or("ZZZZ".to_string()),
             stations: self.stations.clone(),
             empty_mass: self.empty_mass.ok_or(Error::ExpectedEmptyMass)?,
             empty_balance: self.empty_balance.ok_or(Error::ExpectedEmptyBalance)?,

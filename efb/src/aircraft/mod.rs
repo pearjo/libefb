@@ -80,6 +80,7 @@ impl FuelTank {
 /// #
 /// let ac = Aircraft::builder()
 ///     .registration("N12345".to_string())
+///     .icao_type("C172".to_string())
 ///     .stations(vec![
 ///         Station::new(Length::m(0.94), Some("front seats".to_string())),
 ///         Station::new(Length::m(1.85), Some("back seats".to_string())),
@@ -126,6 +127,7 @@ impl FuelTank {
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct Aircraft {
     registration: String, // TODO: Add a Registration type with country and validation.
+    icao_type: String,
     stations: Vec<Station>,
     empty_mass: Mass,
     empty_balance: Length,
@@ -144,6 +146,11 @@ impl Aircraft {
     /// The unique registration code of the aircraft aka tail number.
     pub fn registration(&self) -> &str {
         &self.registration
+    }
+
+    /// The aircraft type designator according to ICAO Doc. 8643.
+    pub fn icao_type(&self) -> &str {
+        &self.icao_type
     }
 
     /// The distances from a reference datum at which mass can be loaded
@@ -342,6 +349,7 @@ mod tests {
         // we have two fuel tanks with 40 Liter each
         let ac = Aircraft {
             registration: String::from("N12345"),
+            icao_type: "ZZZZ".to_string(),
             stations: vec![],
             empty_mass: Mass::kg(0.0),
             empty_balance: Length::m(0.0),
@@ -369,6 +377,7 @@ mod tests {
     fn create_stations_with_missing_mass() {
         let ac = Aircraft {
             registration: String::from("N12345"),
+            icao_type: "ZZZZ".to_string(),
             stations: vec![
                 Station::new(Length::m(1.0), None),
                 Station::new(Length::m(2.0), None),
@@ -390,6 +399,7 @@ mod tests {
         // we configure no station and only an empty mass of 800 kg at 1.0 m
         let ac = Aircraft {
             registration: String::from("N12345"),
+            icao_type: "ZZZZ".to_string(),
             stations: vec![],
             empty_mass: Mass::kg(800.0),
             empty_balance: Length::m(1.0),
