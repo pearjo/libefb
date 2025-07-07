@@ -19,6 +19,7 @@ members = [
     "efb",
     "bindings/c",
     "bindings/python",
+    "bindings/wasm",
 ]
 resolver = "2"
 

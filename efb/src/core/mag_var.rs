@@ -19,10 +19,10 @@ use std::fmt::{Display, Formatter, Result};
 use serde::{Deserialize, Serialize};
 
 use time::OffsetDateTime;
-use world_magnetic_model::GeomagneticField;
 use world_magnetic_model::uom::si::{
     angle::degree, angle::radian, f32::Angle, f32::Length, length::meter,
 };
+use world_magnetic_model::GeomagneticField;
 
 use crate::geom::Coordinate;
 
@@ -43,13 +43,15 @@ pub enum MagneticVariation {
 
 impl From<Coordinate> for MagneticVariation {
     fn from(value: Coordinate) -> Self {
-        let mag_var = GeomagneticField::new(
+        let mag_var = match GeomagneticField::new(
             Length::new::<meter>(0.0),
             Angle::new::<radian>(value.latitude.to_radians()),
             Angle::new::<radian>(value.longitude.to_radians()),
             OffsetDateTime::now_utc().date(),
-        )
-        .map_or(1.0, |field| field.declination().get::<degree>());
+        ) {
+            Ok(field) => field.declination().get::<degree>(),
+            Err(_) => todo!("implement TryFrom to handle unavailable variation!"),
+        };
 
         if mag_var.is_sign_negative() {
             Self::West(mag_var.abs())
