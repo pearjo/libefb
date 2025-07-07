@@ -19,10 +19,10 @@ use std::fmt::{Display, Formatter, Result};
 use serde::{Deserialize, Serialize};
 
 use time::OffsetDateTime;
-use world_magnetic_model::GeomagneticField;
 use world_magnetic_model::uom::si::{
     angle::degree, angle::radian, f32::Angle, f32::Length, length::meter,
 };
+use world_magnetic_model::GeomagneticField;
 
 use crate::geom::Coordinate;
 
@@ -41,6 +41,7 @@ pub enum MagneticVariation {
     OrientedToTrueNorth,
 }
 
+// TODO: Implement as TryFrom since conversion can fail!
 impl From<Coordinate> for MagneticVariation {
     fn from(value: Coordinate) -> Self {
         let mag_var = GeomagneticField::new(
