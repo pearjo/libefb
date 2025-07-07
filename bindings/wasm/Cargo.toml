@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright 2024 Joe Pearson
+# Copyright 2025 Joe Pearson
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[workspace]
-members = [
-    "arinc424",
-    "efb",
-    "bindings/c",
-    "bindings/python",
-    "bindings/wasm",
-]
-resolver = "2"
+[package]
+name = "efb-wasm"
+version = "0.1.0"
+edition = "2021"
 
-[workspace.lints.rust]
-unsafe_code = "warn"
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+console_error_panic_hook = "0.1.7"
+efb = { path = "../../efb", features = ["geojson", "serde"] }
+serde = "1.0.219"
+serde-wasm-bindgen = "0.6.5"
+wasm-bindgen = "0.2.100"
+web-sys = { version = "0.3.77", features = ["console"] }
+
+[lints]
+workspace = true
