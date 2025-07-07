@@ -28,7 +28,7 @@ readme = "../README.md"
 [dependencies]
 arinc424 = { path = "../arinc424", version = "0.1.2" }
 serde = { version = "1.0.219", features = ["derive", "rc"], optional = true  }
-time = "0.3.36"
+time = { version = "0.3.36", features = ["wasm-bindgen"] }
 world_magnetic_model = "0.2.0"
 
 [features]
