@@ -20,40 +20,18 @@ use serde::{Deserialize, Serialize};
 
 mod builder;
 mod cg_envelope;
+mod fuel_tank;
 mod station;
 
 use crate::error::Error;
 use crate::fp::MassAndBalance;
-use crate::measurements::{Length, Mass, Volume};
+use crate::measurements::{Length, Mass};
 use crate::{Fuel, FuelType};
 
 pub use builder::AircraftBuilder;
 pub use cg_envelope::{CGEnvelope, CGLimit};
+pub use fuel_tank::FuelTank;
 pub use station::{LoadedStation, Station};
-
-/// An aircraft's fuel tank.
-#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct FuelTank {
-    capacity: Volume,
-    arm: Length,
-}
-
-impl FuelTank {
-    pub fn new(capacity: Volume, arm: Length) -> Self {
-        Self { capacity, arm }
-    }
-
-    /// The tank's capacity.
-    pub fn capacity(&self) -> &Volume {
-        &self.capacity
-    }
-
-    /// The distance of the tank to the aircraft's reference datum.
-    pub fn arm(&self) -> &Length {
-        &self.arm
-    }
-}
 
 /// The aircraft we're planning to fly with.
 ///
@@ -205,7 +183,7 @@ impl Aircraft {
     pub fn usable_fuel(&self) -> Option<Fuel> {
         self.tanks
             .iter()
-            .map(|tank| Fuel::from_volume(tank.capacity, &self.fuel_type))
+            .map(|tank| Fuel::from_volume(*tank.capacity(), &self.fuel_type))
             .reduce(|acc, fuel| acc + fuel)
     }
 
@@ -323,16 +301,16 @@ impl Aircraft {
                 // The fuel after landing might be more than on ramp (if we do
                 // air refueling with our C172), but it can never be more than
                 // our tank's capacity!
-                if fuel_on_ramp.volume() > tank.capacity {
+                if &fuel_on_ramp.volume() > tank.capacity() {
                     return Err(Error::ExceededFuelCapacityOnRamp);
                 }
 
-                if fuel_after_landing.volume() > tank.capacity {
+                if &fuel_after_landing.volume() > tank.capacity() {
                     return Err(Error::ExceededFuelCapacityAfterLanding);
                 }
 
                 loaded_stations.push(LoadedStation {
-                    station: Station::new(tank.arm, None),
+                    station: Station::new(*tank.arm(), None),
                     on_ramp: fuel_on_ramp.mass,
                     after_landing: fuel_after_landing.mass,
                 });
@@ -348,6 +326,7 @@ impl Aircraft {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::measurements::Volume;
 
     #[test]
     fn usable_fuel_matches_tank_capacity() {
@@ -360,14 +339,8 @@ mod tests {
             empty_balance: Length::m(0.0),
             fuel_type: FuelType::Diesel,
             tanks: vec![
-                FuelTank {
-                    capacity: Volume::l(40.0),
-                    arm: Length::m(1.0),
-                },
-                FuelTank {
-                    capacity: Volume::l(40.0),
-                    arm: Length::m(1.0),
-                },
+                FuelTank::new(Volume::l(40.0), Length::m(1.0)),
+                FuelTank::new(Volume::l(40.0), Length::m(1.0)),
             ],
             cg_envelope: CGEnvelope::new(vec![]),
             notes: None,
