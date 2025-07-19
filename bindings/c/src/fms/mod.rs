@@ -16,7 +16,8 @@
 use std::ffi::{c_char, CStr, CString};
 use std::path::Path;
 
-use efb::fms::{FlightPlanning, FlightPlanningBuilder, FMS};
+use efb::fms::FMS;
+use efb::fp::{FlightPlanning, FlightPlanningBuilder};
 use efb::nd::InputFormat;
 
 use super::EfbRoute;
@@ -122,13 +123,13 @@ pub extern "C" fn efb_fms_flight_planning(fms: &EfbFMS) -> Option<&FlightPlannin
     fms.inner.flight_planning()
 }
 
-/// Builds the flight planning.
+/// Sets the flight planning.
 ///
 /// The planning is created by the builder returned by
 /// [`efb_flight_planning_builder_new`].
 #[no_mangle]
-pub extern "C" fn efb_fms_flight_planning_build(fms: &mut EfbFMS, builder: &FlightPlanningBuilder) {
-    let _ = fms.inner.build_flight_planning(builder);
+pub extern "C" fn efb_fms_set_flight_planning(fms: &mut EfbFMS, builder: &FlightPlanningBuilder) {
+    let _ = fms.inner.set_flight_planning(builder);
 }
 
 /// Prints the route and planning of the FMS.

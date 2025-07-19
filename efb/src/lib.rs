@@ -109,7 +109,8 @@ pub mod prelude {
     pub use crate::core::{Fuel, FuelFlow, FuelType, VerticalDistance};
     pub use crate::fms::FMS;
     pub use crate::fp::{
-        AlteringFactor, AlteringFactors, FactorOfEffect, Performance, TakeoffLandingPerformance,
+        AlteringFactor, AlteringFactors, FactorOfEffect, FlightPlanningBuilder, Performance,
+        TakeoffLandingPerformance,
     };
     pub use crate::measurements::*;
     pub use crate::nd::InputFormat;

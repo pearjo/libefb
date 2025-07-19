@@ -15,14 +15,13 @@
 
 //! Flight Management System.
 use crate::error::Error;
+use crate::fp::{FlightPlanning, FlightPlanningBuilder};
 use crate::nd::NavigationData;
 use crate::route::Route;
 
 mod printer;
-mod subs;
 
 pub use printer::*;
-pub use subs::*;
 
 #[derive(PartialEq, Debug)]
 pub struct FMS {
@@ -71,9 +70,9 @@ impl FMS {
         }
     }
 
-    pub fn build_flight_planning(&mut self, builder: &FlightPlanningBuilder) -> Result<(), Error> {
+    pub fn set_flight_planning(&mut self, builder: &FlightPlanningBuilder) -> Result<(), Error> {
         let flight_planning = builder.build(&self.route)?;
-        let _ = self.flight_planning.insert(flight_planning);
+        self.flight_planning = Some(flight_planning);
         Ok(())
     }
 

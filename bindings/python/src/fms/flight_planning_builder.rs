@@ -15,7 +15,7 @@
 
 use pyo3::prelude::*;
 
-use efb::fms::FlightPlanningBuilder;
+use efb::fp::FlightPlanningBuilder;
 
 use crate::aircraft::PyAircraft;
 use crate::core::PyFuel;
@@ -54,12 +54,12 @@ impl PyFlightPlanningBuilder {
         let mut builder = FlightPlanningBuilder::new();
 
         builder
-            .set_aircraft(aircraft.into())
-            .set_mass(mass.into_iter().map(|mass| mass.into()).collect())
-            .set_policy(policy.into())
-            .set_taxi(taxi.into())
-            .set_reserve(reserve.into())
-            .set_perf(perf.into());
+            .aircraft(aircraft.into())
+            .mass(mass.into_iter().map(|mass| mass.into()).collect())
+            .policy(policy.into())
+            .taxi(taxi.into())
+            .reserve(reserve.into())
+            .perf(perf.into());
 
         Self { builder }
     }

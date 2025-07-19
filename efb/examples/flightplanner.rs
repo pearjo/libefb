@@ -157,8 +157,8 @@ fn main() {
     let mut builder = FlightPlanning::builder();
 
     builder
-        .set_aircraft(aircraft)
-        .set_mass(vec![
+        .aircraft(aircraft)
+        .mass(vec![
             // we're in the front
             Mass::kg(80.0),
             // and no mass on the other stations
@@ -166,16 +166,16 @@ fn main() {
             Mass::kg(0.0),
             Mass::kg(0.0),
         ])
-        .set_policy(FuelPolicy::ManualFuel(diesel!(Volume::l(80.0))))
-        .set_taxi(diesel!(Volume::l(10.0)))
-        .set_reserve(Reserve::Manual(Duration::s(1800))) // 30 min
-        .set_perf(perf)
-        .set_takeoff_perf(takeoff_perf)
+        .policy(FuelPolicy::ManualFuel(diesel!(Volume::l(80.0))))
+        .taxi(diesel!(Volume::l(10.0)))
+        .reserve(Reserve::Manual(Duration::s(1800))) // 30 min
+        .perf(perf)
+        .takeoff_perf(takeoff_perf)
         // we use the route's wind so no need to specify it here
-        .set_origin_rwycc(RunwayConditionCode::Six)
-        .set_origin_temperature(Temperature::c(20.0));
+        .origin_rwycc(RunwayConditionCode::Six)
+        .origin_temperature(Temperature::c(20.0));
 
-    let _ = fms.build_flight_planning(&builder);
+    let _ = fms.set_flight_planning(&builder);
 
     println!("{}", fms.print(40));
 }

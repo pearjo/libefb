@@ -98,6 +98,7 @@ typedef struct EfbRoute EfbRoute;
 
 typedef struct EfbFlightPlanning EfbFlightPlanning;
 
+/// Flight planning factory, which is used to build a flight planning.
 typedef struct EfbFlightPlanningBuilder EfbFlightPlanningBuilder;
 
 typedef struct EfbFuelPlanning EfbFuelPlanning;
@@ -594,13 +595,13 @@ efb_fms_route_unref(EfbRoute *route);
 const EfbFlightPlanning *
 efb_fms_flight_planning(const EfbFMS *fms);
 
-/// Builds the flight planning.
+/// Sets the flight planning.
 ///
 /// The planning is created by the builder returned by
 /// [`efb_flight_planning_builder_new`].
 void
-efb_fms_flight_planning_build(EfbFMS *fms,
-                              const EfbFlightPlanningBuilder *builder);
+efb_fms_set_flight_planning(EfbFMS *fms,
+                            const EfbFlightPlanningBuilder *builder);
 
 /// Prints the route and planning of the FMS.
 ///
@@ -758,16 +759,8 @@ efb_flight_planning_builder_set_aircraft(
     const EfbAircraftBuilder *aircraft_builder);
 
 void
-efb_flight_planning_builder_mass_push(EfbFlightPlanningBuilder *builder,
-                                      EfbMass mass);
-
-void
-efb_flight_planning_builder_mass_remove(EfbFlightPlanningBuilder *builder,
-                                        size_t i);
-
-void
-efb_flight_planning_builder_mass_edit(EfbFlightPlanningBuilder *builder,
-                                      EfbMass mass, size_t i);
+efb_flight_planning_builder_set_mass(EfbFlightPlanningBuilder *builder,
+                                     const EfbMass *mass, size_t len);
 
 void
 efb_flight_planning_builder_set_policy(EfbFlightPlanningBuilder *builder,

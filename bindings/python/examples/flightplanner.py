@@ -69,5 +69,5 @@ flight_planning = FlightPlanningBuilder(
     ]),
 )
 
-fms.build_flight_planning(flight_planning)
+fms.set_flight_planning(flight_planning)
 print(fms.print(40))

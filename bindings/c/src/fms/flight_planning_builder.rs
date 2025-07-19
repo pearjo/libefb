@@ -13,8 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fms::FlightPlanningBuilder;
-use efb::fp::{FuelPolicy, Performance, Reserve};
+use efb::fp::{FlightPlanningBuilder, FuelPolicy, Performance, Reserve};
 use efb::measurements::{Mass, Speed};
 use efb::{Fuel, FuelFlow, VerticalDistance};
 
@@ -38,7 +37,7 @@ pub struct PerformanceAtLevel {
 /// [`efb_flight_planning_builder_free`].
 #[no_mangle]
 pub unsafe extern "C" fn efb_flight_planning_builder_new() -> Box<FlightPlanningBuilder> {
-    Box::new(FlightPlanningBuilder::default())
+    Box::new(FlightPlanningBuilder::new())
 }
 
 /// Frees the flight planning builder.
@@ -53,40 +52,18 @@ pub extern "C" fn efb_flight_planning_builder_set_aircraft(
     aircraft_builder: &AircraftBuilder,
 ) {
     if let Some(ac) = aircraft_builder.build() {
-        builder.set_aircraft(ac);
+        builder.aircraft(ac);
     }
 }
 
 #[no_mangle]
-pub extern "C" fn efb_flight_planning_builder_mass_push(
+pub extern "C" fn efb_flight_planning_builder_set_mass(
     builder: &mut FlightPlanningBuilder,
-    mass: Mass,
+    mass: *const Mass,
+    len: usize,
 ) {
-    if let Some(v) = builder.mass() {
-        v.push(mass);
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn efb_flight_planning_builder_mass_remove(
-    builder: &mut FlightPlanningBuilder,
-    i: usize,
-) {
-    if let Some(v) = builder.mass() {
-        v.remove(i);
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn efb_flight_planning_builder_mass_edit(
-    builder: &mut FlightPlanningBuilder,
-    mass: Mass,
-    i: usize,
-) {
-    if let Some(v) = builder.mass() {
-        v.remove(i);
-        v.insert(i, mass);
-    };
+    let slice = unsafe { std::slice::from_raw_parts(mass, len) };
+    builder.mass(slice.to_vec());
 }
 
 #[no_mangle]
@@ -94,7 +71,7 @@ pub extern "C" fn efb_flight_planning_builder_set_policy(
     builder: &mut FlightPlanningBuilder,
     policy: FuelPolicy,
 ) {
-    builder.set_policy(policy);
+    builder.policy(policy);
 }
 
 #[no_mangle]
@@ -102,7 +79,7 @@ pub extern "C" fn efb_flight_planning_builder_set_taxi(
     builder: &mut FlightPlanningBuilder,
     taxi: Fuel,
 ) {
-    builder.set_taxi(taxi);
+    builder.taxi(taxi);
 }
 
 #[no_mangle]
@@ -110,7 +87,7 @@ pub extern "C" fn efb_flight_planning_builder_set_reserve(
     builder: &mut FlightPlanningBuilder,
     reserve: Reserve,
 ) {
-    builder.set_reserve(reserve);
+    builder.reserve(reserve);
 }
 
 #[no_mangle]
@@ -119,7 +96,7 @@ pub extern "C" fn efb_flight_planning_builder_set_perf(
     perf: extern "C" fn(&VerticalDistance) -> PerformanceAtLevel,
     ceiling: VerticalDistance,
 ) {
-    builder.set_perf(Performance::from(
+    builder.perf(Performance::from(
         |vd| {
             let at_level = perf(vd);
             (at_level.tas, at_level.ff)

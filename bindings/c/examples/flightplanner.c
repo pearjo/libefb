@@ -112,12 +112,16 @@ main(int argc, char *argv[]) {
   EfbFlightPlanningBuilder *builder = efb_flight_planning_builder_new();
 
   efb_flight_planning_builder_set_aircraft(builder, aircraft_builder);
-  // we're in the front
-  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(80.0));
-  // and no mass on the other stations
-  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(0.0));
-  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(0.0));
-  efb_flight_planning_builder_mass_push(builder, efb_mass_kg(0.0));
+
+  EfbMass mass[] = {
+      // we're in the front
+      efb_mass_kg(80.0),
+      // and no mass on the other stations
+      efb_mass_kg(0.0),
+      efb_mass_kg(0.0),
+      efb_mass_kg(0.0)
+  };
+  efb_flight_planning_builder_set_mass(builder, mass, 4);
 
   EfbFuelPolicy policy = {.tag = ManualFuel,
                           .manual_fuel = efb_fuel_diesel_l(80.0)};
@@ -135,7 +139,7 @@ main(int argc, char *argv[]) {
                                        efb_vertical_distance_altitude(10000));
 
   // now that all data are entered, we can build our planning
-  efb_fms_flight_planning_build(fms, builder);
+  efb_fms_set_flight_planning(fms, builder);
 
   // finally we can print out the result of our planning
   char *printout = efb_fms_print(fms, 40);

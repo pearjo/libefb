@@ -13,8 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::fms::FlightPlanning;
-use efb::fp::{FuelPlanning, MassAndBalance};
+use efb::fp::{FlightPlanning, FuelPlanning, MassAndBalance};
 
 #[no_mangle]
 pub extern "C" fn efb_flight_planning_fuel_planning(

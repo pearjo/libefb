@@ -82,11 +82,11 @@ impl PyFMS {
         let _ = self.fms.decode(route);
     }
 
-    /// Adds a builder for the flight planning.
+    /// Sets the flight planning.
     ///
     /// :param FlightPlanningBuilder builder:
-    pub fn build_flight_planning(&mut self, builder: PyFlightPlanningBuilder) {
-        let _ = self.fms.build_flight_planning(&builder.into());
+    pub fn set_flight_planning(&mut self, builder: PyFlightPlanningBuilder) {
+        let _ = self.fms.set_flight_planning(&builder.into());
     }
 
     /// Prints the flight planning.
