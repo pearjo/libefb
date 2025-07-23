@@ -33,6 +33,8 @@ pub enum Error {
     //
     /// The string that should be parsed to create some type is malformed.
     UnexpectedString,
+    /// The value that should be returned is implausible.
+    ImplausibleValue,
 
     // Errors that relate to navigation data:
     //

@@ -78,9 +78,17 @@
 //!
 //! - **FMS** Flight Management System
 //!
+//! ## M
+//!
+//! - **MSL** Mean Sea Level
+//!
 //! ## P
 //!
 //! - **POH** Pilot Operation Handbook
+//!
+//! ## Q
+//!
+//! - **QNH** Pressure measured at a location and reduced down to MSL
 //!
 //! ## R
 //!

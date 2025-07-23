@@ -61,13 +61,24 @@ pub enum VerticalDistance {
 
 impl VerticalDistance {
     /// Returns the pressure altitude based on the elevation and the QNH.
-    pub fn pa(elevation: &i16, qnh: &Pressure) -> Self {
+    ///
+    /// # Errors
+    ///
+    /// Will return [`ImplausibleValue`] if the QNH is implausible causing the
+    /// pressure altitude to overflow.
+    ///
+    /// [`ImplausibleValue`]: Error::ImplausibleValue
+    pub fn pa(elevation: i16, qnh: Pressure) -> Result<Self, Error> {
         // https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-        Self::PressureAltitude(
-            elevation
-                + (145366.45 * (1.0 - (*qnh / constants::STD_PRESSURE).powf(0.190284)).round())
-                    as i16,
-        )
+        let (pa, overflowed) = elevation.overflowing_add(
+            (145366.45 * (1.0 - (qnh / constants::STD_PRESSURE).powf(0.190284))).round() as i16,
+        );
+
+        if overflowed {
+            Err(Error::ImplausibleValue)
+        } else {
+            Ok(Self::PressureAltitude(pa))
+        }
     }
 }
 
