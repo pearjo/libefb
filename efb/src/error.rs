@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::error;
+use std::fmt;
+
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
     // Errors that can occur while decoding a route:
@@ -65,3 +68,17 @@ pub enum Error {
     /// The aircraft's fuel type is not set.
     ExpectedFuelType,
 }
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::ExpectedSpeedOnFPL => write!(f, "FPL is missing cruise speed"),
+            Self::ExpectedLevelOnFPL => write!(f, "FPL is missing cruise level"),
+            Self::UnexpectedRouteElement => write!(f, "invalid element found in route"),
+            Self::UnexpectedRunwayInRoute => write!(f, "invalid runway found in route"),
+            _ => write!(f, "ooops, something went wrong"),
+        }
+    }
+}
+
+impl error::Error for Error {}
