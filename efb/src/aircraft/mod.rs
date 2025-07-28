@@ -183,7 +183,7 @@ impl Aircraft {
     pub fn usable_fuel(&self) -> Option<Fuel> {
         self.tanks
             .iter()
-            .map(|tank| Fuel::from_volume(*tank.capacity(), &self.fuel_type))
+            .map(|tank| Fuel::from_volume(*tank.capacity(), self.fuel_type))
             .reduce(|acc, fuel| acc + fuel)
     }
 

@@ -75,11 +75,8 @@ impl PyDiesel {
             Self {},
             PyFuel {
                 fuel: match quantity {
-                    FuelQuantity::Volume(v) => Fuel::from_volume(v.into(), &FuelType::Diesel),
-                    FuelQuantity::Mass(m) => Fuel {
-                        fuel_type: FuelType::Diesel,
-                        mass: m.into(),
-                    },
+                    FuelQuantity::Volume(v) => Fuel::from_volume(v.into(), FuelType::Diesel),
+                    FuelQuantity::Mass(m) => Fuel::new(m.into(), FuelType::Diesel),
                 },
             },
         )
@@ -101,11 +98,8 @@ impl PyJetA {
             Self {},
             PyFuel {
                 fuel: match quantity {
-                    FuelQuantity::Volume(v) => Fuel::from_volume(v.into(), &FuelType::JetA),
-                    FuelQuantity::Mass(m) => Fuel {
-                        fuel_type: FuelType::JetA,
-                        mass: m.into(),
-                    },
+                    FuelQuantity::Volume(v) => Fuel::from_volume(v.into(), FuelType::JetA),
+                    FuelQuantity::Mass(m) => Fuel::new(m.into(), FuelType::JetA),
                 },
             },
         )

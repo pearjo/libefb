@@ -57,9 +57,13 @@ pub struct Fuel {
 }
 
 impl Fuel {
-    pub fn from_volume(v: Volume, fuel_type: &FuelType) -> Self {
+    pub fn new(mass: Mass, fuel_type: FuelType) -> Self {
+        Self { fuel_type, mass }
+    }
+
+    pub fn from_volume(v: Volume, fuel_type: FuelType) -> Self {
         Self {
-            fuel_type: *fuel_type,
+            fuel_type,
             mass: v * fuel_type.density(),
         }
     }
@@ -171,7 +175,7 @@ mod tests {
 
     #[test]
     fn fuel_from_volume() {
-        let lhs = Fuel::from_volume(Volume::l(10.0), &FuelType::Diesel);
+        let lhs = Fuel::from_volume(Volume::l(10.0), FuelType::Diesel);
         let rhs = diesel!(Volume::l(10.0));
         assert_eq!(lhs, rhs);
     }

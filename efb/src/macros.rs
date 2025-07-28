@@ -20,7 +20,7 @@
 #[macro_export]
 macro_rules! avgas {
     ($volume:expr) => {
-        Fuel::from_volume($volume, &FuelType::AvGas)
+        Fuel::from_volume($volume, FuelType::AvGas)
     };
 }
 
@@ -31,7 +31,7 @@ macro_rules! avgas {
 #[macro_export]
 macro_rules! diesel {
     ($volume:expr) => {
-        Fuel::from_volume($volume, &FuelType::Diesel)
+        Fuel::from_volume($volume, FuelType::Diesel)
     };
 }
 
@@ -42,7 +42,7 @@ macro_rules! diesel {
 #[macro_export]
 macro_rules! jet_a {
     ($volume:expr) => {
-        Fuel::from_volume($volume, &FuelType::JetA)
+        Fuel::from_volume($volume, FuelType::JetA)
     };
 }
 
