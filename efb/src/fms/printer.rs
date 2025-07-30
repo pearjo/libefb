@@ -15,8 +15,7 @@
 
 use std::fmt::{Error, Write as _};
 
-use super::{FMS, FlightPlanning};
-use crate::fp::{FuelPlanning, RunwayAnalysis};
+use crate::fp::{FlightPlanning, FuelPlanning, RunwayAnalysis};
 use crate::measurements::LengthUnit;
 use crate::nd::*;
 use crate::route::Route;
@@ -34,12 +33,16 @@ pub struct Printer {
 
 impl Printer {
     /// Prints the flight planning of the FMS.
-    pub fn print(&self, fms: &mut FMS) -> Result<String, Error> {
+    pub fn print(
+        &self,
+        route: &Route,
+        flight_planning: Option<&FlightPlanning>,
+    ) -> Result<String, Error> {
         let mut buffer = String::new();
 
-        self.write_route(&mut buffer, fms.route())?;
+        self.write_route(&mut buffer, route)?;
 
-        if let Some(flight_planning) = fms.flight_planning() {
+        if let Some(flight_planning) = flight_planning {
             if let Some(fuel_planning) = flight_planning.fuel_planning() {
                 self.write_fuel(&mut buffer, fuel_planning)?;
             }

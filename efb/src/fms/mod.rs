@@ -81,10 +81,12 @@ impl FMS {
     }
 
     /// Prints the route and planning with a defined line length.
-    pub fn print(&mut self, line_length: usize) -> String {
+    pub fn print(&self, line_length: usize) -> String {
         let printer = Printer { line_length };
         // TODO: Add print errors and return Result.
-        printer.print(self).unwrap_or_default()
+        printer
+            .print(&self.route, self.flight_planning.as_ref())
+            .unwrap_or_default()
     }
 }
 
