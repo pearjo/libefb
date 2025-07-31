@@ -18,7 +18,7 @@ use std::ops::Div;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use super::{Density, DensityUnit, Measurement, UnitOfMeasure, Volume, VolumeUnit};
+use super::{constants, Density, DensityUnit, Measurement, UnitOfMeasure, Volume, VolumeUnit};
 
 /// Mass unit with _kg_ as SI unit.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -44,14 +44,14 @@ impl UnitOfMeasure<f32> for MassUnit {
     fn from_si(value: f32, to: &Self) -> f32 {
         match to {
             Self::Kilograms => value,
-            Self::Pounds => unimplemented!(),
+            Self::Pounds => value / constants::POUNDS_IN_KILOGRAMS,
         }
     }
 
     fn to_si(&self, value: &f32) -> f32 {
         match self {
             Self::Kilograms => *value,
-            Self::Pounds => unimplemented!(),
+            Self::Pounds => value * constants::POUNDS_IN_KILOGRAMS,
         }
     }
 }
