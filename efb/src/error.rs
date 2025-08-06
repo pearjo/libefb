@@ -76,7 +76,25 @@ impl fmt::Display for Error {
             Self::ExpectedLevelOnFPL => write!(f, "FPL is missing cruise level"),
             Self::UnexpectedRouteElement => write!(f, "invalid element found in route"),
             Self::UnexpectedRunwayInRoute => write!(f, "invalid runway found in route"),
-            _ => write!(f, "ooops, something went wrong"),
+            Self::UnexpectedString => write!(f, "unexpected string"),
+            Self::ImplausibleValue => write!(f, "value seams implausuble"),
+            Self::UnknownIdent => write!(f, "unkown ident"),
+            Self::UnexpectedMassesForStations => {
+                write!(f, "mass should match to aircraft's stations")
+            }
+            Self::UnexpectedNumberOfFuelStations => {
+                write!(f, "fuel stations should match to aircraft's tanks")
+            }
+            Self::ExceededFuelCapacityOnRamp => {
+                write!(f, "fuel should fit in tank capacity when on ramp")
+            }
+            Self::ExceededFuelCapacityAfterLanding => {
+                write!(f, "fuel should fit in tank capacity after landing")
+            }
+            Self::ExpectedRegistration => write!(f, "aircraft should have a registration"),
+            Self::ExpectedEmptyMass => write!(f, "aircraft should have an empty mass"),
+            Self::ExpectedEmptyBalance => write!(f, "aircraft should have an empty balance"),
+            Self::ExpectedFuelType => write!(f, "aircraft should have a fuel type defined"),
         }
     }
 }
