@@ -129,7 +129,8 @@ pub extern "C" fn efb_fms_flight_planning(fms: &EfbFMS) -> Option<&FlightPlannin
 /// [`efb_flight_planning_builder_new`].
 #[no_mangle]
 pub extern "C" fn efb_fms_set_flight_planning(fms: &mut EfbFMS, builder: &FlightPlanningBuilder) {
-    let _ = fms.inner.set_flight_planning(builder);
+    // clone here to not mess with the builder's memory
+    let _ = fms.inner.set_flight_planning(builder.clone());
 }
 
 /// Prints the route and planning of the FMS.

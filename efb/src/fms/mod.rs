@@ -23,21 +23,18 @@ mod printer;
 
 pub use printer::*;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Default)]
 pub struct FMS {
     nd: NavigationData,
     route: Route,
     flight_planning: Option<FlightPlanning>,
+    flight_planning_builder: Option<FlightPlanningBuilder>,
 }
 
 impl FMS {
     /// Constructs a new, empty `FMS`.
     pub fn new() -> Self {
-        Self {
-            nd: NavigationData::default(),
-            route: Route::default(),
-            flight_planning: None,
-        }
+        Self::default()
     }
 
     pub fn nd(&mut self) -> &mut NavigationData {
@@ -50,6 +47,7 @@ impl FMS {
 
     pub fn decode(&mut self, route: &str) -> Result<(), Error> {
         self.route.decode(route, &self.nd)?;
+        self.update_flight_planning()?;
         Ok(())
     }
 
@@ -64,16 +62,17 @@ impl FMS {
         match self.nd.find(ident) {
             Some(alternate) => {
                 self.route.set_alternate(Some(alternate));
+                self.update_flight_planning()?;
                 Ok(())
             }
             None => Err(Error::UnknownIdent),
         }
     }
 
-    pub fn set_flight_planning(&mut self, builder: &FlightPlanningBuilder) -> Result<(), Error> {
-        let flight_planning = builder.build(&self.route)?;
-        self.flight_planning = Some(flight_planning);
-        Ok(())
+    pub fn set_flight_planning(&mut self, builder: FlightPlanningBuilder) -> Result<(), Error> {
+        self.flight_planning_builder = Some(builder);
+        self.update_flight_planning()
+            .inspect_err(|_| self.flight_planning_builder = None)
     }
 
     pub fn flight_planning(&self) -> Option<&FlightPlanning> {
@@ -88,10 +87,13 @@ impl FMS {
             .print(&self.route, self.flight_planning.as_ref())
             .unwrap_or_default()
     }
-}
 
-impl Default for FMS {
-    fn default() -> Self {
-        Self::new()
+    fn update_flight_planning(&mut self) -> Result<(), Error> {
+        if let Some(builder) = self.flight_planning_builder.clone() {
+            let flight_planning = builder.build(&self.route)?;
+            self.flight_planning = Some(flight_planning);
+        }
+
+        Ok(())
     }
 }

@@ -175,7 +175,7 @@ fn main() {
         .origin_rwycc(RunwayConditionCode::Six)
         .origin_temperature(Temperature::c(20.0));
 
-    let _ = fms.set_flight_planning(&builder);
+    let _ = fms.set_flight_planning(builder);
 
     println!("{}", fms.print(40));
 }

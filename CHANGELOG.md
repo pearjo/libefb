@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement std Error trait
 - ICAO Doc. 8643 aircraft type designator
 
+### Changed
+
+- Let FMS take ownership of flight planning builder
+
+### Fixed
+
+- Flight planning gets updated on route change
+
 ## [0.3.2] - 2025-06-15
 
 ### Added
