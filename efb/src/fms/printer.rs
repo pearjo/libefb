@@ -100,7 +100,7 @@ impl Printer {
                 "",
                 leg.dist().convert_to(LengthUnit::NauticalMiles),
                 "",
-                leg.ete().unwrap(),
+                leg.ete().map(|d| d.to_string()).unwrap_or("-".to_string()),
             )?;
 
             writeln!(buffer)?;
