@@ -57,8 +57,8 @@
 //! [`FMS`]: fms::FMS
 //! [navigation data]: nd::NavigationData
 //! [route]: route::Route
-//! [flight planning]: fms::FlightPlanning
-//! [`FlightPlanningBuilder`]: fms::FlightPlanningBuilder
+//! [flight planning]: fp::FlightPlanning
+//! [`FlightPlanningBuilder`]: fp::FlightPlanningBuilder
 //!
 //! # Acronyms & Abbreviations
 //!
