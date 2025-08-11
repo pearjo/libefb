@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Create temperature with proper unit
 - Flight planning gets updated on route change
 
 ## [0.3.2] - 2025-06-15

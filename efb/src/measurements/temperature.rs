@@ -72,14 +72,40 @@ impl Temperature {
     pub fn c(value: f64) -> Self {
         Measurement {
             value,
-            unit: TemperatureUnit::Kelvin,
+            unit: TemperatureUnit::Celsius,
         }
     }
 
     pub fn f(value: f64) -> Self {
         Measurement {
             value,
-            unit: TemperatureUnit::Kelvin,
+            unit: TemperatureUnit::Fahrenheit,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn temperature_shows_symbol() {
+        let k = Temperature::k(0.0);
+        let c = Temperature::c(0.0);
+        let f = Temperature::f(0.0);
+
+        assert_eq!(k.symbol(), "K");
+        assert_eq!(c.symbol(), "°C");
+        assert_eq!(f.symbol(), "°F");
+    }
+
+    #[test]
+    fn convert_k_to_c() {
+        assert_eq!(Temperature::k(0.0), Temperature::c(-273.15));
+    }
+
+    #[test]
+    fn convert_c_to_f() {
+        assert_eq!(Temperature::c(15.0), Temperature::f(59.0));
     }
 }
