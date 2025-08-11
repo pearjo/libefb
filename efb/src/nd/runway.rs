@@ -13,13 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::convert::TryFrom;
 use std::fmt;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::VerticalDistance;
+use crate::error::Error;
 use crate::measurements::{Angle, Length};
+use crate::VerticalDistance;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -54,6 +56,23 @@ pub enum RunwayConditionCode {
     /// Wet ice, water on top of compacted snow or dry snow or wet snow on top
     /// of ice.
     Zero,
+}
+
+impl TryFrom<u8> for RunwayConditionCode {
+    type Error = Error;
+
+    fn try_from(value: u8) -> Result<RunwayConditionCode, Self::Error> {
+        match value {
+            6 => Ok(RunwayConditionCode::Six),
+            5 => Ok(RunwayConditionCode::Five),
+            4 => Ok(RunwayConditionCode::Four),
+            3 => Ok(RunwayConditionCode::Three),
+            2 => Ok(RunwayConditionCode::Two),
+            1 => Ok(RunwayConditionCode::One),
+            0 => Ok(RunwayConditionCode::Zero),
+            _ => Err(Error::InvalidRWYCC),
+        }
+    }
 }
 
 #[derive(Clone, PartialEq, Debug)]

@@ -43,6 +43,8 @@ pub enum Error {
     //
     /// The requested identifier is not know.
     UnknownIdent,
+    /// The RWYCC should be between 0 and 6.
+    InvalidRWYCC,
 
     // Errors that originate from the mass & balance planning:
     //
@@ -79,6 +81,7 @@ impl fmt::Display for Error {
             Self::UnexpectedString => write!(f, "unexpected string"),
             Self::ImplausibleValue => write!(f, "value seams implausuble"),
             Self::UnknownIdent => write!(f, "unkown ident"),
+            Self::InvalidRWYCC => write!(f, "RWYCC should be between 0 and 6"),
             Self::UnexpectedMassesForStations => {
                 write!(f, "mass should match to aircraft's stations")
             }
