@@ -29,7 +29,7 @@ pub enum TemperatureUnit {
     Fahrenheit,
 }
 
-impl UnitOfMeasure<f64> for TemperatureUnit {
+impl UnitOfMeasure<f32> for TemperatureUnit {
     fn si() -> Self {
         Self::Kelvin
     }
@@ -42,7 +42,7 @@ impl UnitOfMeasure<f64> for TemperatureUnit {
         }
     }
 
-    fn from_si(value: f64, to: &Self) -> f64 {
+    fn from_si(value: f32, to: &Self) -> f32 {
         match to {
             Self::Kelvin => value,
             Self::Celsius => value - constants::KELVIN_IN_CELSIUS,
@@ -50,7 +50,7 @@ impl UnitOfMeasure<f64> for TemperatureUnit {
         }
     }
 
-    fn to_si(&self, value: &f64) -> f64 {
+    fn to_si(&self, value: &f32) -> f32 {
         match self {
             Self::Kelvin => *value,
             Self::Celsius => value + constants::KELVIN_IN_CELSIUS,
@@ -59,24 +59,24 @@ impl UnitOfMeasure<f64> for TemperatureUnit {
     }
 }
 
-pub type Temperature = Measurement<f64, TemperatureUnit>;
+pub type Temperature = Measurement<f32, TemperatureUnit>;
 
 impl Temperature {
-    pub fn k(value: f64) -> Self {
+    pub fn k(value: f32) -> Self {
         Measurement {
             value,
             unit: TemperatureUnit::Kelvin,
         }
     }
 
-    pub fn c(value: f64) -> Self {
+    pub fn c(value: f32) -> Self {
         Measurement {
             value,
             unit: TemperatureUnit::Celsius,
         }
     }
 
-    pub fn f(value: f64) -> Self {
+    pub fn f(value: f32) -> Self {
         Measurement {
             value,
             unit: TemperatureUnit::Fahrenheit,
