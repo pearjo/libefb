@@ -16,7 +16,7 @@
 use std::error;
 use std::fmt;
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
     // Errors that can occur while decoding a route:
     //
@@ -27,10 +27,12 @@ pub enum Error {
     /// first two elements.
     ExpectedLevelOnFPL,
     /// The route to decode includes an element that was not expected.
-    UnexpectedRouteElement,
+    UnexpectedRouteElement(String),
     /// The route includes a runway at a position that is not next to an
     /// airport.
-    UnexpectedRunwayInRoute,
+    UnexpectedRunwayInRoute(String),
+    /// The route includes a runway that is not found on the associated airport.
+    UnknownRunwayInRoute { aprt: String, rwy: String },
 
     // Errors that are related to parsing of input data:
     //
@@ -42,7 +44,7 @@ pub enum Error {
     // Errors that relate to navigation data:
     //
     /// The requested identifier is not know.
-    UnknownIdent,
+    UnknownIdent(String),
     /// The RWYCC should be between 0 and 6.
     InvalidRWYCC,
 
@@ -76,11 +78,16 @@ impl fmt::Display for Error {
         match self {
             Self::ExpectedSpeedOnFPL => write!(f, "FPL is missing cruise speed"),
             Self::ExpectedLevelOnFPL => write!(f, "FPL is missing cruise level"),
-            Self::UnexpectedRouteElement => write!(f, "invalid element found in route"),
-            Self::UnexpectedRunwayInRoute => write!(f, "invalid runway found in route"),
+            Self::UnexpectedRouteElement(e) => write!(f, "invalid element {e} found in route"),
+            Self::UnexpectedRunwayInRoute(rwy) => {
+                write!(f, "runway {rwy} should follow an airport")
+            }
+            Self::UnknownRunwayInRoute { aprt, rwy } => {
+                write!(f, "unknown runway {rwy} found for {aprt}")
+            }
             Self::UnexpectedString => write!(f, "unexpected string"),
             Self::ImplausibleValue => write!(f, "value seams implausuble"),
-            Self::UnknownIdent => write!(f, "unkown ident"),
+            Self::UnknownIdent(ident) => write!(f, "unknown ident {ident}"),
             Self::InvalidRWYCC => write!(f, "RWYCC should be between 0 and 6"),
             Self::UnexpectedMassesForStations => {
                 write!(f, "mass should match to aircraft's stations")

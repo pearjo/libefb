@@ -97,15 +97,22 @@ impl Route {
             } else if let Ok(value) = element.parse::<Wind>() {
                 elements.push(RouteElement::Wind(value));
             } else if element.starts_with("RWY") {
-                if let Some(RouteElement::NavAid(NavAid::Airport(_))) = elements.last() {
-                    elements.push(RouteElement::RunwayDesignator(
-                        element.strip_prefix("RWY").unwrap_or_default().to_string(),
-                    ));
+                if let Some(RouteElement::NavAid(NavAid::Airport(aprt))) = elements.last() {
+                    let designator = element.strip_prefix("RWY").unwrap_or_default().to_string();
+                    match aprt.runways.iter().find(|rwy| rwy.designator == designator) {
+                        Some(_) => elements.push(RouteElement::RunwayDesignator(designator)),
+                        None => {
+                            return Err(Error::UnknownRunwayInRoute {
+                                aprt: aprt.icao_ident.to_string(),
+                                rwy: designator,
+                            })
+                        }
+                    }
                 } else {
-                    return Err(Error::UnexpectedRunwayInRoute);
+                    return Err(Error::UnexpectedRunwayInRoute(element.to_string()));
                 }
             } else {
-                return Err(Error::UnexpectedRouteElement);
+                return Err(Error::UnexpectedRouteElement(element.to_string()));
             }
         }
 

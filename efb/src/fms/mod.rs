@@ -65,7 +65,7 @@ impl FMS {
                 self.update_flight_planning()?;
                 Ok(())
             }
-            None => Err(Error::UnknownIdent),
+            None => Err(Error::UnknownIdent(ident.to_string())),
         }
     }
 
