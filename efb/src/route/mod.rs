@@ -65,7 +65,7 @@ pub enum RouteElement {
 ///
 /// [`leg`]: Leg
 /// [`fixes`]: crate::nd::Fix
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Default)]
 pub struct Route {
     elements: Vec<RouteElement>,
     legs: Vec<Leg>,
@@ -76,13 +76,7 @@ pub struct Route {
 
 impl Route {
     pub fn new() -> Self {
-        Self {
-            elements: Vec::new(),
-            legs: Vec::new(),
-            speed: None,
-            level: None,
-            alternate: None,
-        }
+        Self::default()
     }
 
     /// Decodes a `route` that is composed of a space separated list of fix
@@ -288,8 +282,3 @@ impl Route {
     }
 }
 
-impl Default for Route {
-    fn default() -> Self {
-        Self::new()
-    }
-}
