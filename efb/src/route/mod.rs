@@ -45,7 +45,7 @@ pub enum RouteElement {
 /// and performance elements. The route elements
 ///
 /// ```text
-/// 135@09 107KT EDDH DHD HLW EDHL
+/// 13509KT N0107 EDDH DHD HLW EDHL
 /// ```
 ///
 /// would create a route from Hamburg to Luebeck via outbound delta routing and
