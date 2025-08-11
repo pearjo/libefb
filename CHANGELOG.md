@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Return the route as GeoJSON
 - Implement std Error trait
 - ICAO Doc. 8643 aircraft type designator
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2024 Joe Pearson
+// Copyright 2025 Joe Pearson
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,11 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Geometry.
-mod bbox;
-mod coordinate;
-mod polygon;
+use geojson;
 
-pub(crate) use bbox::*;
-pub use coordinate::*;
-pub use polygon::*;
+use crate::geom::BBox;
+
+impl From<BBox> for geojson::Bbox {
+    fn from(value: BBox) -> Self {
+        vec![
+            value.sw().longitude as f64,
+            value.sw().latitude as f64,
+            value.ne().longitude as f64,
+            value.ne().latitude as f64,
+        ]
+    }
+}

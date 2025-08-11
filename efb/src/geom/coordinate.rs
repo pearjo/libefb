@@ -38,6 +38,14 @@ pub struct Coordinate {
 }
 
 impl Coordinate {
+    /// Creates a new coordinate.
+    pub fn new(latitude: f32, longitude: f32) -> Self {
+        Self {
+            latitude,
+            longitude,
+        }
+    }
+
     // TODO check calculation and add test to verify
     /// Returns the bearing between this point and the `other`.
     pub fn bearing(&self, other: &Coordinate) -> Angle {

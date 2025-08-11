@@ -13,10 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod leg;
-
-pub use leg::Leg;
-
 use std::rc::Rc;
 
 use crate::error::Error;
@@ -24,6 +20,9 @@ use crate::fp::Performance;
 use crate::measurements::{Duration, Length, Speed};
 use crate::nd::*;
 use crate::{Fuel, VerticalDistance, Wind};
+
+mod leg;
+pub use leg::Leg;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum RouteElement {
@@ -232,6 +231,7 @@ impl Route {
 impl Route {
     /// Returns the runway from an airport if a designator is next to the
     /// airport element.
+    // TODO: Return Result rather than Option.
     fn aprt_rwy_from_elements(&self, aprt: Rc<Airport>) -> Option<Runway> {
         let designator = self
             .elements
@@ -288,4 +288,3 @@ impl Route {
         legs
     }
 }
-

@@ -25,11 +25,17 @@ homepage = "https://github.com/pearjo/libefb"
 repository = "https://github.com/pearjo/libefb"
 readme = "../README.md"
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
 [dependencies]
 arinc424 = { path = "../arinc424", version = "0.1.2" }
+geojson = { version = "0.24.2", optional = true }
 serde = { version = "1.0.219", features = ["derive", "rc"], optional = true  }
 time = "0.3.36"
 world_magnetic_model = "0.2.0"
 
 [features]
+geojson = ["dep:geojson"]
 serde = ["dep:serde"]
