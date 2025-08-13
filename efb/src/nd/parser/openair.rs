@@ -127,7 +127,7 @@ impl FromStr for OpenAirCoordinate {
         let latitude = match (d, m, s, ns) {
             (Some(d), Some(m), Some(s), Some(ns)) => match ns {
                 "N" => Some(fc::dms_to_decimal(d, m, s)),
-                "S" => Some(-1.0 * fc::dms_to_decimal(d, m, s)),
+                "S" => Some(-fc::dms_to_decimal(d, m, s)),
                 _ => None,
             },
             _ => None,
@@ -142,7 +142,7 @@ impl FromStr for OpenAirCoordinate {
         let longitude = match (d, m, s, ew) {
             (Some(d), Some(m), Some(s), Some(ew)) => match ew {
                 "E" => Some(fc::dms_to_decimal(d, m, s)),
-                "W" => Some(-1.0 * fc::dms_to_decimal(d, m, s)),
+                "W" => Some(-fc::dms_to_decimal(d, m, s)),
                 _ => None,
             },
             _ => None,

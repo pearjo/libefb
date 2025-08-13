@@ -64,7 +64,7 @@ impl Printer {
     /// Writes a section with title to the buffer.
     fn write_section(&self, buffer: &mut String, title: &str) -> Result<(), Error> {
         writeln!(buffer, "{}", "-".repeat(self.line_length))?;
-        writeln!(buffer, "-- {}", title)?;
+        writeln!(buffer, "-- {title}")?;
         writeln!(buffer, "{}", "-".repeat(self.line_length))?;
         writeln!(buffer)?;
         Ok(())

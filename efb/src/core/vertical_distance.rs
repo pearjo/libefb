@@ -162,8 +162,7 @@ impl Ord for VerticalDistance {
                         VerticalDistance::Msl(v) => *v,
                         VerticalDistance::Altitude(v) => *v,
                         _ => panic!(
-                            "We can't compare {} here, since it doesn't reference to common datum.",
-                            vd
+                            "We can't compare {vd} here, since it doesn't reference to common datum."
                         ),
                     }
                 }

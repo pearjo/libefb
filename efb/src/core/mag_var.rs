@@ -62,8 +62,8 @@ impl From<Coordinate> for MagneticVariation {
 impl Display for MagneticVariation {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
-            Self::East(value) => write!(f, "{:.1}° E", value),
-            Self::West(value) => write!(f, "{:.1}° W", value),
+            Self::East(value) => write!(f, "{value:.1}° E"),
+            Self::West(value) => write!(f, "{value:.1}° W"),
             Self::OrientedToTrueNorth => write!(f, "T"),
         }
     }
