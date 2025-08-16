@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::Performance;
 use crate::aircraft::Aircraft;
 use crate::measurements::Duration;
@@ -49,6 +52,7 @@ pub enum FuelPolicy {
     ExtraFuel(Fuel),
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct FuelPlanning {
     taxi: Fuel,

@@ -15,9 +15,12 @@
 
 use std::cmp::{Ordering, PartialOrd};
 
-use crate::Wind;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::measurements::{Length, Speed, Temperature};
 use crate::nd::{Runway, RunwayConditionCode};
+use crate::Wind;
 
 use super::{AlteringFactors, Influences, MassAndBalance, TakeoffLandingPerformance};
 
@@ -29,6 +32,7 @@ use super::{AlteringFactors, Influences, MassAndBalance, TakeoffLandingPerforman
 ///
 /// [`takeoff`]: RunwayAnalysis::takeoff
 /// [`landing`]: RunwayAnalysis::landing
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct RunwayAnalysis {
     headwind: Speed,
