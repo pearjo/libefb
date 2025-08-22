@@ -25,6 +25,9 @@
 //! - [`RunwayAnalysis`] to estimate the ground roll and distance to clear a
 //!   50ft obstacle on takeoff or landing
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 mod builder;
 mod fuel_planning;
 mod mb;
@@ -41,6 +44,7 @@ pub use takeoff_landing_performance::*;
 
 use crate::aircraft::Aircraft;
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, PartialEq)]
 pub struct FlightPlanning {
     aircraft: Option<Aircraft>,

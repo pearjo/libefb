@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::aircraft::LoadedStation;
 use crate::measurements::{Length, LengthUnit, Mass};
 
@@ -24,6 +27,7 @@ use crate::measurements::{Length, LengthUnit, Mass};
 ///
 /// [`Aircraft`]: crate::aircraft::Aircraft
 /// [`Station`]: crate::aircraft::Station
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
 pub struct MassAndBalance {
     on_ramp: Mass,

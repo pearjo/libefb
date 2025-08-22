@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.3] - 2025-08-13
-
 ### Added
+
+- WebAssembly bindings
+
+## [0.3.3] - 2025-08-13
 
 - Return the route as GeoJSON
 - Implement std Error trait
