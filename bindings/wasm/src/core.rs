@@ -42,6 +42,12 @@ impl JsFuel {
             inner: Fuel::from_volume(volume.into(), fuel_type),
         })
     }
+
+    #[wasm_bindgen(getter)]
+    pub fn volume(&self) -> Result<JsValue, JsValue> {
+        let v = self.inner.volume();
+        Ok(serde_wasm_bindgen::to_value(&v)?)
+    }
 }
 
 impl From<JsFuel> for Fuel {
