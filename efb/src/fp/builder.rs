@@ -76,6 +76,11 @@ impl FlightPlanningBuilder {
             _ => None,
         };
 
+        let is_balanced = match (&self.aircraft, mb.as_ref()) {
+            (Some(aircraft), Some(mb)) => Some(aircraft.is_balanced(mb)),
+            _ => None,
+        };
+
         let takeoff_rwy_analysis: Option<RunwayAnalysis> = match (
             &route.takeoff_rwy(),
             self.origin_rwycc,
@@ -128,6 +133,7 @@ impl FlightPlanningBuilder {
             aircraft: self.aircraft.clone(),
             fuel_planning,
             mb,
+            is_balanced,
             takeoff_rwy_analysis,
             landing_rwy_analysis,
         })

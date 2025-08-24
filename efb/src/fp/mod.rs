@@ -50,6 +50,7 @@ pub struct FlightPlanning {
     aircraft: Option<Aircraft>,
     fuel_planning: Option<FuelPlanning>,
     mb: Option<MassAndBalance>,
+    is_balanced: Option<bool>,
     takeoff_rwy_analysis: Option<RunwayAnalysis>,
     landing_rwy_analysis: Option<RunwayAnalysis>,
 }
@@ -68,10 +69,7 @@ impl FlightPlanning {
     }
 
     pub fn is_balanced(&self) -> Option<bool> {
-        match (self.aircraft.as_ref(), self.mb.as_ref()) {
-            (Some(ac), Some(mb)) => Some(ac.is_balanced(mb)),
-            _ => None,
-        }
+        self.is_balanced
     }
 
     pub fn takeoff_rwy_analysis(&self) -> Option<&RunwayAnalysis> {
