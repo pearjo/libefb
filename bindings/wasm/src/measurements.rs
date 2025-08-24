@@ -74,7 +74,7 @@ impl JsLength {
             Some("NM") => LengthUnit::NauticalMiles,
             Some("in") => LengthUnit::Inches,
             Some("ft") => LengthUnit::Feet,
-            _ => LengthUnit::si(),
+            _ => serde_wasm_bindgen::from_value(unit.into()).unwrap_or(LengthUnit::si()),
         };
 
         Self {
@@ -119,7 +119,7 @@ impl JsMass {
         let unit = match unit.as_deref() {
             Some("kg") => MassUnit::Kilograms,
             Some("lb") => MassUnit::Pounds,
-            _ => MassUnit::si(),
+            _ => serde_wasm_bindgen::from_value(unit.into()).unwrap_or(MassUnit::si()),
         };
 
         Self {
@@ -165,7 +165,7 @@ impl JsTemperature {
             Some("K") => TemperatureUnit::Kelvin,
             Some("°C") => TemperatureUnit::Celsius,
             Some("°F") => TemperatureUnit::Fahrenheit,
-            _ => TemperatureUnit::si(),
+            _ => serde_wasm_bindgen::from_value(unit.into()).unwrap_or(TemperatureUnit::si()),
         };
 
         Self {
@@ -210,7 +210,7 @@ impl JsVolume {
         let unit = match unit.as_deref() {
             Some("m³") => VolumeUnit::CubicMeters,
             Some("L") => VolumeUnit::Liter,
-            _ => VolumeUnit::si(),
+            _ => serde_wasm_bindgen::from_value(unit.into()).unwrap_or(VolumeUnit::si()),
         };
 
         Self {
