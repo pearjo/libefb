@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::*;
 use crate::error::Error;
 use crate::measurements::{Length, Mass};
@@ -39,6 +42,7 @@ use crate::measurements::{Length, Mass};
 /// assert!(aircraft.is_ok());
 /// ```
 #[derive(Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct AircraftBuilder {
     registration: Option<String>,
     icao_type: Option<String>,
@@ -118,7 +122,7 @@ impl AircraftBuilder {
                 .registration
                 .clone()
                 .ok_or(Error::ExpectedRegistration)?,
-            // TODO: Do we wan't the unassigned type as default?
+            // TODO: Do we want the unassigned type as default?
             icao_type: self.icao_type.clone().unwrap_or("ZZZZ".to_string()),
             stations: self.stations.clone(),
             empty_mass: self.empty_mass.ok_or(Error::ExpectedEmptyMass)?,
