@@ -50,12 +50,9 @@ pub enum AirspaceClass {
     F,
     G,
     CTR,
-    EDR,
-    EDD,
-    EDP,
-    // Restricted,
-    // Danger,
-    // Prohibited,
+    Restricted,
+    Danger,
+    Prohibited,
 }
 
 impl Display for AirspaceClass {
@@ -69,9 +66,9 @@ impl Display for AirspaceClass {
             AirspaceClass::F => write!(f, "Class F"),
             AirspaceClass::G => write!(f, "Class G"),
             AirspaceClass::CTR => write!(f, "CTR"),
-            AirspaceClass::EDR => write!(f, "ED-R"),
-            AirspaceClass::EDD => write!(f, "ED-D"),
-            AirspaceClass::EDP => write!(f, "ED-P"),
+            AirspaceClass::Restricted => write!(f, "Restricted"),
+            AirspaceClass::Danger => write!(f, "Danger"),
+            AirspaceClass::Prohibited => write!(f, "Prohibited"),
         }
     }
 }

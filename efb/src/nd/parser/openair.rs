@@ -59,9 +59,9 @@ impl From<String> for AirspaceClass {
             "F" => AirspaceClass::F,
             "G" => AirspaceClass::G,
             "CTR" => AirspaceClass::CTR,
-            "R" => AirspaceClass::EDR,
-            "Q" => AirspaceClass::EDD,
-            "P" => AirspaceClass::EDP,
+            "R" => AirspaceClass::Restricted,
+            "Q" => AirspaceClass::Danger,
+            "P" => AirspaceClass::Prohibited,
             &_ => todo!("Unknown airspace class: {ac}"),
         }
     }

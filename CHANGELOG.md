@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Serialization support for aircraft builder
 - WebAssembly bindings
 
+### Fixed
+
+- Inclusion of region code in airspace enums
+
 ## [0.3.3] - 2025-08-13
 
 - Return the route as GeoJSON
