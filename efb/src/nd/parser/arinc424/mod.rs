@@ -22,8 +22,8 @@ use crate::nd::*;
 mod from;
 
 pub struct Arinc424Record {
-    pub airports: Vec<Rc<Airport>>,
-    pub waypoints: Vec<Rc<Waypoint>>,
+    pub(crate) airports: Vec<Rc<Airport>>,
+    pub(crate) waypoints: Vec<Rc<Waypoint>>,
 }
 
 impl FromStr for Arinc424Record {

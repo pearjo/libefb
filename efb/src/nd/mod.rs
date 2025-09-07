@@ -90,9 +90,9 @@ pub enum InputFormat {
 #[derive(Clone, PartialEq, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NavigationData {
-    pub airports: Vec<Rc<Airport>>,
-    pub airspaces: Airspaces,
-    pub waypoints: Vec<Rc<Waypoint>>,
+    airports: Vec<Rc<Airport>>,
+    airspaces: Airspaces,
+    waypoints: Vec<Rc<Waypoint>>,
 }
 
 impl NavigationData {

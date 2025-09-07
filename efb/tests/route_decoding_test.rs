@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::nd::{InputFormat, NavigationData};
+use efb::nd::{Fix, InputFormat, NavigationData};
 use efb::route::Route;
 
 const ARINC_424_RECORDS: &'static str = r#"SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
@@ -46,8 +46,8 @@ fn origin_and_destination() {
         .destination()
         .expect("route should have a destination");
 
-    assert_eq!(origin.icao_ident, "EDDH");
-    assert_eq!(destination.icao_ident, "EDHF");
+    assert_eq!(origin.ident(), "EDDH");
+    assert_eq!(destination.ident(), "EDHF");
 }
 
 #[test]

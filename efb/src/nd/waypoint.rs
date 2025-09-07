@@ -46,13 +46,13 @@ pub enum Region {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(C)]
 pub struct Waypoint {
-    pub fix_ident: String,
-    pub desc: String,
-    pub usage: WaypointUsage,
-    pub coordinate: Coordinate,
-    pub mag_var: MagneticVariation,
-    pub region: Region,
-    pub cycle: AiracCycle,
+    pub(crate) fix_ident: String,
+    pub(crate) desc: String,
+    pub(crate) usage: WaypointUsage,
+    pub(crate) coordinate: Coordinate,
+    pub(crate) mag_var: MagneticVariation,
+    pub(crate) region: Region,
+    pub(crate) cycle: AiracCycle,
 }
 
 impl Fix for Waypoint {
