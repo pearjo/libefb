@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use efb::nd::{Fix, InputFormat, NavigationData};
+use efb::nd::{Fix, NavigationData};
 use efb::route::Route;
 
 const ARINC_424_RECORDS: &'static str = r#"SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
@@ -27,11 +27,9 @@ SEURP EDHFEDGRW20    0034122060 N53594752E009344856                          098
 const ROUTE: &'static str = r#"EDDH RWY33 DHN1 DHN2 EDHF RWY20"#;
 
 fn route() -> Route {
-    let mut nd = NavigationData::new();
+    let nd = NavigationData::try_from_arinc424(ARINC_424_RECORDS).expect("records should be valid");
     let mut route = Route::new();
 
-    nd.read(&ARINC_424_RECORDS, InputFormat::Arinc424)
-        .expect("ARINC 424 record should be readable");
     route.decode(ROUTE, &nd).expect("route should decode");
 
     route
