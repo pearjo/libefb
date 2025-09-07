@@ -15,7 +15,6 @@
 
 //! Navigation Data.
 
-use std::fmt;
 use std::fs;
 use std::path::Path;
 use std::rc::Rc;
@@ -32,6 +31,7 @@ mod airport;
 mod airspace;
 mod fix;
 mod location;
+mod navaid;
 mod parser;
 mod runway;
 mod waypoint;
@@ -41,46 +41,10 @@ pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use fix::Fix;
 pub use location::LocationIndicator;
+pub use navaid::NavAid;
 use parser::*;
 pub use runway::*;
 pub use waypoint::*;
-
-#[derive(Clone, PartialEq, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[repr(C)]
-pub enum NavAid {
-    Airport(Rc<Airport>),
-    Waypoint(Rc<Waypoint>),
-}
-
-impl Fix for NavAid {
-    fn ident(&self) -> String {
-        match self {
-            Self::Airport(aprt) => aprt.ident(),
-            Self::Waypoint(wp) => wp.ident(),
-        }
-    }
-
-    fn coordinate(&self) -> Coordinate {
-        match self {
-            Self::Airport(aprt) => aprt.coordinate(),
-            Self::Waypoint(wp) => wp.coordinate(),
-        }
-    }
-
-    fn mag_var(&self) -> MagneticVariation {
-        match self {
-            Self::Airport(aprt) => aprt.mag_var(),
-            Self::Waypoint(wp) => wp.mag_var(),
-        }
-    }
-}
-
-impl fmt::Display for NavAid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.ident())
-    }
-}
 
 #[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
