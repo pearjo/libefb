@@ -121,13 +121,14 @@ pub mod route;
 pub mod prelude {
     pub use crate::aircraft::{Aircraft, AircraftBuilder, CGLimit, FuelTank, Station};
     pub use crate::core::{Fuel, FuelFlow, FuelType, VerticalDistance};
+    pub use crate::error::Error;
     pub use crate::fms::FMS;
     pub use crate::fp::{
         AlteringFactor, AlteringFactors, FactorOfEffect, FlightPlanningBuilder, FuelPolicy,
         Performance, Reserve, TakeoffLandingPerformance,
     };
     pub use crate::measurements::*;
-    pub use crate::nd::InputFormat;
+    pub use crate::nd::{InputFormat, NavigationData};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
