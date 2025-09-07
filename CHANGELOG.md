@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Inclusion of region code in airspace enums
 
+### Removed
+
+- Reading navigation data from file
+
 ## [0.3.3] - 2025-08-13
 
 - Return the route as GeoJSON

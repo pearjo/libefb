@@ -13,8 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::path::Path;
-
 use pyo3::prelude::*;
 
 use efb::fms::FMS;
@@ -65,14 +63,6 @@ impl PyFMS {
     /// :param InputFormat fmt: The format of the string.
     pub fn nd_read(&mut self, s: &str, fmt: PyInputFormat) {
         let _ = self.fms.nd().read(s, fmt.into());
-    }
-
-    /// Reads the navigation data from a file.
-    ///
-    /// :param str path: The absolute path to the file.
-    /// :param InputFormat fmt: The format of the file's content.
-    pub fn nd_read_file(&mut self, path: &str, fmt: PyInputFormat) {
-        let _ = self.fms.nd().read_file(Path::new(path), fmt.into());
     }
 
     /// Decode a route from a string.

@@ -15,8 +15,6 @@
 
 //! Navigation Data.
 
-use std::fs;
-use std::path::Path;
 use std::rc::Rc;
 
 #[cfg(feature = "serde")]
@@ -103,18 +101,6 @@ impl NavigationData {
         };
 
         Ok(())
-    }
-
-    pub fn read_file(&mut self, path: &Path, fmt: InputFormat) -> Result<(), Error> {
-        match fs::read_to_string(path) {
-            Ok(string) => self.read(&string, fmt),
-            // Err(err) => Err(match err.kind() {
-            //     ErrorKind::NotFound => ParserError::NotFound,
-            //     ErrorKind::PermissionDenied => ParserError::PermissionDenied,
-            //     _ => ParserError::FileNotRead,
-            // }),
-            Err(_) => Err(Error::UnexpectedString),
-        }
     }
 }
 

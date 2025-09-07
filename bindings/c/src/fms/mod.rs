@@ -14,7 +14,6 @@
 // limitations under the License.
 
 use std::ffi::{c_char, CStr, CString};
-use std::path::Path;
 
 use efb::fms::FMS;
 use efb::fp::{FlightPlanning, FlightPlanningBuilder};
@@ -66,23 +65,6 @@ pub unsafe extern "C" fn efb_fms_nd_read(fms: &mut EfbFMS, s: *const c_char, fmt
     if let Ok(s) = unsafe { CStr::from_ptr(s).to_str() } {
         let nd = fms.inner.nd();
         let _ = nd.read(s, fmt);
-    }
-}
-
-/// Reads the file at the path which is in the fmt into the navigation database.
-///
-/// # Safety
-///
-/// It is up to the caller to guarantee that `path` points to a valid string.
-#[no_mangle]
-pub unsafe extern "C" fn efb_fms_nd_read_file(
-    fms: &mut EfbFMS,
-    path: *const c_char,
-    fmt: InputFormat,
-) {
-    if let Ok(path) = unsafe { CStr::from_ptr(path).to_str() } {
-        let nd = fms.inner.nd();
-        let _ = nd.read_file(Path::new(path), fmt);
     }
 }
 
