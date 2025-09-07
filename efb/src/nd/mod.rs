@@ -57,15 +57,47 @@ pub struct NavigationData {
     airports: Vec<Rc<Airport>>,
     airspaces: Airspaces,
     waypoints: Vec<Rc<Waypoint>>,
+    locations: Vec<LocationIndicator>,
+    cycle: Option<AiracCycle>,
 }
 
 impl NavigationData {
     pub fn new() -> Self {
-        Self {
-            airports: Vec::new(),
+        Self::default()
+    }
+
+    /// Creates navigation data from an ARINC 424 string.
+    pub fn try_from_arinc424(s: &str) -> Result<Self, Error> {
+        let record: Arinc424Record = s.parse()?;
+
+        Ok(Self {
+            airports: record.airports,
             airspaces: Vec::new(),
+            waypoints: record.waypoints,
+            locations: record.locations,
+            cycle: record.cycle,
+        })
+    }
+
+    /// Creates navigation data from an OpenAir string.
+    pub fn try_from_openair(s: &str) -> Result<Self, Error> {
+        let record: OpenAirRecord = s.parse()?;
+
+        Ok(Self {
+            airports: Vec::new(),
+            airspaces: record.airspaces,
             waypoints: Vec::new(),
-        }
+            locations: Vec::new(),
+            cycle: None,
+        })
+    }
+
+    pub fn locations(&self) -> &[LocationIndicator] {
+        self.locations.as_slice()
+    }
+
+    pub fn cycle(&self) -> Option<&AiracCycle> {
+        self.cycle.as_ref()
     }
 
     pub fn at(&self, point: &Coordinate) -> Vec<&Airspace> {
@@ -87,6 +119,17 @@ impl NavigationData {
                 .map(|aprt| NavAid::Airport(Rc::clone(aprt))))
     }
 
+    /// Appends other NavigationData.
+    pub fn append(&mut self, mut other: NavigationData) {
+        self.airports.append(&mut other.airports);
+        self.airspaces.append(&mut other.airspaces);
+        self.waypoints.append(&mut other.waypoints);
+    }
+
+    #[deprecated(
+        since = "0.3.4",
+        note = "load navigation data separately and append them"
+    )]
     pub fn read(&mut self, s: &str, fmt: InputFormat) -> Result<(), Error> {
         match fmt {
             InputFormat::Arinc424 => {
@@ -132,6 +175,8 @@ mod tests {
             }],
             airports: Vec::new(),
             waypoints: Vec::new(),
+            locations: vec!["ED".try_into().expect("ED should be a valid location")],
+            cycle: None,
         };
 
         assert_eq!(nd.at(&inside), vec![&nd.airspaces[0]]);

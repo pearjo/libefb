@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Create navigation data per data source
 - Add AIRAC and location to navigation aid
 - Serialization support for navigation data
 - Serialization support for aircraft builder
