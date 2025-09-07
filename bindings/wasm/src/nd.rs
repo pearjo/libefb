@@ -31,14 +31,16 @@ impl JsNavigationData {
         serde_wasm_bindgen::to_value(&fms.nd().find(ident)).unwrap()
     }
 
-    pub fn read(&self, s: &str, fmt: &str) {
+    pub fn read(&self, s: &str, fmt: &str) -> Result<(), JsError> {
         if let Some(fmt) = match fmt {
             "arinc424" => Some(InputFormat::Arinc424),
             "openAir" => Some(InputFormat::OpenAir),
             _ => None,
         } {
             let mut fms = self.inner.borrow_mut();
-            let _ = fms.nd().read(s, fmt);
+            fms.nd().read(s, fmt)?;
         }
+
+        Ok(())
     }
 }
