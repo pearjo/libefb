@@ -22,8 +22,10 @@ use serde::{Deserialize, Serialize};
 use crate::geom::Coordinate;
 use crate::MagneticVariation;
 
+use super::AiracCycle;
 use super::Airport;
 use super::Fix;
+use super::LocationIndicator;
 use super::Waypoint;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -31,6 +33,22 @@ use super::Waypoint;
 pub enum NavAid {
     Airport(Rc<Airport>),
     Waypoint(Rc<Waypoint>),
+}
+
+impl NavAid {
+    pub fn location(&self) -> Option<LocationIndicator> {
+        match self {
+            Self::Airport(aprt) => aprt.location,
+            Self::Waypoint(wp) => wp.location,
+        }
+    }
+
+    pub fn cycle(&self) -> Option<AiracCycle> {
+        match self {
+            Self::Airport(aprt) => aprt.cycle,
+            Self::Waypoint(wp) => wp.cycle,
+        }
+    }
 }
 
 impl Fix for NavAid {

@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::collections::HashSet;
 use std::rc::Rc;
 use std::str::FromStr;
 
@@ -24,6 +25,8 @@ mod from;
 pub struct Arinc424Record {
     pub(crate) airports: Vec<Rc<Airport>>,
     pub(crate) waypoints: Vec<Rc<Waypoint>>,
+    pub(crate) locations: Vec<LocationIndicator>,
+    pub(crate) cycle: Option<AiracCycle>,
 }
 
 impl FromStr for Arinc424Record {
@@ -33,18 +36,34 @@ impl FromStr for Arinc424Record {
         let mut airports: Vec<Airport> = Vec::new();
         let mut rwy_record_lines: Vec<&str> = Vec::new();
         let mut waypoints: Vec<Rc<Waypoint>> = Vec::new();
+        let mut locations: HashSet<LocationIndicator> = HashSet::new();
+        let mut cycle: Option<AiracCycle> = None;
 
         // TODO add some nice error handling
         s.lines().for_each(|line| match &line[4..6] {
             "EA" | "PC" => {
                 if let Ok(waypoint_record) = arinc424::Waypoint::from_str(line) {
-                    waypoints.push(Rc::new(waypoint_record.into()));
+                    let wp = Waypoint::from(waypoint_record);
+                    if let Some(l) = wp.location {
+                        locations.insert(l);
+                    }
+                    if let Some(c) = wp.cycle {
+                        cycle = Some(cycle.map_or(c, |cycle| cycle.min(c)));
+                    }
+                    waypoints.push(Rc::new(wp));
                 }
             }
             "P " => match &line[12..13] {
                 "A" => {
                     if let Ok(airport_record) = arinc424::Airport::from_str(line) {
-                        airports.push(airport_record.into());
+                        let aprt = Airport::from(airport_record);
+                        if let Some(l) = aprt.location {
+                            locations.insert(l);
+                        }
+                        if let Some(c) = aprt.cycle {
+                            cycle = Some(cycle.map_or(c, |cycle| cycle.min(c)));
+                        }
+                        airports.push(aprt);
                     }
                 }
                 "G" => rwy_record_lines.push(line),
@@ -68,6 +87,8 @@ impl FromStr for Arinc424Record {
         Ok(Self {
             airports: airports.into_iter().map(Rc::new).collect(),
             waypoints,
+            locations: locations.into_iter().collect(),
+            cycle,
         })
     }
 }

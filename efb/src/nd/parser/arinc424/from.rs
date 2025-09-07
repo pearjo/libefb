@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use crate::error::Error;
 use crate::fc;
 use crate::geom::Coordinate;
 use crate::measurements::{Angle, Length};
@@ -27,6 +28,14 @@ impl From<arinc424::Cycle> for AiracCycle {
             year: value.year,
             month: value.month,
         }
+    }
+}
+
+impl<const I: usize> TryFrom<arinc424::IcaoCode<I>> for LocationIndicator {
+    type Error = Error;
+
+    fn try_from(value: arinc424::IcaoCode<I>) -> Result<Self, Self::Error> {
+        LocationIndicator::try_from(value.as_str())
     }
 }
 
@@ -118,7 +127,8 @@ impl From<arinc424::Airport> for Airport {
             // TODO: Parse elevation and runways.
             elevation: VerticalDistance::Gnd,
             runways: Vec::new(),
-            cycle: aprt.cycle.into(),
+            location: aprt.icao_code.try_into().ok(),
+            cycle: Some(aprt.cycle.into()),
         }
     }
 }
@@ -137,7 +147,8 @@ impl From<arinc424::Waypoint> for Waypoint {
             coordinate: (wp.latitude, wp.longitude).into(),
             region: wp.regn_code.into(),
             mag_var: wp.mag_var.into(),
-            cycle: wp.cycle.into(),
+            location: wp.icao_code.try_into().ok(),
+            cycle: Some(wp.cycle.into()),
         }
     }
 }

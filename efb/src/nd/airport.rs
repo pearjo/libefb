@@ -31,7 +31,8 @@ pub struct Airport {
     pub(crate) mag_var: MagneticVariation,
     pub(crate) elevation: VerticalDistance,
     pub(crate) runways: Vec<Runway>,
-    pub(crate) cycle: AiracCycle,
+    pub(crate) location: Option<LocationIndicator>,
+    pub(crate) cycle: Option<AiracCycle>,
 }
 
 impl Fix for Airport {
