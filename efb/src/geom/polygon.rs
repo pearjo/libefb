@@ -15,11 +15,15 @@
 
 use std::ops::Index;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use super::Coordinate;
 use crate::algorithm;
 
 /// A polygon spawned by coordinates.
 #[derive(Clone, PartialEq, PartialOrd, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Polygon {
     coords: Vec<Coordinate>,
 }

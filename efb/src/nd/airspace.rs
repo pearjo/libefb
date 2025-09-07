@@ -15,8 +15,11 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-use crate::VerticalDistance;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::geom::Polygon;
+use crate::VerticalDistance;
 
 pub type Airspaces = Vec<Airspace>;
 
@@ -26,6 +29,7 @@ pub type Airspaces = Vec<Airspace>;
 /// It ranges from the `floor` to `ceiling` in vertical direction.
 #[repr(C)]
 #[derive(Clone, PartialEq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Airspace {
     pub name: String,
     pub class: AirspaceClass,
@@ -36,6 +40,7 @@ pub struct Airspace {
 
 #[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum AirspaceClass {
     A,
     B,

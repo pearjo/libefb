@@ -23,9 +23,9 @@ use std::rc::Rc;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::MagneticVariation;
 use crate::error::Error;
 use crate::geom::Coordinate;
+use crate::MagneticVariation;
 
 mod airac_cycle;
 mod airport;
@@ -88,6 +88,7 @@ pub enum InputFormat {
 }
 
 #[derive(Clone, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NavigationData {
     pub airports: Vec<Rc<Airport>>,
     pub airspaces: Airspaces,
@@ -153,8 +154,8 @@ impl NavigationData {
 
 #[cfg(test)]
 mod tests {
-    use crate::VerticalDistance;
     use crate::geom::Polygon;
+    use crate::VerticalDistance;
 
     use super::*;
 
