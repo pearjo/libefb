@@ -24,10 +24,7 @@ use arinc424;
 
 impl From<arinc424::Cycle> for AiracCycle {
     fn from(value: arinc424::Cycle) -> Self {
-        AiracCycle {
-            year: value.year,
-            month: value.month,
-        }
+        AiracCycle::new(value.year, value.cycle)
     }
 }
 

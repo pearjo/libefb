@@ -19,7 +19,7 @@ use std::str::FromStr;
 #[derive(Debug, PartialEq)]
 pub struct Cycle {
     pub year: u8,
-    pub month: u8,
+    pub cycle: u8,
 }
 
 impl Field for Cycle {}
@@ -29,8 +29,8 @@ impl FromStr for Cycle {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let year: u8 = s[128..130].parse().map_err(|_| FieldError::NotANumber)?;
-        let month: u8 = s[130..132].parse().map_err(|_| FieldError::NotANumber)?;
+        let cycle: u8 = s[130..132].parse().map_err(|_| FieldError::NotANumber)?;
 
-        Ok(Self { year, month })
+        Ok(Self { year, cycle })
     }
 }

@@ -13,12 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::fmt;
+
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct AiracCycle {
-    pub year: u8,
-    pub month: u8,
+    year: u8,
+    cycle: u8,
+}
+
+impl AiracCycle {
+    pub fn new(year: u8, cycle: u8) -> Self {
+        Self { year, cycle }
+    }
+}
+
+impl fmt::Display for AiracCycle {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:02}{:02}", self.year, self.cycle)
+    }
 }
