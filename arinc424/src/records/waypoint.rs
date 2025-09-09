@@ -99,7 +99,7 @@ mod tests {
                 assert_eq!(wp.name_ind, NameInd::Unspecified);
                 assert_eq!(wp.name_desc, "WHISKEY1                 ");
                 assert_eq!(wp.frn, 12292);
-                assert_eq!(wp.cycle, Cycle { year: 24, month: 7 });
+                assert_eq!(wp.cycle, Cycle { year: 24, cycle: 7 });
             }
             _ => panic!("Waypoint should be parsed."),
         }

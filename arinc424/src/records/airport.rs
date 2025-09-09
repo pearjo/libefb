@@ -91,7 +91,7 @@ mod tests {
                 assert_eq!(wp.mag_true_ind, MagTrueInd::Magnetic);
                 assert_eq!(wp.datum, Datum::WGE);
                 assert_eq!(wp.frn, 35651);
-                assert_eq!(wp.cycle, Cycle { year: 24, month: 7 });
+                assert_eq!(wp.cycle, Cycle { year: 24, cycle: 7 });
             }
             _ => panic!("Waypoint should be parsed."),
         }

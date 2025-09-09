@@ -85,7 +85,7 @@ mod tests {
                 assert_eq!(rwy.rwy_brg, RwyBrg::MagneticNorth(333.0));
                 assert_eq!(rwy.threshould_source, Source::OtherSources);
                 assert_eq!(rwy.frn, 12436);
-                assert_eq!(rwy.cycle, Cycle { year: 25, month: 2 });
+                assert_eq!(rwy.cycle, Cycle { year: 25, cycle: 2 });
             }
             Err(e) => panic!("Runway should be parsed. {:#?}", e),
         }
