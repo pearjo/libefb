@@ -34,7 +34,7 @@ mod parser;
 mod runway;
 mod waypoint;
 
-pub use airac_cycle::AiracCycle;
+pub use airac_cycle::{AiracCycle, CycleValidity};
 pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use fix::Fix;
