@@ -14,21 +14,26 @@
 // limitations under the License.
 
 //! Flight Management System.
-use crate::error::Error;
+use crate::error::{Error, Result};
 use crate::fp::{FlightPlanning, FlightPlanningBuilder};
 use crate::nd::NavigationData;
 use crate::route::Route;
 
 mod printer;
-
 pub use printer::*;
+
+#[derive(Clone, PartialEq, Debug, Default)]
+struct Context {
+    route: Option<String>,
+    flight_planning_builder: Option<FlightPlanningBuilder>,
+}
 
 #[derive(PartialEq, Debug, Default)]
 pub struct FMS {
     nd: NavigationData,
+    context: Context,
     route: Route,
     flight_planning: Option<FlightPlanning>,
-    flight_planning_builder: Option<FlightPlanningBuilder>,
 }
 
 impl FMS {
@@ -45,10 +50,9 @@ impl FMS {
         &mut self.route
     }
 
-    pub fn decode(&mut self, route: &str) -> Result<(), Error> {
-        self.route.decode(route, &self.nd)?;
-        self.update_flight_planning()?;
-        Ok(())
+    pub fn decode(&mut self, route: String) -> Result<()> {
+        self.context.route = Some(route);
+        self.reevaluate()
     }
 
     /// Sets an alternate on the route.
@@ -58,21 +62,20 @@ impl FMS {
     ///
     /// [UnknownIdent]: Error::UnknownIdent
     /// [NavAid]: crate::nd::NavAid
-    pub fn set_alternate(&mut self, ident: &str) -> Result<(), Error> {
+    pub fn set_alternate(&mut self, ident: &str) -> Result<()> {
         match self.nd.find(ident) {
             Some(alternate) => {
                 self.route.set_alternate(Some(alternate));
-                self.update_flight_planning()?;
+                self.reevaluate()?;
                 Ok(())
             }
             None => Err(Error::UnknownIdent(ident.to_string())),
         }
     }
 
-    pub fn set_flight_planning(&mut self, builder: FlightPlanningBuilder) -> Result<(), Error> {
-        self.flight_planning_builder = Some(builder);
-        self.update_flight_planning()
-            .inspect_err(|_| self.flight_planning_builder = None)
+    pub fn set_flight_planning(&mut self, builder: FlightPlanningBuilder) -> Result<()> {
+        self.context.flight_planning_builder = Some(builder);
+        self.reevaluate()
     }
 
     pub fn flight_planning(&self) -> Option<&FlightPlanning> {
@@ -88,8 +91,12 @@ impl FMS {
             .unwrap_or_default()
     }
 
-    fn update_flight_planning(&mut self) -> Result<(), Error> {
-        if let Some(builder) = self.flight_planning_builder.clone() {
+    fn reevaluate(&mut self) -> Result<()> {
+        if let Some(route) = &self.context.route {
+            self.route.decode(&route, &self.nd)?;
+        }
+
+        if let Some(builder) = &self.context.flight_planning_builder.clone() {
             let flight_planning = builder.build(&self.route)?;
             self.flight_planning = Some(flight_planning);
         }

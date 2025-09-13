@@ -57,7 +57,7 @@ impl JsFMS {
         }
     }
 
-    pub fn decode(&mut self, route: &str) -> Result<(), JsError> {
+    pub fn decode(&mut self, route: String) -> Result<(), JsError> {
         self.inner.borrow_mut().decode(route)?;
         Ok(())
     }
