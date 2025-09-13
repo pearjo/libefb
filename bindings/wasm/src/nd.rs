@@ -27,7 +27,7 @@ pub struct JsNavigationData {
 #[wasm_bindgen(js_class = NavigationData)]
 impl JsNavigationData {
     pub fn find(&self, ident: &str) -> JsValue {
-        let mut fms = self.inner.borrow_mut();
+        let fms = self.inner.borrow();
         serde_wasm_bindgen::to_value(&fms.nd().find(ident)).unwrap()
     }
 

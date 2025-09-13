@@ -16,7 +16,7 @@
 use pyo3::prelude::*;
 
 use efb::fms::FMS;
-use efb::nd::InputFormat;
+use efb::nd::{InputFormat, NavigationData};
 
 mod flight_planning_builder;
 use flight_planning_builder::*;
@@ -62,13 +62,20 @@ impl PyFMS {
     /// :param str s: The data as string.
     /// :param InputFormat fmt: The format of the string.
     pub fn nd_read(&mut self, s: &str, fmt: PyInputFormat) {
-        let _ = self.fms.nd().read(s, fmt.into());
+        let new_nd = match fmt {
+            PyInputFormat::Arinc424 => NavigationData::try_from_arinc424(s),
+            PyInputFormat::OpenAir => NavigationData::try_from_openair(s),
+        };
+
+        if let Ok(new_nd) = new_nd {
+            let _ = self.fms.modify_nd(|nd| nd.append(new_nd));
+        }
     }
 
     /// Decode a route from a string.
     ///
     /// :param str route: The route string to decode.
-    pub fn decode(&mut self, route: &str) {
+    pub fn decode(&mut self, route: String) {
         let _ = self.fms.decode(route);
     }
 

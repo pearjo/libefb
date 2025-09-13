@@ -34,15 +34,15 @@ pub use leg::*;
 ///      leg = efb_route_legs_next(route))
 /// ```
 pub struct EfbRoute<'a> {
-    inner: &'a mut Route,
+    inner: &'a Route,
     legs: Option<Legs<'a>>,
     // TODO: Rework the Route to avoid this additional wrapping.
     dist: Option<Length>,
     ete: Option<Duration>,
 }
 
-impl<'a> From<&'a mut Route> for EfbRoute<'a> {
-    fn from(route: &'a mut Route) -> Self {
+impl<'a> From<&'a Route> for EfbRoute<'a> {
+    fn from(route: &'a Route) -> Self {
         Self {
             inner: route,
             legs: None,

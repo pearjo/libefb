@@ -14,6 +14,13 @@
 // limitations under the License.
 
 //! Flight Management System.
+//!
+//! [`FMS`] is the type used to manage all different flight systems and that
+//! have dependencies on another. For example, to decode a route we need the
+//! navigation data and to plan a flight we need a route. The FMS allows to
+//! modify e.g. the navigation data and takes care that the route is reevaluated
+//! based on the new data.
+
 use crate::error::{Error, Result};
 use crate::fp::{FlightPlanning, FlightPlanningBuilder};
 use crate::nd::NavigationData;
@@ -28,6 +35,9 @@ struct Context {
     flight_planning_builder: Option<FlightPlanningBuilder>,
 }
 
+/// `FMS` is the type that manages all flight systems.
+///
+/// See the [module documentation](self) for details.
 #[derive(PartialEq, Debug, Default)]
 pub struct FMS {
     nd: NavigationData,
@@ -37,17 +47,49 @@ pub struct FMS {
 }
 
 impl FMS {
-    /// Constructs a new, empty `FMS`.
+    /// Constructs a new `FMS`.
     pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn nd(&mut self) -> &mut NavigationData {
-        &mut self.nd
+    pub fn nd(&self) -> &NavigationData {
+        &self.nd
     }
 
-    pub fn route(&mut self) -> &mut Route {
-        &mut self.route
+    /// Modifies the internal [`NavigationData`].
+    ///
+    /// # Examples
+    ///
+    /// Append new data created from an ARINC 424 string.
+    ///
+    /// ```
+    /// # use efb::prelude::*;
+    /// #
+    /// # fn modify_nd(fms: &mut FMS, records: &str) -> Result<(), Error> {
+    /// let new_nd = NavigationData::try_from_arinc424(records)?;
+    /// fms.modify_nd(|nd| nd.append(new_nd))?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn modify_nd<F>(&mut self, f: F) -> Result<()>
+    where
+        F: FnOnce(&mut NavigationData),
+    {
+        f(&mut self.nd);
+        self.reevaluate()
+    }
+
+    pub fn route(&self) -> &Route {
+        &self.route
+    }
+
+    /// Modifies the [`Route`].
+    pub fn modify_route<F>(&mut self, f: F) -> Result<()>
+    where
+        F: FnOnce(&mut Route),
+    {
+        f(&mut self.route);
+        self.reevaluate()
     }
 
     pub fn decode(&mut self, route: String) -> Result<()> {
