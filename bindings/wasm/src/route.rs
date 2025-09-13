@@ -85,18 +85,18 @@ pub struct JsRoute {
 impl JsRoute {
     #[wasm_bindgen(getter)]
     pub fn dist(&self) -> JsValue {
-        let mut fms = self.inner.borrow_mut();
+        let fms = self.inner.borrow();
         serde_wasm_bindgen::to_value(&fms.route().dist()).unwrap_or_default()
     }
 
     #[wasm_bindgen(getter)]
     pub fn ete(&self) -> JsValue {
-        let mut fms = self.inner.borrow_mut();
+        let fms = self.inner.borrow();
         serde_wasm_bindgen::to_value(&fms.route().ete()).unwrap_or_default()
     }
 
     pub fn legs(&self) -> Vec<JsLeg> {
-        let mut fms = self.inner.borrow_mut();
+        let fms = self.inner.borrow();
         fms.route()
             .legs()
             .iter()
@@ -107,7 +107,7 @@ impl JsRoute {
 
     #[wasm_bindgen(js_name = toGeojson)]
     pub fn to_geojson(&self) -> Result<JsValue, JsValue> {
-        let mut fms = self.inner.borrow_mut();
+        let fms = self.inner.borrow();
         let value = fms.route().to_geojson();
         let serializer = Serializer::new().serialize_maps_as_objects(true);
         Ok(value.serialize(&serializer)?)

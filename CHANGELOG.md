@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Serialization support for aircraft builder
 - WebAssembly bindings
 
+### Changed
+
+- Modify route and navigation data from closure to reevaluate
+  dependant FMS parts
+
 ### Fixed
 
 - Inclusion of region code in airspace enums
@@ -24,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reading navigation data from file
 
 ## [0.3.3] - 2025-08-13
+
+### Added
 
 - Return the route as GeoJSON
 - Implement std Error trait
