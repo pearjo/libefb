@@ -84,6 +84,18 @@ pub struct JsRoute {
 #[wasm_bindgen(js_class = Route)]
 impl JsRoute {
     #[wasm_bindgen(getter)]
+    pub fn origin(&self) -> JsValue {
+        let fms = self.inner.borrow();
+        serde_wasm_bindgen::to_value(&fms.route().origin()).unwrap_or_default()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn destination(&self) -> JsValue {
+        let fms = self.inner.borrow();
+        serde_wasm_bindgen::to_value(&fms.route().destination()).unwrap_or_default()
+    }
+
+    #[wasm_bindgen(getter)]
     pub fn dist(&self) -> JsValue {
         let fms = self.inner.borrow();
         serde_wasm_bindgen::to_value(&fms.route().dist()).unwrap_or_default()
