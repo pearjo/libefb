@@ -15,9 +15,6 @@
 
 //! Navigation Data.
 
-use std::fmt;
-use std::fs;
-use std::path::Path;
 use std::rc::Rc;
 
 #[cfg(feature = "serde")]
@@ -31,54 +28,21 @@ mod airac_cycle;
 mod airport;
 mod airspace;
 mod fix;
+mod location;
+mod navaid;
 mod parser;
 mod runway;
 mod waypoint;
 
-pub use airac_cycle::AiracCycle;
+pub use airac_cycle::{AiracCycle, CycleValidity};
 pub use airport::Airport;
 pub use airspace::{Airspace, AirspaceClass, Airspaces};
 pub use fix::Fix;
+pub use location::LocationIndicator;
+pub use navaid::NavAid;
 use parser::*;
 pub use runway::*;
 pub use waypoint::*;
-
-#[derive(Clone, PartialEq, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[repr(C)]
-pub enum NavAid {
-    Airport(Rc<Airport>),
-    Waypoint(Rc<Waypoint>),
-}
-
-impl Fix for NavAid {
-    fn ident(&self) -> String {
-        match self {
-            Self::Airport(aprt) => aprt.ident(),
-            Self::Waypoint(wp) => wp.ident(),
-        }
-    }
-
-    fn coordinate(&self) -> Coordinate {
-        match self {
-            Self::Airport(aprt) => aprt.coordinate(),
-            Self::Waypoint(wp) => wp.coordinate(),
-        }
-    }
-
-    fn mag_var(&self) -> MagneticVariation {
-        match self {
-            Self::Airport(aprt) => aprt.mag_var(),
-            Self::Waypoint(wp) => wp.mag_var(),
-        }
-    }
-}
-
-impl fmt::Display for NavAid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.ident())
-    }
-}
 
 #[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -90,18 +54,50 @@ pub enum InputFormat {
 #[derive(Clone, PartialEq, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NavigationData {
-    pub airports: Vec<Rc<Airport>>,
-    pub airspaces: Airspaces,
-    pub waypoints: Vec<Rc<Waypoint>>,
+    airports: Vec<Rc<Airport>>,
+    airspaces: Airspaces,
+    waypoints: Vec<Rc<Waypoint>>,
+    locations: Vec<LocationIndicator>,
+    cycle: Option<AiracCycle>,
 }
 
 impl NavigationData {
     pub fn new() -> Self {
-        Self {
-            airports: Vec::new(),
+        Self::default()
+    }
+
+    /// Creates navigation data from an ARINC 424 string.
+    pub fn try_from_arinc424(s: &str) -> Result<Self, Error> {
+        let record: Arinc424Record = s.parse()?;
+
+        Ok(Self {
+            airports: record.airports,
             airspaces: Vec::new(),
+            waypoints: record.waypoints,
+            locations: record.locations,
+            cycle: record.cycle,
+        })
+    }
+
+    /// Creates navigation data from an OpenAir string.
+    pub fn try_from_openair(s: &str) -> Result<Self, Error> {
+        let record: OpenAirRecord = s.parse()?;
+
+        Ok(Self {
+            airports: Vec::new(),
+            airspaces: record.airspaces,
             waypoints: Vec::new(),
-        }
+            locations: Vec::new(),
+            cycle: None,
+        })
+    }
+
+    pub fn locations(&self) -> &[LocationIndicator] {
+        self.locations.as_slice()
+    }
+
+    pub fn cycle(&self) -> Option<&AiracCycle> {
+        self.cycle.as_ref()
     }
 
     pub fn at(&self, point: &Coordinate) -> Vec<&Airspace> {
@@ -123,6 +119,17 @@ impl NavigationData {
                 .map(|aprt| NavAid::Airport(Rc::clone(aprt))))
     }
 
+    /// Appends other NavigationData.
+    pub fn append(&mut self, mut other: NavigationData) {
+        self.airports.append(&mut other.airports);
+        self.airspaces.append(&mut other.airspaces);
+        self.waypoints.append(&mut other.waypoints);
+    }
+
+    #[deprecated(
+        since = "0.3.4",
+        note = "load navigation data separately and append them"
+    )]
     pub fn read(&mut self, s: &str, fmt: InputFormat) -> Result<(), Error> {
         match fmt {
             InputFormat::Arinc424 => {
@@ -137,18 +144,6 @@ impl NavigationData {
         };
 
         Ok(())
-    }
-
-    pub fn read_file(&mut self, path: &Path, fmt: InputFormat) -> Result<(), Error> {
-        match fs::read_to_string(path) {
-            Ok(string) => self.read(&string, fmt),
-            // Err(err) => Err(match err.kind() {
-            //     ErrorKind::NotFound => ParserError::NotFound,
-            //     ErrorKind::PermissionDenied => ParserError::PermissionDenied,
-            //     _ => ParserError::FileNotRead,
-            // }),
-            Err(_) => Err(Error::UnexpectedString),
-        }
     }
 }
 
@@ -180,6 +175,8 @@ mod tests {
             }],
             airports: Vec::new(),
             waypoints: Vec::new(),
+            locations: vec!["ED".try_into().expect("ED should be a valid location")],
+            cycle: None,
         };
 
         assert_eq!(nd.at(&inside), vec![&nd.airspaces[0]]);

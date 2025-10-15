@@ -26,9 +26,7 @@
 //! simplest planning:
 //!
 //! ```
-//! # use efb::error::Error;
-//! use efb::fms::FMS;
-//! use efb::nd::InputFormat;
+//! use efb::prelude::*;
 //!
 //! # fn main() -> Result<(), Error> {
 //! // create the FMS
@@ -41,12 +39,13 @@
 //! SEURP EDHFEDA        0        N N53593300E009343600E000000082                   P    MWGE    ITZEHOE/HUNGRIGER WOLF        320782409
 //! SEURP EDHFEDGRW20    0034122060 N53594752E009344856                          098                                           120792502
 //! "#;
-//! fms.nd().read(records, InputFormat::Arinc424)?;
+//! let example_nd = NavigationData::try_from_arinc424(records)?;
+//! fms.modify_nd(|nd| nd.append(example_nd))?;
 //!
 //! // Now we can decode a Route from EDDH to EDHF with takeoff runway 33 and
 //! // landing runway 20. Cruise speed is 107kt at an cruise altitude of 2500ft.
 //! // The wind is 20kt from 290°.
-//! fms.decode("29020KT N0107 A0250 EDDH RWY33 EDHF RWY20")?;
+//! fms.decode("29020KT N0107 A0250 EDDH RWY33 EDHF RWY20".to_string())?;
 //! #     Ok(())
 //! # }
 //! ```
@@ -124,8 +123,8 @@ pub mod prelude {
     pub use crate::error::Error;
     pub use crate::fms::FMS;
     pub use crate::fp::{
-        AlteringFactor, AlteringFactors, FactorOfEffect, FlightPlanningBuilder, FuelPolicy,
-        Performance, Reserve, TakeoffLandingPerformance,
+        AlteringFactor, AlteringFactors, FactorOfEffect, FlightPlanning, FlightPlanningBuilder,
+        FuelPolicy, Performance, Reserve, TakeoffLandingPerformance,
     };
     pub use crate::measurements::*;
     pub use crate::nd::{InputFormat, NavigationData};

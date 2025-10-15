@@ -23,7 +23,6 @@ pub type Waypoints = Vec<Waypoint>;
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[repr(C)]
 pub enum WaypointUsage {
     VFROnly,
     Unknown,
@@ -33,7 +32,6 @@ pub enum WaypointUsage {
 /// or enroute if the holding fix is an enroute waypoint or enroute Navaid.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[repr(C)]
 pub enum Region {
     /// An enroute fix or Navaid.
     Enroute,
@@ -44,15 +42,15 @@ pub enum Region {
 
 #[derive(Clone, PartialEq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[repr(C)]
 pub struct Waypoint {
-    pub fix_ident: String,
-    pub desc: String,
-    pub usage: WaypointUsage,
-    pub coordinate: Coordinate,
-    pub mag_var: MagneticVariation,
-    pub region: Region,
-    pub cycle: AiracCycle,
+    pub(crate) fix_ident: String,
+    pub(crate) desc: String,
+    pub(crate) usage: WaypointUsage,
+    pub(crate) coordinate: Coordinate,
+    pub(crate) mag_var: MagneticVariation,
+    pub(crate) region: Region,
+    pub(crate) location: Option<LocationIndicator>,
+    pub(crate) cycle: Option<AiracCycle>,
 }
 
 impl Fix for Waypoint {

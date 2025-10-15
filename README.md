@@ -19,23 +19,24 @@ execution. The following example just shows the very basics that we
 can enter into the FMS to get started:
 
 ```rust
+use std::fs::read_to_string;
 use std::path::Path;
 
-use efb::error::Error;
-use efb::fms::FMS;
-use efb::nd::InputFormat;
+use efb::prelude::*;
 
 fn main() -> Result<(), Error> {
     let mut fms = FMS::new();
 
-    // Read a ARINC 424 file into the navigation data (ND). You can get
-    // a dataset at e.g.: https://www.openflightmaps.org
-    fms.nd()
-        .read_file(Path::new("arinc_ed.pc"), InputFormat::Arinc424)?;
+    // Read a ARINC 424 file downloaded from https://www.openflightmaps.org
+    let records = read_to_string(Path::new("arinc_ed.pc")).unwrap_or_default();
+
+    // Read the German navigation data from the ARINC 424 record
+    let ed = NavigationData::try_from_arinc424(&records)?;
+    fms.modify_nd(|nd| nd.append(ed))?;
 
     // Decode a route from EDDH to EDHF with winds at 20 kt from 290° and
     // cruising speed of 107 kt and an altitude of 2500 ft.
-    fms.decode("29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF")?;
+    fms.decode("29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF".to_string())?;
 
     // Now we could define an aircraft and continue with our planning
     // but for now we'll just print the route
@@ -52,45 +53,22 @@ Running this example with a proper ARINC 424 file, we get the following output:
 -- ROUTE
 ----------------------------------------
 
-TO          HDG          DIST      ETE
-DHN2       354°M       3.2 NM     00:02
+TO          HDG           DIST      ETE
+DHN2       354 °M       3.2 NM     113 s
 
-TO          HDG          DIST      ETE
-DHN1       354°M       7.5 NM     00:04
+TO          HDG           DIST      ETE
+DHN1       354 °M       7.5 NM     266 s
 
-TO          HDG          DIST      ETE
-EDHF       298°M      19.6 NM     00:13
+TO          HDG           DIST      ETE
+EDHF       298 °M      19.6 NM     806 s
 
 DIST                             30.3 NM
-ETE                                00:20
+ETE                               1185 s
 ```
 
-Following we have the same example using the C binding that can be
-used to write other language bindings using their
-_foreign function interface_ (FFI):
-
-```c
-#include "efb.h"
-
-int main(int argc, char *argv[]) {
-    EfbFMS *fms = efb_fms_new();
-
-    efb_fms_nd_read_file(fms, "arinc_ed.pc", Arinc424);
-
-    efb_fms_decode(fms, "29020KT N0107 A0250 EDDH DHN2 DHN1 EDHF");
-
-    char *printout = efb_fms_print(fms, 40);
-    printf("%s", printout);
-    efb_string_free(printout);
-
-    efb_fms_free(fms);
-
-    return 0;
-}
-```
-
-For more on a specific binding and its usage, refer to the READMEs of
-the bindings.
+The library can be used from other languages through the different
+bindings. For more on a specific binding and its usage, refer to the
+READMEs of the bindings.
 
 ## Roadmap
 

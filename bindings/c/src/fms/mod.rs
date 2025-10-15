@@ -14,11 +14,10 @@
 // limitations under the License.
 
 use std::ffi::{c_char, CStr, CString};
-use std::path::Path;
 
 use efb::fms::FMS;
 use efb::fp::{FlightPlanning, FlightPlanningBuilder};
-use efb::nd::InputFormat;
+use efb::nd::{InputFormat, NavigationData};
 
 use super::EfbRoute;
 
@@ -64,25 +63,14 @@ pub extern "C" fn efb_fms_free(fms: Option<Box<EfbFMS>>) {
 pub unsafe extern "C" fn efb_fms_nd_read(fms: &mut EfbFMS, s: *const c_char, fmt: InputFormat) {
     // TODO: Shouldn't crash when passing the wrong format!
     if let Ok(s) = unsafe { CStr::from_ptr(s).to_str() } {
-        let nd = fms.inner.nd();
-        let _ = nd.read(s, fmt);
-    }
-}
+        let new_nd = match fmt {
+            InputFormat::Arinc424 => NavigationData::try_from_arinc424(s),
+            InputFormat::OpenAir => NavigationData::try_from_openair(s),
+        };
 
-/// Reads the file at the path which is in the fmt into the navigation database.
-///
-/// # Safety
-///
-/// It is up to the caller to guarantee that `path` points to a valid string.
-#[no_mangle]
-pub unsafe extern "C" fn efb_fms_nd_read_file(
-    fms: &mut EfbFMS,
-    path: *const c_char,
-    fmt: InputFormat,
-) {
-    if let Ok(path) = unsafe { CStr::from_ptr(path).to_str() } {
-        let nd = fms.inner.nd();
-        let _ = nd.read_file(Path::new(path), fmt);
+        if let Ok(new_nd) = new_nd {
+            let _ = fms.inner.modify_nd(|nd| nd.append(new_nd));
+        }
     }
 }
 
@@ -94,7 +82,7 @@ pub unsafe extern "C" fn efb_fms_nd_read_file(
 #[no_mangle]
 pub unsafe extern "C" fn efb_fms_decode(fms: &mut EfbFMS, route: *const c_char) {
     if let Ok(route) = unsafe { CStr::from_ptr(route).to_str() } {
-        let _ = fms.inner.decode(route);
+        let _ = fms.inner.decode(route.to_string());
     }
 }
 

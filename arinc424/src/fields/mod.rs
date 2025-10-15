@@ -87,6 +87,12 @@ where
 pub struct AlphaNumericField<const I: usize, const N: usize>([u8; N]);
 
 impl<const I: usize, const N: usize> AlphaNumericField<I, N> {
+    pub fn as_str<'a>(&'a self) -> &'a str {
+        str::from_utf8(self.0.as_slice())
+            .expect("field should decode to UTF-8")
+            .trim_end()
+    }
+
     pub fn into_inner(self) -> [u8; N] {
         self.0
     }

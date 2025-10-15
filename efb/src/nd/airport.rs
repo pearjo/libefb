@@ -16,22 +16,23 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::VerticalDistance;
 use crate::geom::Coordinate;
+use crate::VerticalDistance;
 
 use super::*;
 
 #[derive(Clone, PartialEq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Airport {
-    pub icao_ident: String,
-    pub iata_designator: String,
-    pub name: String,
-    pub coordinate: Coordinate,
-    pub mag_var: MagneticVariation,
-    pub elevation: VerticalDistance,
-    pub runways: Vec<Runway>,
-    pub cycle: AiracCycle,
+    pub(crate) icao_ident: String,
+    pub(crate) iata_designator: String,
+    pub(crate) name: String,
+    pub(crate) coordinate: Coordinate,
+    pub(crate) mag_var: MagneticVariation,
+    pub(crate) elevation: VerticalDistance,
+    pub(crate) runways: Vec<Runway>,
+    pub(crate) location: Option<LocationIndicator>,
+    pub(crate) cycle: Option<AiracCycle>,
 }
 
 impl Fix for Airport {

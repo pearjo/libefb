@@ -15,6 +15,9 @@
 
 use std::error;
 use std::fmt;
+use std::result;
+
+pub type Result<T> = result::Result<T, Error>;
 
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
@@ -40,6 +43,9 @@ pub enum Error {
     UnexpectedString,
     /// The value that should be returned is implausible.
     ImplausibleValue,
+    /// The location indicator should be a two-letter code according to ICAO
+    /// Document No. 7910.
+    UnknownLocationIndicator(String),
 
     // Errors that relate to navigation data:
     //
@@ -85,10 +91,17 @@ impl fmt::Display for Error {
             Self::UnknownRunwayInRoute { aprt, rwy } => {
                 write!(f, "unknown runway {rwy} found for {aprt}")
             }
+
             Self::UnexpectedString => write!(f, "unexpected string"),
             Self::ImplausibleValue => write!(f, "value seams implausuble"),
+            Self::UnknownLocationIndicator(code) => write!(
+                f,
+                "location {code} should be according to ICAO document no. 7910"
+            ),
+
             Self::UnknownIdent(ident) => write!(f, "unknown ident {ident}"),
             Self::InvalidRWYCC => write!(f, "RWYCC should be between 0 and 6"),
+
             Self::UnexpectedMassesForStations => {
                 write!(f, "mass should match to aircraft's stations")
             }
@@ -101,6 +114,7 @@ impl fmt::Display for Error {
             Self::ExceededFuelCapacityAfterLanding => {
                 write!(f, "fuel should fit in tank capacity after landing")
             }
+
             Self::ExpectedRegistration => write!(f, "aircraft should have a registration"),
             Self::ExpectedEmptyMass => write!(f, "aircraft should have an empty mass"),
             Self::ExpectedEmptyBalance => write!(f, "aircraft should have an empty balance"),

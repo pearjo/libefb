@@ -15,11 +15,9 @@
 
 use std::collections::HashMap;
 
-use efb::aircraft::*;
-use efb::fms::*;
-use efb::fp::*;
-use efb::measurements::*;
-use efb::nd::{InputFormat, RunwayConditionCode, RunwaySurface};
+use efb::error::Result;
+use efb::nd::{RunwayConditionCode, RunwaySurface};
+use efb::prelude::*;
 use efb::*;
 
 const ARINC_424_RECORDS: &'static str = r#"SEURP EDDHEDA        0        N N53374900E009591762E002000053                   P    MWGE    HAMBURG                       356462409
@@ -36,7 +34,7 @@ SEURP EDHFEDGRW09    0023230910 N53592877E009335932                          131
 SEURP EDHFEDGRW27    0023232710 N53592838E009344247                          131                                           120792502
 "#;
 
-fn main() {
+fn main() -> Result<()> {
     // Performance setting with 65% load in cruise. This is the performance
     // profile of a Cessna C172 with an TAE125-02-114 Diesel engine.
     let perf = Performance::from(
@@ -145,12 +143,14 @@ fn main() {
     let mut fms = FMS::new();
 
     // read the ARINC database
-    let _ = fms.nd().read(ARINC_424_RECORDS, InputFormat::Arinc424);
+    let ed_nd = NavigationData::try_from_arinc424(ARINC_424_RECORDS)?;
+
+    fms.modify_nd(|nd| nd.append(ed_nd))?;
 
     // decode a route from EDDH to EDHF with winds at 20 kt from 290° and
     // cruising speed of 107 kt and an altitude of 2500 ft. Takeoff runway in
     // EDDH is runway 33 and landing runway in EDHF is 20.
-    let _ = fms.decode("29020KT N0107 A0250 EDDH RWY33 DHN2 DHN1 EDHF RWY20");
+    fms.decode("29020KT N0107 A0250 EDDH RWY33 DHN2 DHN1 EDHF RWY20".to_string())?;
 
     // Now we can enter some data into the flight planning to get a fuel planning
     // and mass & balance calculation.
@@ -175,7 +175,9 @@ fn main() {
         .origin_rwycc(RunwayConditionCode::Six)
         .origin_temperature(Temperature::c(20.0));
 
-    let _ = fms.set_flight_planning(builder);
+    fms.set_flight_planning(builder)?;
 
     println!("{}", fms.print(40));
+
+    Ok(())
 }

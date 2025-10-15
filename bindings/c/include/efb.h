@@ -560,14 +560,6 @@ efb_fms_free(EfbFMS *fms);
 void
 efb_fms_nd_read(EfbFMS *fms, const char *s, EfbInputFormat fmt);
 
-/// Reads the file at the path which is in the fmt into the navigation database.
-///
-/// # Safety
-///
-/// It is up to the caller to guarantee that `path` points to a valid string.
-void
-efb_fms_nd_read_file(EfbFMS *fms, const char *path, EfbInputFormat fmt);
-
 /// Decodes the route and enters it into the FMS.
 ///
 /// # Safety

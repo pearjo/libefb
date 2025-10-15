@@ -27,20 +27,7 @@ pub struct JsNavigationData {
 #[wasm_bindgen(js_class = NavigationData)]
 impl JsNavigationData {
     pub fn find(&self, ident: &str) -> JsValue {
-        let mut fms = self.inner.borrow_mut();
+        let fms = self.inner.borrow();
         serde_wasm_bindgen::to_value(&fms.nd().find(ident)).unwrap()
-    }
-
-    pub fn read(&self, s: &str, fmt: &str) -> Result<(), JsError> {
-        if let Some(fmt) = match fmt {
-            "arinc424" => Some(InputFormat::Arinc424),
-            "openAir" => Some(InputFormat::OpenAir),
-            _ => None,
-        } {
-            let mut fms = self.inner.borrow_mut();
-            fms.nd().read(s, fmt)?;
-        }
-
-        Ok(())
     }
 }
