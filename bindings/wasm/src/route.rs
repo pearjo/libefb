@@ -71,6 +71,11 @@ impl JsLeg {
     }
 
     #[wasm_bindgen(getter)]
+    pub fn gs(&self) -> JsValue {
+        serde_wasm_bindgen::to_value(&self.inner.gs()).unwrap_or_default()
+    }
+
+    #[wasm_bindgen(getter)]
     pub fn ete(&self) -> JsValue {
         serde_wasm_bindgen::to_value(&self.inner.ete()).unwrap_or_default()
     }
