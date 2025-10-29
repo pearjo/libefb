@@ -46,6 +46,12 @@ pub extern "C" fn efb_leg_get_level(leg: &Leg) -> Option<&VerticalDistance> {
     leg.level()
 }
 
+/// Returns the leg's MSA or null if unknown.
+#[no_mangle]
+pub extern "C" fn efb_leg_get_msa(leg: &Leg) -> Option<&VerticalDistance> {
+    leg.msa()
+}
+
 /// Returns the wind along the leg or null if unknown.
 #[no_mangle]
 pub extern "C" fn efb_leg_get_wind(leg: &Leg) -> Option<&Wind> {

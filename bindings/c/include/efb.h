@@ -910,6 +910,10 @@ efb_leg_get_to(const EfbLeg *leg);
 const EfbVerticalDistance *
 efb_leg_get_level(const EfbLeg *leg);
 
+/// Returns the leg's MSA or null if unknown.
+const EfbVerticalDistance *
+efb_leg_get_msa(const EfbLeg *leg);
+
 /// Returns the wind along the leg or null if unknown.
 const EfbWind *
 efb_leg_get_wind(const EfbLeg *leg);

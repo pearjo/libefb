@@ -79,6 +79,7 @@
 //!
 //! ## M
 //!
+//! - **MSA** Minimum Safe Altitude
 //! - **MSL** Mean Sea Level
 //!
 //! ## P

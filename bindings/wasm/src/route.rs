@@ -46,6 +46,11 @@ impl JsLeg {
     }
 
     #[wasm_bindgen(getter)]
+    pub fn msa(&self) -> JsValue {
+        serde_wasm_bindgen::to_value(&self.inner.msa()).unwrap_or_default()
+    }
+
+    #[wasm_bindgen(getter)]
     pub fn tas(&self) -> JsValue {
         serde_wasm_bindgen::to_value(&self.inner.tas()).unwrap_or_default()
     }

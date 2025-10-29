@@ -103,6 +103,11 @@ impl Leg {
         self.level.as_ref()
     }
 
+    /// The minimum safe altitude (MSA).
+    pub fn msa(&self) -> Option<&VerticalDistance> {
+        unimplemented!("MSA requires terrain data")
+    }
+
     /// The desired true airspeed (TAS).
     pub fn tas(&self) -> Option<&Speed> {
         self.tas.as_ref()
