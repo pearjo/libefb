@@ -18,10 +18,12 @@ use std::rc::Rc;
 
 use efb::nd::Fix;
 use efb::prelude::*;
-use efb::route::Leg;
+use efb::route::{Leg, TotalsToLeg};
 use serde::ser::Serialize;
 use serde_wasm_bindgen::Serializer;
 use wasm_bindgen::prelude::*;
+
+use crate::JsPerformance;
 
 #[wasm_bindgen(js_name = Leg)]
 pub struct JsLeg {
@@ -120,6 +122,21 @@ impl JsRoute {
             .cloned()
             .map(|leg| JsLeg { inner: leg })
             .collect()
+    }
+
+    #[wasm_bindgen(js_name = accumulateLegs)]
+    pub fn accumulate_legs(&self, perf: Option<JsPerformance>) -> JsValue {
+        let fms = self.inner.borrow();
+        let perf = perf.map(|js_perf| Performance::from(js_perf));
+        let totals: Vec<TotalsToLeg> = fms.route().accumulate_legs(perf.as_ref()).collect();
+        serde_wasm_bindgen::to_value(&totals).unwrap_or_default()
+    }
+
+    pub fn totals(&self, perf: Option<JsPerformance>) -> JsValue {
+        let fms = self.inner.borrow();
+        let perf = perf.map(|js_perf| Performance::from(js_perf));
+        let totals = fms.route().totals(perf.as_ref());
+        serde_wasm_bindgen::to_value(&totals).unwrap_or_default()
     }
 
     #[wasm_bindgen(js_name = toGeojson)]
