@@ -96,7 +96,7 @@ pub extern "C" fn efb_flight_planning_builder_set_perf(
     perf: extern "C" fn(&VerticalDistance) -> PerformanceAtLevel,
     ceiling: VerticalDistance,
 ) {
-    builder.perf(Performance::from(
+    builder.perf(Performance::from_fn(
         |vd| {
             let at_level = perf(vd);
             (at_level.tas, at_level.ff)

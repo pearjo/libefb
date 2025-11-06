@@ -43,7 +43,7 @@ impl Performance {
     /// Creates the performance profile from a function.
     ///
     /// The function `f` is called in 1000 ft intervals up to the ceiling.
-    pub fn from<F>(f: F, ceiling: VerticalDistance) -> Self
+    pub fn from_fn<F>(f: F, ceiling: VerticalDistance) -> Self
     where
         F: Fn(&VerticalDistance) -> (Speed, FuelFlow),
     {

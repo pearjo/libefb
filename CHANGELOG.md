@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix naming conflict of Performance with From
 - Inclusion of region code in airspace enums
 
 ### Removed
