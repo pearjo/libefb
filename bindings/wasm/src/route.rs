@@ -102,18 +102,6 @@ impl JsRoute {
         serde_wasm_bindgen::to_value(&fms.route().destination()).unwrap_or_default()
     }
 
-    #[wasm_bindgen(getter)]
-    pub fn dist(&self) -> JsValue {
-        let fms = self.inner.borrow();
-        serde_wasm_bindgen::to_value(&fms.route().dist()).unwrap_or_default()
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn ete(&self) -> JsValue {
-        let fms = self.inner.borrow();
-        serde_wasm_bindgen::to_value(&fms.route().ete()).unwrap_or_default()
-    }
-
     pub fn legs(&self) -> Vec<JsLeg> {
         let fms = self.inner.borrow();
         fms.route()

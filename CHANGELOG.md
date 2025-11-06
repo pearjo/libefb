@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Get route totals as one struct
 - Modify route and navigation data from closure to reevaluate
   dependant FMS parts
 

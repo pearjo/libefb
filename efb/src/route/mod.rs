@@ -17,9 +17,9 @@ use std::rc::Rc;
 
 use crate::error::Error;
 use crate::fp::Performance;
-use crate::measurements::{Duration, Length, Speed};
+use crate::measurements::Speed;
 use crate::nd::*;
-use crate::{Fuel, VerticalDistance, Wind};
+use crate::{VerticalDistance, Wind};
 
 mod accumulator;
 mod leg;
@@ -204,30 +204,6 @@ impl Route {
     pub fn landing_rwy(&self) -> Option<Runway> {
         let aprt = self.destination()?;
         self.aprt_rwy_from_elements(aprt)
-    }
-
-    /// Returns the fuel consumption en-route for the given performance.
-    pub fn fuel(&self, perf: &Performance) -> Option<Fuel> {
-        self.legs
-            .iter()
-            .filter_map(|leg| leg.fuel(perf))
-            .reduce(|acc, fuel| acc + fuel)
-    }
-
-    /// Returns the total distance of the route.
-    pub fn dist(&self) -> Option<Length> {
-        self.legs
-            .iter()
-            .map(|leg| *leg.dist())
-            .reduce(|acc, dist| acc + dist)
-    }
-
-    /// Returns the estimated time en-route.
-    pub fn ete(&self) -> Option<Duration> {
-        self.legs
-            .iter()
-            .filter_map(|leg| leg.ete().cloned())
-            .reduce(|acc, ete| acc + ete)
     }
 
     /// Returns an iterator that accumulates totals progressively through each
