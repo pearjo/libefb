@@ -76,7 +76,7 @@ impl FuelPlanning {
         perf: &Performance,
     ) -> Option<Self> {
         let climb = None; // TODO add climb fuel
-        let trip = route.fuel(perf)?;
+        let trip = route.totals(Some(perf))?.fuel().cloned()?;
         let alternate = route.alternate().and_then(|alternate| alternate.fuel(perf));
         let reserve = reserve.fuel(perf, &route.level()?);
 

@@ -37,7 +37,7 @@ SEURP EDHFEDGRW27    0023232710 N53592838E009344247                          131
 fn main() -> Result<()> {
     // Performance setting with 65% load in cruise. This is the performance
     // profile of a Cessna C172 with an TAE125-02-114 Diesel engine.
-    let perf = Performance::from(
+    let perf = Performance::from_fn(
         |vd| {
             let tas = if *vd >= VerticalDistance::Altitude(10000) {
                 Speed::kt(114.0)

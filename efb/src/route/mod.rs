@@ -17,11 +17,14 @@ use std::rc::Rc;
 
 use crate::error::Error;
 use crate::fp::Performance;
-use crate::measurements::{Duration, Length, Speed};
+use crate::measurements::Speed;
 use crate::nd::*;
-use crate::{Fuel, VerticalDistance, Wind};
+use crate::{VerticalDistance, Wind};
 
+mod accumulator;
 mod leg;
+
+pub use accumulator::TotalsToLeg;
 pub use leg::Leg;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -203,28 +206,55 @@ impl Route {
         self.aprt_rwy_from_elements(aprt)
     }
 
-    /// Returns the fuel consumption en-route for the given performance.
-    pub fn fuel(&self, perf: &Performance) -> Option<Fuel> {
+    /// Returns an iterator that accumulates totals progressively through each
+    /// leg of the route.
+    ///
+    /// This function provides cumulative [totals] from the route start up to
+    /// each leg. Each yielded `TotalsToLeg` represents the accumulated totals
+    /// from the beginning of the route to that specific leg. If [`Some`]
+    /// performance is provided, the fuel will be accumulated too.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use efb::route::Route;
+    /// # use efb::prelude::Performance;
+    /// # fn accumulate_legs(route: Route, perf: Performance) {
+    /// // Iterate through route showing progressive totals
+    /// for (i, totals) in route.accumulate_legs(Some(&perf)).enumerate() {
+    ///     println!("Leg {}: Total distance: {}, Total fuel: {:?}",
+    ///              i + 1, totals.dist(), totals.fuel());
+    /// }
+    /// # }
+    /// ```
+    ///
+    /// # Note
+    ///
+    /// If any leg in the sequence is missing ETE or fuel data, the cumulative ETE/fuel
+    /// will be `None` for that leg and all subsequent legs, following an "all-or-nothing"
+    /// approach to ensure data consistency.
+    ///
+    /// [totals]: `TotalsToLeg`
+    pub fn accumulate_legs<'a>(
+        &'a self,
+        perf: Option<&'a Performance>,
+    ) -> impl Iterator<Item = TotalsToLeg> + 'a {
         self.legs
             .iter()
-            .filter_map(|leg| leg.fuel(perf))
-            .reduce(|acc, fuel| acc + fuel)
+            .scan(None, move |totals_to_leg: &mut Option<TotalsToLeg>, leg| {
+                // accumulate totals from previous legs
+                *totals_to_leg = Some(match totals_to_leg.as_ref() {
+                    None => TotalsToLeg::new(leg, perf),
+                    Some(prev) => prev.accumulate(leg, perf),
+                });
+                // the totals up to this leg
+                totals_to_leg.clone()
+            })
     }
 
-    /// Returns the total distance of the route.
-    pub fn dist(&self) -> Option<Length> {
-        self.legs
-            .iter()
-            .map(|leg| *leg.dist())
-            .reduce(|acc, dist| acc + dist)
-    }
-
-    /// Returns the estimated time en-route.
-    pub fn ete(&self) -> Option<Duration> {
-        self.legs
-            .iter()
-            .filter_map(|leg| leg.ete().cloned())
-            .reduce(|acc, ete| acc + ete)
+    /// Returns the totals of the entire route.
+    pub fn totals(&self, perf: Option<&Performance>) -> Option<TotalsToLeg> {
+        self.accumulate_legs(perf).last()
     }
 }
 

@@ -28,7 +28,7 @@ public class Route {
     ///
     /// - Returns: The optional distance of the route.
     public func dist() -> Length? {
-        efb_route_dist(self.route).map { (dist) -> Length in
+        efb_route_totals_dist(self.route).map { (dist) -> Length in
             Length(dist.pointee)
         }
     }
@@ -39,7 +39,7 @@ public class Route {
     ///
     /// - Returns: The optional estimated time enroute.
     public func ete() -> Duration? {
-        efb_route_ete(self.route).map { (ete) -> Duration in
+        efb_route_totals_ete(self.route).map { (ete) -> Duration in
             Duration(ete.pointee)
         }
     }

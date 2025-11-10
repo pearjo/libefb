@@ -14,7 +14,7 @@
 // limitations under the License.
 
 use efb::measurements::{Duration, Length};
-use efb::route::{Leg, Route};
+use efb::route::{Leg, Route, TotalsToLeg};
 
 mod leg;
 
@@ -36,9 +36,14 @@ pub use leg::*;
 pub struct EfbRoute<'a> {
     inner: &'a Route,
     legs: Option<Legs<'a>>,
-    // TODO: Rework the Route to avoid this additional wrapping.
-    dist: Option<Length>,
-    ete: Option<Duration>,
+    totals: Option<TotalsToLeg>,
+}
+
+impl<'a> EfbRoute<'a> {
+    fn totals(&mut self) -> Option<&TotalsToLeg> {
+        self.totals = self.inner.totals(None);
+        self.totals.as_ref()
+    }
 }
 
 impl<'a> From<&'a Route> for EfbRoute<'a> {
@@ -46,8 +51,7 @@ impl<'a> From<&'a Route> for EfbRoute<'a> {
         Self {
             inner: route,
             legs: None,
-            dist: None,
-            ete: None,
+            totals: None,
         }
     }
 }
@@ -81,28 +85,16 @@ impl<'a> Iterator for Legs<'a> {
 ///
 /// If the route has no legs, a NULL pointer is returned.
 #[no_mangle]
-pub extern "C" fn efb_route_dist<'a>(route: &'a mut EfbRoute) -> Option<&'a Length> {
-    let _ = route.dist.take();
-
-    if let Some(dist) = route.inner.dist() {
-        let _ = route.dist.insert(dist);
-    }
-
-    route.dist.as_ref()
+pub extern "C" fn efb_route_totals_dist<'a>(route: &'a mut EfbRoute) -> Option<&'a Length> {
+    route.totals().map(|totals| totals.dist())
 }
 
 /// Returns the estimated time enroute.
 ///
 /// If the ETE can't be calculated, a NULL pointer is returned.
 #[no_mangle]
-pub extern "C" fn efb_route_ete<'a>(route: &'a mut EfbRoute) -> Option<&'a Duration> {
-    let _ = route.ete.take();
-
-    if let Some(ete) = route.inner.ete() {
-        let _ = route.ete.insert(ete);
-    }
-
-    route.ete.as_ref()
+pub extern "C" fn efb_route_totals_ete<'a>(route: &'a mut EfbRoute) -> Option<&'a Duration> {
+    route.totals().and_then(|totals| totals.ete())
 }
 
 /// Returns the first leg in the route.

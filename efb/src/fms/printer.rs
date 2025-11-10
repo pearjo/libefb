@@ -106,12 +106,12 @@ impl Printer {
             writeln!(buffer)?;
         }
 
-        if let Some(dist) = route.dist() {
-            writeln!(buffer, "DIST {:>1$.1}", dist, self.line_length - 5)?;
-        }
+        if let Some(totals) = route.totals(None) {
+            writeln!(buffer, "DIST {:>1$.1}", totals.dist(), self.line_length - 5)?;
 
-        if let Some(ete) = route.ete() {
-            writeln!(buffer, "ETE {:>1$}", ete, self.line_length - 4)?;
+            if let Some(ete) = totals.ete() {
+                writeln!(buffer, "ETE {:>1$}", ete, self.line_length - 4)?;
+            }
         }
 
         writeln!(buffer)?;

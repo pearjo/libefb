@@ -872,13 +872,13 @@ efb_performance_table_row_set_ff(EfbPerformanceTableRow *row, EfbFuelFlow ff);
 ///
 /// If the route has no legs, a NULL pointer is returned.
 const EfbLength *
-efb_route_dist(EfbRoute *route);
+efb_route_totals_dist(EfbRoute *route);
 
 /// Returns the estimated time enroute.
 ///
 /// If the ETE can't be calculated, a NULL pointer is returned.
 const EfbDuration *
-efb_route_ete(EfbRoute *route);
+efb_route_totals_ete(EfbRoute *route);
 
 /// Returns the first leg in the route.
 const EfbLeg *

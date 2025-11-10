@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Accumulate distance, ETE and fuel of route
 - Create navigation data per data source
 - Add AIRAC and location to navigation aid
 - Serialization support for navigation data
@@ -17,11 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Get route totals as one struct
 - Modify route and navigation data from closure to reevaluate
   dependant FMS parts
 
 ### Fixed
 
+- Fix naming conflict of Performance with From
 - Inclusion of region code in airspace enums
 
 ### Removed
