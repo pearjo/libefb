@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-11-10
+
 ### Added
 
 - Accumulate distance, ETE and fuel of route
@@ -106,7 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Aircraft performance entry.
 - Fuel planning and Mass & Balance.
 
-[unreleased]: https://github.com/pearjo/libefb/compare/v0.3.3...HEAD
+[unreleased]: https://github.com/pearjo/libefb/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/pearjo/libefb/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/pearjo/libefb/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/pearjo/libefb/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/pearjo/libefb/compare/0.3.0...v0.3.1
