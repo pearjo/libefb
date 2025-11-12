@@ -36,6 +36,14 @@ impl JsFMS {
     }
 }
 
+impl From<Rc<RefCell<FMS>>> for JsFMS {
+    fn from(value: Rc<RefCell<FMS>>) -> Self {
+        Self {
+            inner: value.clone(),
+        }
+    }
+}
+
 #[wasm_bindgen(js_class = FMS)]
 impl JsFMS {
     #[wasm_bindgen(constructor)]
