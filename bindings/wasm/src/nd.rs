@@ -21,7 +21,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = NavigationData)]
 pub struct JsNavigationData {
-    pub(super) inner: Rc<RefCell<FMS>>,
+    inner: Rc<RefCell<FMS>>,
 }
 
 #[wasm_bindgen(js_class = NavigationData)]
@@ -29,5 +29,13 @@ impl JsNavigationData {
     pub fn find(&self, ident: &str) -> JsValue {
         let fms = self.inner.borrow();
         serde_wasm_bindgen::to_value(&fms.nd().find(ident)).unwrap()
+    }
+}
+
+impl From<&Rc<RefCell<FMS>>> for JsNavigationData {
+    fn from(value: &Rc<RefCell<FMS>>) -> Self {
+        Self {
+            inner: Rc::clone(value),
+        }
     }
 }

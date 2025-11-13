@@ -85,7 +85,7 @@ impl JsLeg {
 
 #[wasm_bindgen(js_name = Route)]
 pub struct JsRoute {
-    pub(super) inner: Rc<RefCell<FMS>>,
+    inner: Rc<RefCell<FMS>>,
 }
 
 #[wasm_bindgen(js_class = Route)]
@@ -133,5 +133,13 @@ impl JsRoute {
         let value = fms.route().to_geojson();
         let serializer = Serializer::new().serialize_maps_as_objects(true);
         Ok(value.serialize(&serializer)?)
+    }
+}
+
+impl From<&Rc<RefCell<FMS>>> for JsRoute {
+    fn from(value: &Rc<RefCell<FMS>>) -> Self {
+        Self {
+            inner: Rc::clone(value),
+        }
     }
 }

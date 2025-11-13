@@ -32,14 +32,14 @@ pub struct JsFMS {
 impl JsFMS {
     /// Returns a new pointer to the FMS.
     pub fn fms(&self) -> Rc<RefCell<FMS>> {
-        self.inner.clone()
+        Rc::clone(&self.inner)
     }
 }
 
-impl From<Rc<RefCell<FMS>>> for JsFMS {
-    fn from(value: Rc<RefCell<FMS>>) -> Self {
+impl From<&Rc<RefCell<FMS>>> for JsFMS {
+    fn from(value: &Rc<RefCell<FMS>>) -> Self {
         Self {
-            inner: value.clone(),
+            inner: Rc::clone(value),
         }
     }
 }
@@ -54,15 +54,11 @@ impl JsFMS {
     }
 
     pub fn nd(&self) -> JsNavigationData {
-        JsNavigationData {
-            inner: Rc::clone(&self.inner),
-        }
+        (&self.inner).into()
     }
 
     pub fn route(&self) -> JsRoute {
-        JsRoute {
-            inner: Rc::clone(&self.inner),
-        }
+        (&self.inner).into()
     }
 
     pub fn decode(&mut self, route: String) -> Result<(), JsError> {
